@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { CountdownCard } from "@/components/ui/countdown-card";
 import { FloatingAddButton } from "@/components/ui/floating-add-button";
 import { AddEventDialog } from "@/components/add-event-dialog";
-import { Sparkles, Moon, Sun } from "lucide-react";
+import { Sparkles, Moon, Sun, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { Session, User as SupabaseUser } from "@supabase/supabase-js";
+import { toast } from "@/hooks/use-toast";
 import heroImage from "@/assets/countdown-hero.jpg";
 
 interface Event {
@@ -16,27 +20,47 @@ interface Event {
 }
 
 const Index = () => {
-  const [events, setEvents] = useState<Event[]>([
-    {
-      id: "1",
-      title: "عيد الفطر المبارك",
-      date: new Date(2024, 8, 15), // September 15, 2024
-      type: "العيد",
-      calculationType: "days-left",
-      repeatOption: "yearly"
-    },
-    {
-      id: "2", 
-      title: "رحلة العمرة",
-      date: new Date(2024, 9, 20), // October 20, 2024
-      type: "السفر",
-      calculationType: "days-left",
-      repeatOption: "none"
-    }
-  ]);
-
+  const [events, setEvents] = useState<Event[]>([]);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  // Authentication state management
+  useEffect(() => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+        
+        // Load events when user signs in
+        if (session?.user) {
+          setTimeout(() => {
+            loadUserEvents();
+          }, 0);
+        } else {
+          setEvents([]);
+        }
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+      
+      if (session?.user) {
+        loadUserEvents();
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Real-time countdown updates
   useEffect(() => {
@@ -48,12 +72,103 @@ const Index = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleAddEvent = (newEvent: Omit<Event, "id">) => {
-    const event = {
-      ...newEvent,
-      id: Date.now().toString()
-    };
-    setEvents(prev => [...prev, event]);
+  const loadUserEvents = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('event_date', { ascending: true });
+
+      if (error) {
+        console.error('Error loading events:', error);
+        toast({
+          title: "Error loading events",
+          description: "Please try refreshing the page",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const formattedEvents = data.map(event => ({
+        id: event.id,
+        title: event.title,
+        date: new Date(event.event_date),
+        type: event.event_type,
+        calculationType: "days-left",
+        repeatOption: "none"
+      }));
+
+      setEvents(formattedEvents);
+    } catch (error) {
+      console.error('Error loading events:', error);
+    }
+  };
+
+  const handleAddEvent = async (newEvent: Omit<Event, "id">) => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to save events",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('events')
+        .insert({
+          user_id: user.id,
+          title: newEvent.title,
+          event_date: newEvent.date.toISOString(),
+          event_type: newEvent.type
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error saving event:', error);
+        toast({
+          title: "Error saving event",
+          description: "Please try again",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const formattedEvent = {
+        id: data.id,
+        title: data.title,
+        date: new Date(data.event_date),
+        type: data.event_type,
+        calculationType: newEvent.calculationType,
+        repeatOption: newEvent.repeatOption
+      };
+
+      setEvents(prev => [...prev, formattedEvent]);
+      toast({
+        title: "Event saved! ✨",
+        description: "Your countdown event has been added",
+      });
+    } catch (error) {
+      console.error('Error saving event:', error);
+      toast({
+        title: "Something went wrong",
+        description: "Please try again later",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Signed out",
+      description: "See you later! ✨",
+    });
   };
 
   const toggleDarkMode = () => {
@@ -84,14 +199,46 @@ const Index = () => {
             </div>
           </div>
           
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={toggleDarkMode}
-            className="h-10 w-10 p-0"
-          >
-            {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
+          <div className="flex items-center gap-2">
+            {user ? (
+              <>
+                <div className="hidden sm:flex items-center gap-2 mr-2">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">
+                    {user.email?.split('@')[0]}
+                  </span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSignOut}
+                  className="h-9"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => navigate("/auth")}
+                className="h-9"
+              >
+                <User className="h-4 w-4 mr-2" />
+                Sign In
+              </Button>
+            )}
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleDarkMode}
+              className="h-10 w-10 p-0 ml-2"
+            >
+              {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+          </div>
         </div>
       </header>
 
