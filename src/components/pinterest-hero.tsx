@@ -131,12 +131,12 @@ export function PinterestHero() {
                    }}
               />
               
-              <div className="relative z-10 flex flex-col items-center gap-2">
-                <div className="bg-white/20 p-3 rounded-full">
+              <div className="relative z-10 flex flex-col items-center justify-center gap-2 text-center px-2">
+                <div className="bg-white/20 p-2 rounded-full mb-1 flex items-center justify-center">
                   {event.icon}
                 </div>
-                <h3 className="font-bold text-lg">{event.title}</h3>
-                <p className="text-sm text-white/80">{event.subtitle}</p>
+                <h3 className="font-bold text-sm sm:text-base leading-tight">{event.title}</h3>
+                <p className="text-xs sm:text-sm text-white/90 leading-tight">{event.subtitle}</p>
               </div>
             </div>
           ))}
