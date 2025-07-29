@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { CountdownCard } from "@/components/ui/countdown-card";
 import { FloatingAddButton } from "@/components/ui/floating-add-button";
 import { AddEventDialog } from "@/components/add-event-dialog";
+import { PinterestHero } from "@/components/pinterest-hero";
 import { Sparkles, Moon, Sun, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User as SupabaseUser } from "@supabase/supabase-js";
 import { toast } from "@/hooks/use-toast";
-import heroImage from "@/assets/countdown-hero.jpg";
 
 interface Event {
   id: string;
@@ -244,21 +244,7 @@ const Index = () => {
 
       {/* Hero Section */}
       {activeEvents.length === 0 && expiredEvents.length === 0 && (
-        <div className="relative container mx-auto px-4 py-12 text-center">
-          <div className="max-w-2xl mx-auto">
-            <img 
-              src={heroImage} 
-              alt="العد التنازلي" 
-              className="w-full h-48 object-cover rounded-2xl shadow-islamic mb-8"
-            />
-            <h2 className="text-3xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">
-              مرحباً بك في تطبيق العد التنازلي
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              احتفل بلحظاتك المميزة واجعل كل حدث له عدّ تنازلي خاص به
-            </p>
-          </div>
-        </div>
+        <PinterestHero />
       )}
 
       {/* Main Content */}
