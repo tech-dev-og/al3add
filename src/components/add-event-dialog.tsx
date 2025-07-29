@@ -66,8 +66,16 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title && date && eventType) {
+      // Input validation and sanitization
+      if (title.length > 100) {
+        return;
+      }
+
+      // Sanitize title to prevent XSS
+      const sanitizedTitle = title.replace(/<[^>]*>/g, '').trim();
+
       onAddEvent({
-        title,
+        title: sanitizedTitle,
         date,
         type: eventType,
         calculationType,
@@ -181,6 +189,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
               onChange={(e) => setTitle(e.target.value)}
               placeholder="مثال: عيد الفطر المبارك"
               className="text-right"
+              maxLength={100}
               required
             />
           </div>

@@ -38,6 +38,34 @@ const Auth = () => {
       return;
     }
 
+    // Input validation
+    if (displayName && displayName.length > 50) {
+      toast({
+        title: "Invalid display name",
+        description: "Display name must be 50 characters or less",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (displayName && !/^[a-zA-Z0-9\s\-_]+$/.test(displayName)) {
+      toast({
+        title: "Invalid display name",
+        description: "Display name can only contain letters, numbers, spaces, hyphens, and underscores",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 6 characters long",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const redirectUrl = `${window.location.origin}/`;
@@ -230,6 +258,7 @@ const Auth = () => {
                         value={displayName}
                         onChange={(e) => setDisplayName(e.target.value)}
                         className="pl-10"
+                        maxLength={50}
                       />
                     </div>
                   </div>
