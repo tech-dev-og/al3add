@@ -87,13 +87,13 @@ const LIFE_EVENTS: LifeEvent[] = [
 const getTileClassName = (size: string) => {
   switch (size) {
     case 'large':
-      return 'col-span-2 row-span-2 h-48';
+      return 'col-span-2 row-span-2 h-40 sm:h-48';
     case 'medium': 
-      return 'col-span-2 h-24';
+      return 'col-span-1 sm:col-span-2 h-32 sm:h-28';
     case 'small':
-      return 'col-span-1 h-24';
+      return 'col-span-1 h-28 sm:h-24';
     default:
-      return 'col-span-1 h-24';
+      return 'col-span-1 h-28 sm:h-24';
   }
 };
 
@@ -109,18 +109,19 @@ export function PinterestHero() {
         </p>
       </div>
       
-      <div className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-4 gap-4 auto-rows-max">
+      <div className="max-w-5xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 auto-rows-auto">
           {LIFE_EVENTS.map((event) => (
             <div
               key={event.id}
               className={`
                 ${getTileClassName(event.size)}
                 bg-gradient-to-br ${event.bgGradient}
-                rounded-2xl p-6 text-white relative overflow-hidden
-                hover:scale-105 transition-all duration-300
-                cursor-pointer shadow-lg hover:shadow-xl
+                rounded-xl sm:rounded-2xl p-3 sm:p-4 text-white relative overflow-hidden
+                hover:scale-[1.02] transition-all duration-300
+                cursor-pointer shadow-md hover:shadow-lg
                 flex flex-col justify-center items-center text-center
+                min-h-0
               `}
             >
               {/* Decorative pattern overlay */}
