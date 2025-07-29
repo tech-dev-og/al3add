@@ -11,6 +11,8 @@ interface Event {
   title: string;
   date: Date;
   type: string;
+  calculationType?: string;
+  repeatOption?: string;
 }
 
 const Index = () => {
@@ -19,13 +21,17 @@ const Index = () => {
       id: "1",
       title: "عيد الفطر المبارك",
       date: new Date(2024, 8, 15), // September 15, 2024
-      type: "العيد"
+      type: "العيد",
+      calculationType: "days-left",
+      repeatOption: "yearly"
     },
     {
       id: "2", 
       title: "رحلة العمرة",
       date: new Date(2024, 9, 20), // October 20, 2024
-      type: "السفر"
+      type: "السفر",
+      calculationType: "days-left",
+      repeatOption: "none"
     }
   ]);
 
@@ -124,6 +130,8 @@ const Index = () => {
                   title={event.title}
                   eventDate={event.date}
                   eventType={event.type}
+                  calculationType={event.calculationType}
+                  repeatOption={event.repeatOption}
                 />
               ))}
             </div>
@@ -143,6 +151,8 @@ const Index = () => {
                   title={event.title}
                   eventDate={event.date}
                   eventType={event.type}
+                  calculationType={event.calculationType}
+                  repeatOption={event.repeatOption}
                   isExpired
                 />
               ))}

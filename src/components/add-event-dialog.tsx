@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, ChevronDown, ChevronUp } from "lucide-react";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -18,21 +18,50 @@ interface AddEventDialogProps {
     title: string;
     date: Date;
     type: string;
+    calculationType: string;
+    repeatOption: string;
   }) => void;
 }
 
 const EVENT_TYPES = [
-  'العيد',
-  'رمضان', 
-  'الزواج',
-  'السفر',
-  'الاختبارات'
+  { id: 'العيد', label: 'العيد', icon: '🌙' },
+  { id: 'رمضان', label: 'رمضان', icon: '☪️' },
+  { id: 'الحب', label: 'الحب', icon: '💕' },
+  { id: 'الامتحانات', label: 'الامتحانات', icon: '📚' },
+  { id: 'عيد الميلاد', label: 'عيد الميلاد', icon: '🎂' },
+  { id: 'النظام الغذائي', label: 'النظام الغذائي', icon: '🥗' },
+  { id: 'التمرين', label: 'التمرين', icon: '💪' },
+  { id: 'السفر', label: 'السفر', icon: '✈️' },
+  { id: 'الزواج', label: 'الزواج', icon: '💍' },
+  { id: 'العمل', label: 'العمل', icon: '💼' },
+  { id: 'الإقلاع عن التدخين', label: 'الإقلاع عن التدخين', icon: '🚭' },
+  { id: 'المولود الجديد', label: 'المولود الجديد', icon: '👶' }
+];
+
+const CALCULATION_TYPES = [
+  { id: 'days-left', label: 'الأيام المتبقية', description: 'العد التنازلي للأحداث القادمة' },
+  { id: 'days-passed', label: 'الأيام الماضية', description: 'حساب الأيام من تاريخ معين' },
+  { id: 'months-duration', label: 'المدة بالأشهر', description: 'عمر الطفل بالأشهر' },
+  { id: 'weeks-duration', label: 'المدة بالأسابيع', description: 'حساب 7 أيام كأسبوع واحد' },
+  { id: 'years-months', label: 'السنوات والأشهر', description: 'مثل 1س 8ش 2ي' }
+];
+
+const REPEAT_OPTIONS = [
+  { id: 'none', label: 'بدون تكرار' },
+  { id: 'daily', label: 'يومي' },
+  { id: 'weekly', label: 'أسبوعي' },
+  { id: 'monthly', label: 'شهري' },
+  { id: 'yearly', label: 'سنوي' }
 ];
 
 export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialogProps) {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState<Date>();
   const [eventType, setEventType] = useState("");
+  const [calculationType, setCalculationType] = useState("days-left");
+  const [repeatOption, setRepeatOption] = useState("none");
+  const [showEventTypes, setShowEventTypes] = useState(true);
+  const [showCalculationTypes, setShowCalculationTypes] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,22 +69,110 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
       onAddEvent({
         title,
         date,
-        type: eventType
+        type: eventType,
+        calculationType,
+        repeatOption
       });
       setTitle("");
       setDate(undefined);
       setEventType("");
+      setCalculationType("days-left");
+      setRepeatOption("none");
       onOpenChange(false);
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl">إضافة حدث جديد</DialogTitle>
+          <DialogTitle className="text-xl text-center">ما نوع الحدث؟</DialogTitle>
+          <p className="text-sm text-muted-foreground text-center">
+            صعب العثور على حدثك؟<br />
+            اختر هنا لإنشائه بنفسك 👇
+          </p>
         </DialogHeader>
+
         <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+          {/* Event Type Selection */}
+          <div className="space-y-3">
+            <div className="grid grid-cols-3 gap-3">
+              {EVENT_TYPES.slice(0, 6).map((type) => (
+                <button
+                  key={type.id}
+                  type="button"
+                  onClick={() => setEventType(type.id)}
+                  className={cn(
+                    "relative h-20 rounded-xl overflow-hidden text-white font-medium transition-all",
+                    "bg-gradient-to-br from-primary/80 to-primary",
+                    "hover:scale-105 hover:shadow-lg",
+                    "flex flex-col items-center justify-center gap-1",
+                    eventType === type.id && "ring-2 ring-accent scale-105"
+                  )}
+                >
+                  <span className="text-2xl">{type.icon}</span>
+                  <span className="text-xs text-center px-1">{type.label}</span>
+                </button>
+              ))}
+            </div>
+            {EVENT_TYPES.length > 6 && (
+              <div className="grid grid-cols-3 gap-3">
+                {EVENT_TYPES.slice(6).map((type) => (
+                  <button
+                    key={type.id}
+                    type="button"
+                    onClick={() => setEventType(type.id)}
+                    className={cn(
+                      "relative h-20 rounded-xl overflow-hidden text-white font-medium transition-all",
+                      "bg-gradient-to-br from-secondary/80 to-secondary",
+                      "hover:scale-105 hover:shadow-lg",
+                      "flex flex-col items-center justify-center gap-1",
+                      eventType === type.id && "ring-2 ring-accent scale-105"
+                    )}
+                  >
+                    <span className="text-2xl">{type.icon}</span>
+                    <span className="text-xs text-center px-1">{type.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Calculation Type Section */}
+          <div className="space-y-3">
+            <button
+              type="button"
+              onClick={() => setShowCalculationTypes(!showCalculationTypes)}
+              className="w-full flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
+            >
+              <div className="text-right">
+                <h3 className="font-medium">حساب الأيام</h3>
+                <p className="text-sm text-muted-foreground">الأيام المتبقية، الأيام الماضية، المدة بالأشهر، المدة بالأسابيع، السنوات-الأشهر</p>
+              </div>
+              {showCalculationTypes ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </button>
+
+            {showCalculationTypes && (
+              <div className="grid grid-cols-1 gap-3">
+                {CALCULATION_TYPES.map((type) => (
+                  <button
+                    key={type.id}
+                    type="button"
+                    onClick={() => setCalculationType(type.id)}
+                    className={cn(
+                      "p-3 rounded-lg border text-right transition-all hover:bg-muted/50",
+                      calculationType === type.id && "bg-primary/10 border-primary"
+                    )}
+                  >
+                    <div className="font-medium text-accent">{type.label}</div>
+                    <div className="text-sm text-muted-foreground">{type.description}</div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Event Title */}
           <div className="space-y-2">
             <Label htmlFor="title">عنوان الحدث</Label>
             <Input
@@ -68,22 +185,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
             />
           </div>
 
-          <div className="space-y-2">
-            <Label>نوع الحدث</Label>
-            <Select value={eventType} onValueChange={setEventType} required>
-              <SelectTrigger>
-                <SelectValue placeholder="اختر نوع الحدث" />
-              </SelectTrigger>
-              <SelectContent>
-                {EVENT_TYPES.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
+          {/* Date Selection */}
           <div className="space-y-2">
             <Label>تاريخ الحدث</Label>
             <Popover>
@@ -114,6 +216,23 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
                 />
               </PopoverContent>
             </Popover>
+          </div>
+
+          {/* Repeat Options */}
+          <div className="space-y-2">
+            <Label>التكرار</Label>
+            <Select value={repeatOption} onValueChange={setRepeatOption}>
+              <SelectTrigger>
+                <SelectValue placeholder="اختر نوع التكرار" />
+              </SelectTrigger>
+              <SelectContent>
+                {REPEAT_OPTIONS.map((option) => (
+                  <SelectItem key={option.id} value={option.id}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex gap-3 pt-4">

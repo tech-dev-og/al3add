@@ -9,6 +9,8 @@ interface CountdownCardProps {
   eventDate: Date;
   eventType: string;
   isExpired?: boolean;
+  calculationType?: string;
+  repeatOption?: string;
 }
 
 interface TimeLeft {
@@ -18,7 +20,7 @@ interface TimeLeft {
   seconds: number;
 }
 
-export function CountdownCard({ title, eventDate, eventType, isExpired = false }: CountdownCardProps) {
+export function CountdownCard({ title, eventDate, eventType, isExpired = false, calculationType = "days-left", repeatOption = "none" }: CountdownCardProps) {
   const getTimeLeft = (): TimeLeft => {
     const now = new Date().getTime();
     const eventTime = eventDate.getTime();
