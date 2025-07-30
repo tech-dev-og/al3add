@@ -131,8 +131,8 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
                     type="button"
                     onClick={() => setEventType(type.id)}
                     className={cn(
-                      "relative h-20 rounded-xl overflow-hidden text-white font-medium transition-all",
-                      "bg-gradient-to-br from-secondary/80 to-secondary",
+                      "relative h-20 rounded-xl overflow-hidden text-slate-800 font-medium transition-all",
+                      "bg-gradient-to-br from-amber-200 to-yellow-300",
                       "hover:scale-105 hover:shadow-lg",
                       "flex flex-col items-center justify-center gap-1",
                       eventType === type.id && "ring-2 ring-accent scale-105"
