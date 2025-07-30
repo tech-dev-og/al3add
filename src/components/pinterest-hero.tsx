@@ -6,6 +6,7 @@ interface LifeEvent {
   subtitle: string;
   icon: React.ReactNode;
   bgGradient: string;
+  textColor: string;
   size: 'small' | 'medium' | 'large';
 }
 
@@ -16,6 +17,7 @@ const LIFE_EVENTS: LifeEvent[] = [
     subtitle: 'الاحتفال المبارك',
     icon: <Sparkles className="h-6 w-6" />,
     bgGradient: 'from-emerald-500 to-teal-600',
+    textColor: 'text-white',
     size: 'large'
   },
   {
@@ -24,6 +26,7 @@ const LIFE_EVENTS: LifeEvent[] = [
     subtitle: 'يوم خاص',
     icon: <Gift className="h-5 w-5" />,
     bgGradient: 'from-pink-500 to-rose-600',
+    textColor: 'text-white',
     size: 'medium'
   },
   {
@@ -32,6 +35,7 @@ const LIFE_EVENTS: LifeEvent[] = [
     subtitle: 'بداية جديدة',
     icon: <Heart className="h-5 w-5" />,
     bgGradient: 'from-purple-500 to-indigo-600',
+    textColor: 'text-white',
     size: 'small'
   },
   {
@@ -40,6 +44,7 @@ const LIFE_EVENTS: LifeEvent[] = [
     subtitle: 'إنجاز عظيم',
     icon: <GraduationCap className="h-6 w-6" />,
     bgGradient: 'from-blue-500 to-cyan-600',
+    textColor: 'text-white',
     size: 'large'
   },
   {
@@ -48,6 +53,7 @@ const LIFE_EVENTS: LifeEvent[] = [
     subtitle: 'مغامرة جديدة',
     icon: <Plane className="h-5 w-5" />,
     bgGradient: 'from-orange-500 to-amber-600',
+    textColor: 'text-slate-800',
     size: 'medium'
   },
   {
@@ -56,6 +62,7 @@ const LIFE_EVENTS: LifeEvent[] = [
     subtitle: 'بركة وفرحة',
     icon: <Baby className="h-4 w-4" />,
     bgGradient: 'from-green-500 to-emerald-600',
+    textColor: 'text-white',
     size: 'small'
   },
   {
@@ -64,6 +71,7 @@ const LIFE_EVENTS: LifeEvent[] = [
     subtitle: 'خطوة مهمة',
     icon: <Briefcase className="h-4 w-4" />,
     bgGradient: 'from-slate-500 to-gray-600',
+    textColor: 'text-white',
     size: 'small'
   },
   {
@@ -72,6 +80,7 @@ const LIFE_EVENTS: LifeEvent[] = [
     subtitle: 'لحظات رومانسية',
     icon: <Heart className="h-5 w-5" />,
     bgGradient: 'from-red-500 to-pink-600',
+    textColor: 'text-white',
     size: 'medium'
   },
   {
@@ -80,6 +89,7 @@ const LIFE_EVENTS: LifeEvent[] = [
     subtitle: 'شهر الخير',
     icon: <Calendar className="h-6 w-6" />,
     bgGradient: 'from-indigo-500 to-purple-600',
+    textColor: 'text-white',
     size: 'large'
   }
 ];
@@ -117,7 +127,7 @@ export function PinterestHero() {
               className={`
                 ${getTileClassName(event.size)}
                 bg-gradient-to-br ${event.bgGradient}
-                rounded-xl sm:rounded-2xl p-3 sm:p-4 text-white relative overflow-hidden
+                rounded-xl sm:rounded-2xl p-3 sm:p-4 ${event.textColor} relative overflow-hidden
                 hover:scale-[1.02] transition-all duration-300
                 cursor-pointer shadow-md hover:shadow-lg
                 flex flex-col justify-center items-center text-center
@@ -137,7 +147,7 @@ export function PinterestHero() {
                   {event.icon}
                 </div>
                 <h3 className="font-bold text-sm sm:text-base leading-tight">{event.title}</h3>
-                <p className="text-xs sm:text-sm text-white/90 leading-tight">{event.subtitle}</p>
+                <p className={`text-xs sm:text-sm leading-tight ${event.textColor === 'text-slate-800' ? 'text-slate-700' : 'text-white/90'}`}>{event.subtitle}</p>
               </div>
             </div>
           ))}
