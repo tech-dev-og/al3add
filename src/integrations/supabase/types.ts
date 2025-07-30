@@ -77,6 +77,39 @@ export type Database = {
         }
         Relationships: []
       }
+      translations: {
+        Row: {
+          arabic_text: string
+          created_at: string
+          description: string | null
+          english_text: string
+          id: string
+          key: string
+          namespace: string
+          updated_at: string
+        }
+        Insert: {
+          arabic_text: string
+          created_at?: string
+          description?: string | null
+          english_text: string
+          id?: string
+          key: string
+          namespace?: string
+          updated_at?: string
+        }
+        Update: {
+          arabic_text?: string
+          created_at?: string
+          description?: string | null
+          english_text?: string
+          id?: string
+          key?: string
+          namespace?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
