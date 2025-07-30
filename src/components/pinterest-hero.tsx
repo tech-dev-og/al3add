@@ -1,4 +1,5 @@
 import { Calendar, Heart, GraduationCap, Baby, Plane, Heart as Ring, Briefcase, Gift, Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface LifeEvent {
   id: string;
@@ -10,89 +11,6 @@ interface LifeEvent {
   size: 'small' | 'medium' | 'large';
 }
 
-const LIFE_EVENTS: LifeEvent[] = [
-  {
-    id: '1',
-    title: 'عيد الفطر',
-    subtitle: 'الاحتفال المبارك',
-    icon: <Sparkles className="h-6 w-6" />,
-    bgGradient: 'from-emerald-400 to-green-500',
-    textColor: 'text-white',
-    size: 'large'
-  },
-  {
-    id: '2', 
-    title: 'عيد الميلاد',
-    subtitle: 'يوم خاص',
-    icon: <Gift className="h-5 w-5" />,
-    bgGradient: 'from-amber-200 to-yellow-300',
-    textColor: 'text-slate-800',
-    size: 'medium'
-  },
-  {
-    id: '3',
-    title: 'الزواج',
-    subtitle: 'بداية جديدة',
-    icon: <Heart className="h-5 w-5" />,
-    bgGradient: 'from-purple-500 to-indigo-600',
-    textColor: 'text-white',
-    size: 'small'
-  },
-  {
-    id: '4',
-    title: 'التخرج',
-    subtitle: 'إنجاز عظيم',
-    icon: <GraduationCap className="h-6 w-6" />,
-    bgGradient: 'from-blue-500 to-cyan-600',
-    textColor: 'text-white',
-    size: 'large'
-  },
-  {
-    id: '5',
-    title: 'السفر',
-    subtitle: 'مغامرة جديدة',
-    icon: <Plane className="h-5 w-5" />,
-    bgGradient: 'from-orange-200 to-amber-300',
-    textColor: 'text-slate-800',
-    size: 'medium'
-  },
-  {
-    id: '6',
-    title: 'مولود جديد',
-    subtitle: 'بركة وفرحة',
-    icon: <Baby className="h-4 w-4" />,
-    bgGradient: 'from-green-500 to-emerald-600',
-    textColor: 'text-white',
-    size: 'small'
-  },
-  {
-    id: '7',
-    title: 'بداية العمل',
-    subtitle: 'خطوة مهمة',
-    icon: <Briefcase className="h-4 w-4" />,
-    bgGradient: 'from-slate-500 to-gray-600',
-    textColor: 'text-white',
-    size: 'small'
-  },
-  {
-    id: '8',
-    title: 'عيد الحب',
-    subtitle: 'لحظات رومانسية',
-    icon: <Heart className="h-5 w-5" />,
-    bgGradient: 'from-pink-300 to-rose-400',
-    textColor: 'text-slate-800',
-    size: 'medium'
-  },
-  {
-    id: '9',
-    title: 'رمضان',
-    subtitle: 'شهر الخير',
-    icon: <Calendar className="h-6 w-6" />,
-    bgGradient: 'from-indigo-500 to-purple-600',
-    textColor: 'text-white',
-    size: 'large'
-  }
-];
 
 const getTileClassName = (size: string) => {
   switch (size) {
@@ -108,14 +26,99 @@ const getTileClassName = (size: string) => {
 };
 
 export function PinterestHero() {
+  const { t } = useTranslation();
+
+  const LIFE_EVENTS: LifeEvent[] = [
+    {
+      id: '1',
+      title: t('hero.lifeEvents.eidFitr'),
+      subtitle: t('hero.lifeEvents.eidFitrSub'),
+      icon: <Sparkles className="h-6 w-6" />,
+      bgGradient: 'from-emerald-400 to-green-500',
+      textColor: 'text-white',
+      size: 'large'
+    },
+    {
+      id: '2', 
+      title: t('hero.lifeEvents.birthday'),
+      subtitle: t('hero.lifeEvents.birthdaySub'),
+      icon: <Gift className="h-5 w-5" />,
+      bgGradient: 'from-amber-200 to-yellow-300',
+      textColor: 'text-slate-800',
+      size: 'medium'
+    },
+    {
+      id: '3',
+      title: t('hero.lifeEvents.marriage'),
+      subtitle: t('hero.lifeEvents.marriageSub'),
+      icon: <Heart className="h-5 w-5" />,
+      bgGradient: 'from-purple-500 to-indigo-600',
+      textColor: 'text-white',
+      size: 'small'
+    },
+    {
+      id: '4',
+      title: t('hero.lifeEvents.graduation'),
+      subtitle: t('hero.lifeEvents.graduationSub'),
+      icon: <GraduationCap className="h-6 w-6" />,
+      bgGradient: 'from-blue-500 to-cyan-600',
+      textColor: 'text-white',
+      size: 'large'
+    },
+    {
+      id: '5',
+      title: t('hero.lifeEvents.travel'),
+      subtitle: t('hero.lifeEvents.travelSub'),
+      icon: <Plane className="h-5 w-5" />,
+      bgGradient: 'from-orange-200 to-amber-300',
+      textColor: 'text-slate-800',
+      size: 'medium'
+    },
+    {
+      id: '6',
+      title: t('hero.lifeEvents.newborn'),
+      subtitle: t('hero.lifeEvents.newbornSub'),
+      icon: <Baby className="h-4 w-4" />,
+      bgGradient: 'from-green-500 to-emerald-600',
+      textColor: 'text-white',
+      size: 'small'
+    },
+    {
+      id: '7',
+      title: t('hero.lifeEvents.workStart'),
+      subtitle: t('hero.lifeEvents.workStartSub'),
+      icon: <Briefcase className="h-4 w-4" />,
+      bgGradient: 'from-slate-500 to-gray-600',
+      textColor: 'text-white',
+      size: 'small'
+    },
+    {
+      id: '8',
+      title: t('hero.lifeEvents.valentine'),
+      subtitle: t('hero.lifeEvents.valentineSub'),
+      icon: <Heart className="h-5 w-5" />,
+      bgGradient: 'from-pink-300 to-rose-400',
+      textColor: 'text-slate-800',
+      size: 'medium'
+    },
+    {
+      id: '9',
+      title: t('hero.lifeEvents.ramadan'),
+      subtitle: t('hero.lifeEvents.ramadanSub'),
+      icon: <Calendar className="h-6 w-6" />,
+      bgGradient: 'from-indigo-500 to-purple-600',
+      textColor: 'text-white',
+      size: 'large'
+    }
+  ];
   return (
     <div className="relative container mx-auto px-4 py-12">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">
-          مرحباً بك في تطبيق العد التنازلي
+          {t('hero.welcomeTitle')}
         </h2>
         <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-          احتفل بلحظاتك المميزة واجعل كل حدث له عدّ تنازلي خاص به
+          {t('hero.welcomeSubtitle')}
         </p>
       </div>
       

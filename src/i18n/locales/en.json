@@ -90,5 +90,89 @@
     "switchLanguage": "Switch Language",
     "arabic": "العربية",
     "english": "English"
+  },
+  "addEvent": {
+    "whatEventType": "What type of event?",
+    "cantFindEvent": "Can't find your event?",
+    "chooseHereToCreate": "Choose here to create it yourself 👇",
+    "dayCalculation": "Day Calculation",
+    "dayCalculationDesc": "Days left, days passed, duration in months, duration in weeks, years-months",
+    "eventTitle": "Event Title",
+    "eventTitlePlaceholder": "Example: Blessed Eid al-Fitr",
+    "eventDate": "Event Date",
+    "chooseDate": "Choose date",
+    "repeat": "Repeat",
+    "chooseRepeatType": "Choose repeat type",
+    "cancel": "Cancel",
+    "addEvent": "Add Event",
+    "eventExpired": "Event Expired",
+    "daysLeft": "{{count}} days left",
+    "hoursLeft": "{{count}} hours left",
+    "minutesLeft": "{{count}} minutes left",
+    "secondsLeft": "{{count}} seconds left",
+    "eventTypes": {
+      "eid": "Eid",
+      "ramadan": "Ramadan",
+      "love": "Love",
+      "exams": "Exams",
+      "birthday": "Birthday",
+      "diet": "Diet",
+      "exercise": "Exercise",
+      "travel": "Travel",
+      "marriage": "Marriage",
+      "work": "Work",
+      "quitSmoking": "Quit Smoking",
+      "newborn": "Newborn"
+    },
+    "calculationTypes": {
+      "daysLeft": "Days Left",
+      "daysLeftDesc": "Countdown for upcoming events",
+      "daysPassed": "Days Passed", 
+      "daysPassedDesc": "Calculate days from a specific date",
+      "monthsDuration": "Duration in Months",
+      "monthsDurationDesc": "Child's age in months",
+      "weeksDuration": "Duration in Weeks",
+      "weeksDurationDesc": "Calculate 7 days as one week",
+      "yearsMonths": "Years and Months",
+      "yearsMonthsDesc": "Like 1y 8m 2d"
+    },
+    "repeatOptions": {
+      "none": "No repeat",
+      "daily": "Daily",
+      "weekly": "Weekly", 
+      "monthly": "Monthly",
+      "yearly": "Yearly"
+    }
+  },
+  "hero": {
+    "welcomeTitle": "Welcome to the Countdown App",
+    "welcomeSubtitle": "Celebrate your special moments and give each event its own countdown",
+    "timeUnits": {
+      "days": "days",
+      "hours": "hours", 
+      "minutes": "minutes",
+      "seconds": "seconds",
+      "remaining": "remaining"
+    },
+    "lifeEvents": {
+      "eidFitr": "Eid al-Fitr",
+      "eidFitrSub": "Blessed Celebration",
+      "birthday": "Birthday",
+      "birthdaySub": "Special Day",
+      "marriage": "Marriage", 
+      "marriageSub": "New Beginning",
+      "graduation": "Graduation",
+      "graduationSub": "Great Achievement",
+      "travel": "Travel",
+      "travelSub": "New Adventure",
+      "newborn": "Newborn",
+      "newbornSub": "Blessing and Joy",
+      "workStart": "Work Start",
+      "workStartSub": "Important Step",
+      "valentine": "Valentine's Day",
+      "valentineSub": "Romantic Moments",
+      "ramadan": "Ramadan",
+      "ramadanSub": "Month of Goodness"
+    }
   }
 }

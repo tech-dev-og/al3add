@@ -8,8 +8,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, ChevronDown, ChevronUp } from "lucide-react";
 import { format } from "date-fns";
-import { ar } from "date-fns/locale";
+import { ar, enUS } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface AddEventDialogProps {
   open: boolean;
@@ -23,38 +24,9 @@ interface AddEventDialogProps {
   }) => void;
 }
 
-const EVENT_TYPES = [
-  { id: 'العيد', label: 'العيد', icon: '🌙' },
-  { id: 'رمضان', label: 'رمضان', icon: '☪️' },
-  { id: 'الحب', label: 'الحب', icon: '💕' },
-  { id: 'الامتحانات', label: 'الامتحانات', icon: '📚' },
-  { id: 'عيد الميلاد', label: 'عيد الميلاد', icon: '🎂' },
-  { id: 'النظام الغذائي', label: 'النظام الغذائي', icon: '🥗' },
-  { id: 'التمرين', label: 'التمرين', icon: '💪' },
-  { id: 'السفر', label: 'السفر', icon: '✈️' },
-  { id: 'الزواج', label: 'الزواج', icon: '💍' },
-  { id: 'العمل', label: 'العمل', icon: '💼' },
-  { id: 'الإقلاع عن التدخين', label: 'الإقلاع عن التدخين', icon: '🚭' },
-  { id: 'المولود الجديد', label: 'المولود الجديد', icon: '👶' }
-];
-
-const CALCULATION_TYPES = [
-  { id: 'days-left', label: 'الأيام المتبقية', description: 'العد التنازلي للأحداث القادمة' },
-  { id: 'days-passed', label: 'الأيام الماضية', description: 'حساب الأيام من تاريخ معين' },
-  { id: 'months-duration', label: 'المدة بالأشهر', description: 'عمر الطفل بالأشهر' },
-  { id: 'weeks-duration', label: 'المدة بالأسابيع', description: 'حساب 7 أيام كأسبوع واحد' },
-  { id: 'years-months', label: 'السنوات والأشهر', description: 'مثل 1س 8ش 2ي' }
-];
-
-const REPEAT_OPTIONS = [
-  { id: 'none', label: 'بدون تكرار' },
-  { id: 'daily', label: 'يومي' },
-  { id: 'weekly', label: 'أسبوعي' },
-  { id: 'monthly', label: 'شهري' },
-  { id: 'yearly', label: 'سنوي' }
-];
 
 export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialogProps) {
+  const { t, i18n } = useTranslation();
   const [title, setTitle] = useState("");
   const [date, setDate] = useState<Date>();
   const [eventType, setEventType] = useState("");
@@ -62,6 +34,37 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
   const [repeatOption, setRepeatOption] = useState("none");
   const [showEventTypes, setShowEventTypes] = useState(true);
   const [showCalculationTypes, setShowCalculationTypes] = useState(false);
+
+  const EVENT_TYPES = [
+    { id: 'eid', label: t('addEvent.eventTypes.eid'), icon: '🌙' },
+    { id: 'ramadan', label: t('addEvent.eventTypes.ramadan'), icon: '☪️' },
+    { id: 'love', label: t('addEvent.eventTypes.love'), icon: '💕' },
+    { id: 'exams', label: t('addEvent.eventTypes.exams'), icon: '📚' },
+    { id: 'birthday', label: t('addEvent.eventTypes.birthday'), icon: '🎂' },
+    { id: 'diet', label: t('addEvent.eventTypes.diet'), icon: '🥗' },
+    { id: 'exercise', label: t('addEvent.eventTypes.exercise'), icon: '💪' },
+    { id: 'travel', label: t('addEvent.eventTypes.travel'), icon: '✈️' },
+    { id: 'marriage', label: t('addEvent.eventTypes.marriage'), icon: '💍' },
+    { id: 'work', label: t('addEvent.eventTypes.work'), icon: '💼' },
+    { id: 'quitSmoking', label: t('addEvent.eventTypes.quitSmoking'), icon: '🚭' },
+    { id: 'newborn', label: t('addEvent.eventTypes.newborn'), icon: '👶' }
+  ];
+
+  const CALCULATION_TYPES = [
+    { id: 'days-left', label: t('addEvent.calculationTypes.daysLeft'), description: t('addEvent.calculationTypes.daysLeftDesc') },
+    { id: 'days-passed', label: t('addEvent.calculationTypes.daysPassed'), description: t('addEvent.calculationTypes.daysPassedDesc') },
+    { id: 'months-duration', label: t('addEvent.calculationTypes.monthsDuration'), description: t('addEvent.calculationTypes.monthsDurationDesc') },
+    { id: 'weeks-duration', label: t('addEvent.calculationTypes.weeksDuration'), description: t('addEvent.calculationTypes.weeksDurationDesc') },
+    { id: 'years-months', label: t('addEvent.calculationTypes.yearsMonths'), description: t('addEvent.calculationTypes.yearsMonthsDesc') }
+  ];
+
+  const REPEAT_OPTIONS = [
+    { id: 'none', label: t('addEvent.repeatOptions.none') },
+    { id: 'daily', label: t('addEvent.repeatOptions.daily') },
+    { id: 'weekly', label: t('addEvent.repeatOptions.weekly') },
+    { id: 'monthly', label: t('addEvent.repeatOptions.monthly') },
+    { id: 'yearly', label: t('addEvent.repeatOptions.yearly') }
+  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,10 +97,10 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl text-center">ما نوع الحدث؟</DialogTitle>
+          <DialogTitle className="text-xl text-center">{t('addEvent.whatEventType')}</DialogTitle>
           <p className="text-sm text-muted-foreground text-center">
-            صعب العثور على حدثك؟<br />
-            اختر هنا لإنشائه بنفسك 👇
+            {t('addEvent.cantFindEvent')}<br />
+            {t('addEvent.chooseHereToCreate')}
           </p>
         </DialogHeader>
 
@@ -154,8 +157,8 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
               className="w-full flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
             >
               <div className="text-right">
-                <h3 className="font-medium">حساب الأيام</h3>
-                <p className="text-sm text-muted-foreground">الأيام المتبقية، الأيام الماضية، المدة بالأشهر، المدة بالأسابيع، السنوات-الأشهر</p>
+                <h3 className="font-medium">{t('addEvent.dayCalculation')}</h3>
+                <p className="text-sm text-muted-foreground">{t('addEvent.dayCalculationDesc')}</p>
               </div>
               {showCalculationTypes ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </button>
@@ -182,12 +185,12 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
 
           {/* Event Title */}
           <div className="space-y-2">
-            <Label htmlFor="title">عنوان الحدث</Label>
+            <Label htmlFor="title">{t('addEvent.eventTitle')}</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="مثال: عيد الفطر المبارك"
+              placeholder={t('addEvent.eventTitlePlaceholder')}
               className="text-right"
               maxLength={100}
               required
@@ -196,7 +199,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
 
           {/* Date Selection */}
           <div className="space-y-2">
-            <Label>تاريخ الحدث</Label>
+            <Label>{t('addEvent.eventDate')}</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -208,9 +211,9 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
                 >
                   <CalendarIcon className="ml-2 h-4 w-4" />
                   {date ? (
-                    format(date, "PPP", { locale: ar })
+                    format(date, "PPP", { locale: i18n.language === 'ar' ? ar : enUS })
                   ) : (
-                    <span>اختر التاريخ</span>
+                    <span>{t('addEvent.chooseDate')}</span>
                   )}
                 </Button>
               </PopoverTrigger>
@@ -229,10 +232,10 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
 
           {/* Repeat Options */}
           <div className="space-y-2">
-            <Label>التكرار</Label>
+            <Label>{t('addEvent.repeat')}</Label>
             <Select value={repeatOption} onValueChange={setRepeatOption}>
               <SelectTrigger>
-                <SelectValue placeholder="اختر نوع التكرار" />
+                <SelectValue placeholder={t('addEvent.chooseRepeatType')} />
               </SelectTrigger>
               <SelectContent>
                 {REPEAT_OPTIONS.map((option) => (
@@ -246,10 +249,10 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
 
           <div className="flex gap-3 pt-4">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="flex-1">
-              إلغاء
+              {t('addEvent.cancel')}
             </Button>
             <Button type="submit" className="flex-1 bg-gradient-primary" disabled={!title || !date || !eventType}>
-              إضافة الحدث
+              {t('addEvent.addEvent')}
             </Button>
           </div>
         </form>

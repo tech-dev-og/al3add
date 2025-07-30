@@ -2,7 +2,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { ar } from "date-fns/locale";
+import { ar, enUS } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 
 interface CountdownCardProps {
   title: string;
@@ -21,6 +22,7 @@ interface TimeLeft {
 }
 
 export function CountdownCard({ title, eventDate, eventType, isExpired = false, calculationType = "days-left", repeatOption = "none" }: CountdownCardProps) {
+  const { t, i18n } = useTranslation();
   const getTimeLeft = (): TimeLeft => {
     const now = new Date().getTime();
     const eventTime = eventDate.getTime();
@@ -77,32 +79,32 @@ export function CountdownCard({ title, eventDate, eventType, isExpired = false, 
         {isExpired ? (
           <div className="text-center py-6">
             <Clock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-            <p className="text-lg font-medium text-muted-foreground">انتهى الحدث</p>
+            <p className="text-lg font-medium text-muted-foreground">{t('addEvent.eventExpired')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-4 gap-4 text-center">
             <div className="bg-gradient-primary rounded-lg p-3 text-primary-foreground">
               <div className="text-2xl font-bold arabic-numerals">{timeLeft.days}</div>
-              <div className="text-xs opacity-90">يوم</div>
+              <div className="text-xs opacity-90">{t('hero.timeUnits.days')}</div>
             </div>
             <div className="bg-secondary rounded-lg p-3">
               <div className="text-2xl font-bold arabic-numerals">{timeLeft.hours}</div>
-              <div className="text-xs text-secondary-foreground">ساعة</div>
+              <div className="text-xs text-secondary-foreground">{t('hero.timeUnits.hours')}</div>
             </div>
             <div className="bg-secondary rounded-lg p-3">
               <div className="text-2xl font-bold arabic-numerals">{timeLeft.minutes}</div>
-              <div className="text-xs text-secondary-foreground">دقيقة</div>
+              <div className="text-xs text-secondary-foreground">{t('hero.timeUnits.minutes')}</div>
             </div>
             <div className="bg-accent rounded-lg p-3 text-accent-foreground">
               <div className="text-2xl font-bold arabic-numerals">{timeLeft.seconds}</div>
-              <div className="text-xs opacity-90">ثانية</div>
+              <div className="text-xs opacity-90">{t('hero.timeUnits.seconds')}</div>
             </div>
           </div>
         )}
         
         {!isExpired && (
           <div className="mt-4 text-center text-sm text-muted-foreground">
-            باقي {formatDistanceToNow(eventDate, { locale: ar, addSuffix: false })}
+            {t('hero.timeUnits.remaining')} {formatDistanceToNow(eventDate, { locale: i18n.language === 'ar' ? ar : enUS, addSuffix: false })}
           </div>
         )}
       </CardContent>
