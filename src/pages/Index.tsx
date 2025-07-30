@@ -37,14 +37,10 @@ const Index = () => {
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Load events when user signs in
-        if (session?.user) {
-          setTimeout(() => {
-            loadUserEvents();
-          }, 0);
-        } else {
-          setEvents([]);
-        }
+        // Load events when user signs in or signs out
+        setTimeout(() => {
+          loadUserEvents();
+        }, 0);
       }
     );
 
@@ -72,8 +68,25 @@ const Index = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Load events on initial page load
+  useEffect(() => {
+    loadUserEvents();
+  }, []);
+
   const loadUserEvents = async () => {
-    if (!user) return;
+    // Load pending events from localStorage
+    const pendingEvents = JSON.parse(localStorage.getItem('pendingEvents') || '[]');
+    
+    if (!user) {
+      // Show only pending events if not logged in
+      const tempEvents = pendingEvents.map((event: any) => ({
+        ...event,
+        date: new Date(event.date),
+        isPending: true
+      }));
+      setEvents(tempEvents);
+      return;
+    }
 
     try {
       const { data, error } = await supabase
@@ -102,17 +115,90 @@ const Index = () => {
       }));
 
       setEvents(formattedEvents);
+      
+      // Save pending events to database after successful login
+      if (pendingEvents.length > 0) {
+        savePendingEvents(pendingEvents);
+      }
     } catch (error) {
       console.error('Error loading events:', error);
     }
   };
 
+  const savePendingEvents = async (pendingEvents: any[]) => {
+    if (!user || pendingEvents.length === 0) return;
+
+    try {
+      const eventsToSave = pendingEvents.map(event => ({
+        user_id: user.id,
+        title: event.title,
+        event_date: event.date,
+        event_type: event.type
+      }));
+
+      const { error } = await supabase
+        .from('events')
+        .insert(eventsToSave);
+
+      if (error) throw error;
+
+      // Clear pending events from localStorage
+      localStorage.removeItem('pendingEvents');
+      
+      toast({
+        title: "أحداثك محفوظة! ✨",
+        description: `تم حفظ ${pendingEvents.length} حدث بنجاح`,
+      });
+      
+      // Reload events to show the saved ones
+      loadUserEvents();
+    } catch (error) {
+      console.error('Error saving pending events:', error);
+      toast({
+        title: "خطأ في حفظ الأحداث",
+        description: "حدث خطأ أثناء حفظ الأحداث المعلقة",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleAddEvent = async (newEvent: Omit<Event, "id">) => {
     if (!user) {
+      // Store event in localStorage for later
+      const pendingEvents = JSON.parse(localStorage.getItem('pendingEvents') || '[]');
+      const eventToStore = {
+        id: Date.now().toString(),
+        title: newEvent.title,
+        date: newEvent.date.toISOString(),
+        type: newEvent.type,
+        calculationType: newEvent.calculationType,
+        repeatOption: newEvent.repeatOption
+      };
+      
+      pendingEvents.push(eventToStore);
+      localStorage.setItem('pendingEvents', JSON.stringify(pendingEvents));
+      
+      // Add to current events list for immediate display
+      const tempEvent = {
+        ...eventToStore,
+        date: newEvent.date,
+        isPending: true
+      };
+      setEvents(prev => [...prev, tempEvent]);
+      
       toast({
-        title: "Sign in required",
-        description: "Please sign in to save events",
-        variant: "destructive",
+        title: "تم إنشاء الحدث مؤقتاً ✨",
+        description: "سجل دخولك لحفظ الحدث نهائياً",
+        action: (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => navigate("/auth")}
+            className="ml-2"
+          >
+            تسجيل الدخول
+          </Button>
+        ),
       });
       return;
     }
@@ -150,14 +236,14 @@ const Index = () => {
 
       setEvents(prev => [...prev, formattedEvent]);
       toast({
-        title: "Event saved! ✨",
-        description: "Your countdown event has been added",
+        title: "تم حفظ الحدث! ✨",
+        description: "تم إضافة الحدث بنجاح",
       });
     } catch (error) {
       console.error('Error saving event:', error);
       toast({
-        title: "Something went wrong",
-        description: "Please try again later",
+        title: "حدث خطأ",
+        description: "حاول مرة أخرى لاحقاً",
         variant: "destructive",
       });
     }
