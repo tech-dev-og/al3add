@@ -16,7 +16,7 @@ const LIFE_EVENTS: LifeEvent[] = [
     title: 'عيد الفطر',
     subtitle: 'الاحتفال المبارك',
     icon: <Sparkles className="h-6 w-6" />,
-    bgGradient: 'from-emerald-500 to-teal-600',
+    bgGradient: 'from-emerald-400 to-green-500',
     textColor: 'text-white',
     size: 'large'
   },
@@ -25,8 +25,8 @@ const LIFE_EVENTS: LifeEvent[] = [
     title: 'عيد الميلاد',
     subtitle: 'يوم خاص',
     icon: <Gift className="h-5 w-5" />,
-    bgGradient: 'from-pink-500 to-rose-600',
-    textColor: 'text-white',
+    bgGradient: 'from-amber-200 to-yellow-300',
+    textColor: 'text-slate-800',
     size: 'medium'
   },
   {
@@ -52,7 +52,7 @@ const LIFE_EVENTS: LifeEvent[] = [
     title: 'السفر',
     subtitle: 'مغامرة جديدة',
     icon: <Plane className="h-5 w-5" />,
-    bgGradient: 'from-orange-500 to-amber-600',
+    bgGradient: 'from-orange-200 to-amber-300',
     textColor: 'text-slate-800',
     size: 'medium'
   },
@@ -79,8 +79,8 @@ const LIFE_EVENTS: LifeEvent[] = [
     title: 'عيد الحب',
     subtitle: 'لحظات رومانسية',
     icon: <Heart className="h-5 w-5" />,
-    bgGradient: 'from-red-500 to-pink-600',
-    textColor: 'text-white',
+    bgGradient: 'from-pink-300 to-rose-400',
+    textColor: 'text-slate-800',
     size: 'medium'
   },
   {
