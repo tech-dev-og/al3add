@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { CountdownCard } from "@/components/ui/countdown-card";
 import { FloatingAddButton } from "@/components/ui/floating-add-button";
 import { AddEventDialog } from "@/components/add-event-dialog";
@@ -9,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User as SupabaseUser } from "@supabase/supabase-js";
 import { toast } from "@/hooks/use-toast";
+import LanguageToggle from "@/components/language-toggle";
 
 interface Event {
   id: string;
@@ -27,6 +29,7 @@ const Index = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Authentication state management
   useEffect(() => {
@@ -301,7 +304,7 @@ const Index = () => {
                   className="h-9"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
+                  {t('navigation.signOut')}
                 </Button>
               </>
             ) : (
@@ -312,9 +315,11 @@ const Index = () => {
                 className="h-9"
               >
                 <User className="h-4 w-4 mr-2" />
-                Sign In
+                {t('navigation.signIn')}
               </Button>
             )}
+            
+            <LanguageToggle />
             
             <Button
               variant="outline"

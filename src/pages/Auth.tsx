@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 import { Sparkles, Mail, Lock, User, ArrowLeft } from "lucide-react";
+import LanguageToggle from "@/components/language-toggle";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -16,6 +17,7 @@ const Auth = () => {
   const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Check if user is already logged in
@@ -32,8 +34,8 @@ const Auth = () => {
     e.preventDefault();
     if (!email || !password) {
       toast({
-        title: "Missing info",
-        description: "Please fill in all fields",
+        title: t('auth.missingInfo'),
+        description: t('auth.fillAllFields'),
         variant: "destructive",
       });
       return;
@@ -42,8 +44,8 @@ const Auth = () => {
     // Input validation
     if (displayName && displayName.length > 50) {
       toast({
-        title: "Invalid display name",
-        description: "Display name must be 50 characters or less",
+        title: t('auth.invalidDisplayName'),
+        description: t('auth.displayNameTooLong'),
         variant: "destructive",
       });
       return;
@@ -51,8 +53,8 @@ const Auth = () => {
 
     if (displayName && !/^[a-zA-Z0-9\s\-_]+$/.test(displayName)) {
       toast({
-        title: "Invalid display name",
-        description: "Display name can only contain letters, numbers, spaces, hyphens, and underscores",
+        title: t('auth.invalidDisplayName'),
+        description: t('auth.displayNameInvalidChars'),
         variant: "destructive",
       });
       return;
@@ -60,8 +62,8 @@ const Auth = () => {
 
     if (password.length < 6) {
       toast({
-        title: "Password too short",
-        description: "Password must be at least 6 characters long",
+        title: t('auth.passwordTooShort'),
+        description: t('auth.passwordMinLength'),
         variant: "destructive",
       });
       return;
@@ -85,27 +87,27 @@ const Auth = () => {
       if (error) {
         if (error.message.includes("already registered")) {
           toast({
-            title: "Account exists",
-            description: "This email is already registered. Try signing in instead!",
+            title: t('auth.accountExists'),
+            description: t('auth.emailAlreadyRegistered'),
             variant: "destructive",
           });
         } else {
           toast({
-            title: "Sign up failed",
+            title: t('auth.signUpFailed'),
             description: error.message,
             variant: "destructive",
           });
         }
       } else {
         toast({
-          title: "Welcome! 🎉",
-          description: "Check your email to confirm your account",
+          title: t('auth.welcome'),
+          description: t('auth.checkEmailToConfirm'),
         });
       }
     } catch (error) {
       toast({
-        title: "Something went wrong",
-        description: "Please try again later",
+        title: t('auth.somethingWentWrong'),
+        description: t('auth.tryAgainLater'),
         variant: "destructive",
       });
     } finally {
@@ -117,8 +119,8 @@ const Auth = () => {
     e.preventDefault();
     if (!email || !password) {
       toast({
-        title: "Missing info",
-        description: "Please enter your email and password",
+        title: t('auth.missingInfo'),
+        description: t('auth.enterEmailPassword'),
         variant: "destructive",
       });
       return;
@@ -134,28 +136,28 @@ const Auth = () => {
       if (error) {
         if (error.message.includes("Invalid login credentials")) {
           toast({
-            title: "Login failed",
-            description: "Invalid email or password. Double-check your credentials!",
+            title: t('auth.loginFailed'),
+            description: t('auth.invalidCredentials'),
             variant: "destructive",
           });
         } else {
           toast({
-            title: "Login failed",
+            title: t('auth.loginFailed'),
             description: error.message,
             variant: "destructive",
           });
         }
       } else {
         toast({
-          title: "Welcome back! ✨",
-          description: "You're all set to track your events",
+          title: t('auth.welcomeBack'),
+          description: t('auth.allSetToTrack'),
         });
         navigate("/");
       }
     } catch (error) {
       toast({
-        title: "Something went wrong",
-        description: "Please try again later",
+        title: t('auth.somethingWentWrong'),
+        description: t('auth.tryAgainLater'),
         variant: "destructive",
       });
     } finally {
@@ -177,15 +179,15 @@ const Auth = () => {
 
       if (error) {
         toast({
-          title: "Google sign in failed",
+          title: t('auth.googleSignInFailed'),
           description: error.message,
           variant: "destructive",
         });
       }
     } catch (error) {
       toast({
-        title: "Something went wrong",
-        description: "Please try again later",
+        title: t('auth.somethingWentWrong'),
+        description: t('auth.tryAgainLater'),
         variant: "destructive",
       });
     } finally {
@@ -198,38 +200,41 @@ const Auth = () => {
       <div className="w-full max-w-md space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/")}
-            className="mb-4 text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to app
-          </Button>
+          <div className="flex items-center justify-between mb-4">
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/")}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              {t('auth.backToApp')}
+            </Button>
+            <LanguageToggle />
+          </div>
           <div className="flex items-center justify-center space-x-2">
             <Sparkles className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              Join the countdown
+              {t('auth.welcomeTitle')}
             </h1>
           </div>
           <p className="text-muted-foreground">
-            Track events that matter to you ✨
+            {t('auth.welcomeSubtitle')}
           </p>
         </div>
 
         {/* Auth Card */}
         <Card className="border-0 shadow-lg bg-card/50 backdrop-blur">
           <CardHeader>
-            <CardTitle className="text-center">Get started</CardTitle>
+            <CardTitle className="text-center">{t('auth.getStarted')}</CardTitle>
             <CardDescription className="text-center">
-              Create an account or sign in to sync your events
+              {t('auth.createAccount')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="signin" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">Sign In</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                <TabsTrigger value="signin">{t('auth.signIn')}</TabsTrigger>
+                <TabsTrigger value="signup">{t('auth.signUp')}</TabsTrigger>
               </TabsList>
               
               <TabsContent value="signin" className="space-y-4">
@@ -248,7 +253,7 @@ const Auth = () => {
                       <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                       <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                     </svg>
-                    تسجيل الدخول مع Google
+                    {t('auth.signInWithGoogle')}
                   </Button>
                 </div>
 
@@ -257,19 +262,19 @@ const Auth = () => {
                     <span className="w-full border-t" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">أو</span>
+                    <span className="bg-background px-2 text-muted-foreground">{t('auth.or')}</span>
                   </div>
                 </div>
 
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="signin-email">البريد الإلكتروني</Label>
+                    <Label htmlFor="signin-email">{t('auth.email')}</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="signin-email"
                         type="email"
-                        placeholder="your@email.com"
+                        placeholder={t('auth.emailPlaceholder')}
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="pl-10"
@@ -279,13 +284,13 @@ const Auth = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="signin-password">كلمة المرور</Label>
+                    <Label htmlFor="signin-password">{t('auth.password')}</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="signin-password"
                         type="password"
-                        placeholder="••••••••"
+                        placeholder={t('auth.passwordPlaceholder')}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="pl-10"
@@ -299,7 +304,7 @@ const Auth = () => {
                     className="w-full"
                     disabled={loading}
                   >
-                    {loading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
+                    {loading ? t('auth.signingIn') : t('auth.signIn')}
                   </Button>
                 </form>
               </TabsContent>
@@ -320,7 +325,7 @@ const Auth = () => {
                       <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                       <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                     </svg>
-                    التسجيل مع Google
+                    {t('auth.signUpWithGoogle')}
                   </Button>
                 </div>
 
@@ -329,19 +334,19 @@ const Auth = () => {
                     <span className="w-full border-t" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">أو</span>
+                    <span className="bg-background px-2 text-muted-foreground">{t('auth.or')}</span>
                   </div>
                 </div>
 
                 <form onSubmit={handleSignUp} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="signup-name">الاسم المعروض (اختياري)</Label>
+                    <Label htmlFor="signup-name">{t('auth.displayName')}</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="signup-name"
                         type="text"
-                        placeholder="ماذا نناديك؟"
+                        placeholder={t('auth.displayNamePlaceholder')}
                         value={displayName}
                         onChange={(e) => setDisplayName(e.target.value)}
                         className="pl-10"
@@ -351,13 +356,13 @@ const Auth = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="signup-email">البريد الإلكتروني</Label>
+                    <Label htmlFor="signup-email">{t('auth.email')}</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="signup-email"
                         type="email"
-                        placeholder="your@email.com"
+                        placeholder={t('auth.emailPlaceholder')}
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="pl-10"
@@ -367,13 +372,13 @@ const Auth = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password">كلمة المرور</Label>
+                    <Label htmlFor="signup-password">{t('auth.password')}</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="signup-password"
                         type="password"
-                        placeholder="اختر كلمة مرور قوية"
+                        placeholder={t('auth.strongPasswordPlaceholder')}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="pl-10"
@@ -387,7 +392,7 @@ const Auth = () => {
                     className="w-full"
                     disabled={loading}
                   >
-                    {loading ? "جاري إنشاء الحساب..." : "إنشاء حساب"}
+                    {loading ? t('auth.creatingAccount') : t('auth.signUp')}
                   </Button>
                 </form>
               </TabsContent>
@@ -397,7 +402,7 @@ const Auth = () => {
 
         {/* Footer */}
         <p className="text-center text-sm text-muted-foreground">
-          Join thousands tracking their special moments ⏰
+          {t('auth.joinThousands')}
         </p>
       </div>
     </div>
