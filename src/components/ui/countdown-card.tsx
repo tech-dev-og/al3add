@@ -121,23 +121,27 @@ export function CountdownCard({ id, title, eventDate, eventType, isExpired = fal
             <p className="text-lg font-medium text-muted-foreground">{t('addEvent.eventExpired')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-4 gap-4 text-center">
+          <div className={`grid gap-4 text-center ${calculationType === 'days-passed' ? 'grid-cols-1' : 'grid-cols-4'}`}>
             <div className="bg-gradient-primary rounded-lg p-3 text-primary-foreground">
               <div className="text-2xl font-bold arabic-numerals">{displayTime.days}</div>
               <div className="text-xs opacity-90">{t('hero.timeUnits.days')}</div>
             </div>
-            <div className="bg-secondary rounded-lg p-3">
-              <div className="text-2xl font-bold arabic-numerals">{displayTime.hours}</div>
-              <div className="text-xs text-secondary-foreground">{t('hero.timeUnits.hours')}</div>
-            </div>
-            <div className="bg-secondary rounded-lg p-3">
-              <div className="text-2xl font-bold arabic-numerals">{displayTime.minutes}</div>
-              <div className="text-xs text-secondary-foreground">{t('hero.timeUnits.minutes')}</div>
-            </div>
-            <div className="bg-accent rounded-lg p-3 text-accent-foreground">
-              <div className="text-2xl font-bold arabic-numerals">{displayTime.seconds}</div>
-              <div className="text-xs opacity-90">{t('hero.timeUnits.seconds')}</div>
-            </div>
+            {calculationType !== 'days-passed' && (
+              <>
+                <div className="bg-secondary rounded-lg p-3">
+                  <div className="text-2xl font-bold arabic-numerals">{displayTime.hours}</div>
+                  <div className="text-xs text-secondary-foreground">{t('hero.timeUnits.hours')}</div>
+                </div>
+                <div className="bg-secondary rounded-lg p-3">
+                  <div className="text-2xl font-bold arabic-numerals">{displayTime.minutes}</div>
+                  <div className="text-xs text-secondary-foreground">{t('hero.timeUnits.minutes')}</div>
+                </div>
+                <div className="bg-accent rounded-lg p-3 text-accent-foreground">
+                  <div className="text-2xl font-bold arabic-numerals">{displayTime.seconds}</div>
+                  <div className="text-xs opacity-90">{t('hero.timeUnits.seconds')}</div>
+                </div>
+              </>
+            )}
           </div>
         )}
         
