@@ -334,7 +334,7 @@ const Index = () => {
                 {showPinterestView ? (
                   <>
                     <Calendar className="h-4 w-4 mr-2" />
-                    Events
+                    My Events
                   </>
                 ) : (
                   <>
