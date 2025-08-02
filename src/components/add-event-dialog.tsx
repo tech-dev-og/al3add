@@ -63,6 +63,63 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
     { id: 'yearly', label: t('addEvent.repeatOptions.yearly') }
   ];
 
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (max 2MB for event images)
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        title: t("error"),
+        description: "Image size must be less than 2MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: t("error"),
+        description: "Please select an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setBackgroundImage(result);
+        setIsUploading(false);
+        toast({
+          title: t("success"),
+          description: "Image uploaded successfully",
+        });
+      };
+      reader.onerror = () => {
+        toast({
+          title: t("error"),
+          description: "Failed to read the file",
+          variant: "destructive",
+        });
+        setIsUploading(false);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: t("error"),
+        description: "Failed to upload image",
+        variant: "destructive",
+      });
+      setIsUploading(false);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title && date && eventType) {
