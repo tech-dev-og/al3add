@@ -257,6 +257,49 @@ const Index = () => {
     }
   };
 
+  const handleDeleteEvent = async (eventId: string) => {
+    try {
+      if (user) {
+        // Delete from database
+        const { error } = await supabase
+          .from('events')
+          .delete()
+          .eq('id', eventId)
+          .eq('user_id', user.id);
+
+        if (error) {
+          console.error('Error deleting event:', error);
+          toast({
+            title: "خطأ في حذف الحدث",
+            description: "حاول مرة أخرى لاحقاً",
+            variant: "destructive",
+          });
+          return;
+        }
+      } else {
+        // Remove from localStorage for pending events
+        const pendingEvents = JSON.parse(localStorage.getItem('pendingEvents') || '[]');
+        const updatedEvents = pendingEvents.filter((event: any) => event.id !== eventId);
+        localStorage.setItem('pendingEvents', JSON.stringify(updatedEvents));
+      }
+
+      // Remove from state
+      setEvents(prev => prev.filter(event => event.id !== eventId));
+      
+      toast({
+        title: "تم حذف الحدث ✨",
+        description: "تم حذف الحدث بنجاح",
+      });
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      toast({
+        title: "خطأ في حذف الحدث",
+        description: "حاول مرة أخرى لاحقاً",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     toast({
@@ -382,11 +425,13 @@ const Index = () => {
               {activeEvents.map((event) => (
                 <CountdownCard
                   key={event.id}
+                  id={event.id}
                   title={event.title}
                   eventDate={event.date}
                   eventType={event.type}
                   calculationType={event.calculationType}
                   repeatOption={event.repeatOption}
+                  onDelete={handleDeleteEvent}
                 />
               ))}
             </div>
@@ -403,12 +448,14 @@ const Index = () => {
               {expiredEvents.map((event) => (
                 <CountdownCard
                   key={event.id}
+                  id={event.id}
                   title={event.title}
                   eventDate={event.date}
                   eventType={event.type}
                   calculationType={event.calculationType}
                   repeatOption={event.repeatOption}
-                  isExpired
+                  isExpired={true}
+                  onDelete={handleDeleteEvent}
                 />
               ))}
             </div>

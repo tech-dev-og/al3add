@@ -1,17 +1,20 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, Clock, Trash2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ar, enUS } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 
 interface CountdownCardProps {
+  id: string;
   title: string;
   eventDate: Date;
   eventType: string;
   isExpired?: boolean;
   calculationType?: string;
   repeatOption?: string;
+  onDelete?: (id: string) => void;
 }
 
 interface TimeLeft {
@@ -21,7 +24,7 @@ interface TimeLeft {
   seconds: number;
 }
 
-export function CountdownCard({ title, eventDate, eventType, isExpired = false, calculationType = "days-left", repeatOption = "none" }: CountdownCardProps) {
+export function CountdownCard({ id, title, eventDate, eventType, isExpired = false, calculationType = "days-left", repeatOption = "none", onDelete }: CountdownCardProps) {
   const { t, i18n } = useTranslation();
   
   const getTimeLeft = (): TimeLeft => {
@@ -83,9 +86,21 @@ export function CountdownCard({ title, eventDate, eventType, isExpired = false, 
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold leading-relaxed">{title}</h3>
-          <Badge className={`${getEventTypeColor(eventType)} text-sm px-3 py-1`}>
-            {eventType}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge className={`${getEventTypeColor(eventType)} text-sm px-3 py-1`}>
+              {eventType}
+            </Badge>
+            {onDelete && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onDelete(id)}
+                className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-2 text-muted-foreground text-sm">
           <Calendar className="h-4 w-4" />
