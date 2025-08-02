@@ -4,11 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, ChevronDown, ChevronUp } from "lucide-react";
-import { format } from "date-fns";
-import { ar, enUS } from "date-fns/locale";
+import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
@@ -200,41 +197,19 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
           {/* Date Selection */}
           <div className="space-y-2">
             <Label>{t('addEvent.eventDate')}</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-right font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="ml-2 h-4 w-4" />
-                  {date ? (
-                    format(date, "PPP", { locale: i18n.language === 'ar' ? ar : enUS })
-                  ) : (
-                    <span>{t('addEvent.chooseDate')}</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  initialFocus
-                  className="p-3 pointer-events-auto"
-                  disabled={(date) => 
-                    calculationType === "days-passed" || 
-                    calculationType === "months-duration" || 
-                    calculationType === "weeks-duration" || 
-                    calculationType === "years-months" 
-                      ? false 
-                      : date < new Date()
-                  }
-                />
-              </PopoverContent>
-            </Popover>
+            <EnhancedDatePicker
+              date={date}
+              onSelect={setDate}
+              disabled={(date) => 
+                calculationType === "days-passed" || 
+                calculationType === "months-duration" || 
+                calculationType === "weeks-duration" || 
+                calculationType === "years-months" 
+                  ? false 
+                  : date < new Date()
+              }
+              placeholder={t('addEvent.chooseDate')}
+            />
           </div>
 
           {/* Repeat Options */}
