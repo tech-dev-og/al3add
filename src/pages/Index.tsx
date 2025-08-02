@@ -268,12 +268,6 @@ const Index = () => {
 
   const activeEvents = events.filter(event => event.date > new Date());
   const expiredEvents = events.filter(event => event.date <= new Date());
-  
-  // Debug: log events data
-  console.log('Total events:', events.length);
-  console.log('Active events:', activeEvents.length);
-  console.log('Expired events:', expiredEvents.length);
-  console.log('Events data:', events);
 
   return (
     <div className={`min-h-screen bg-gradient-background transition-smooth ${isDarkMode ? 'dark' : ''}`}>
