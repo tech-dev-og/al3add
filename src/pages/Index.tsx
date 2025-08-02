@@ -313,8 +313,15 @@ const Index = () => {
     document.documentElement.classList.toggle('dark');
   };
 
-  const activeEvents = events.filter(event => event.date > new Date());
-  const expiredEvents = events.filter(event => event.date <= new Date());
+  const activeEvents = events.filter(event => {
+    const isDurationCalculation = ['days-passed', 'months-duration', 'weeks-duration', 'years-months'].includes(event.calculationType || 'days-left');
+    return event.date > new Date() || isDurationCalculation;
+  });
+  
+  const expiredEvents = events.filter(event => {
+    const isDurationCalculation = ['days-passed', 'months-duration', 'weeks-duration', 'years-months'].includes(event.calculationType || 'days-left');
+    return event.date <= new Date() && !isDurationCalculation;
+  });
 
   return (
     <div className={`min-h-screen bg-gradient-background transition-smooth ${isDarkMode ? 'dark' : ''}`}>
@@ -454,7 +461,7 @@ const Index = () => {
                   eventType={event.type}
                   calculationType={event.calculationType}
                   repeatOption={event.repeatOption}
-                  isExpired={true}
+                  isExpired={false}
                   onDelete={handleDeleteEvent}
                 />
               ))}
