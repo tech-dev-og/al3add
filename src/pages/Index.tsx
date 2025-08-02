@@ -5,7 +5,7 @@ import { CountdownCard } from "@/components/ui/countdown-card";
 import { FloatingAddButton } from "@/components/ui/floating-add-button";
 import { AddEventDialog } from "@/components/add-event-dialog";
 import { PinterestHero } from "@/components/pinterest-hero";
-import { Sparkles, Moon, Sun, LogOut, User } from "lucide-react";
+import { Sparkles, Moon, Sun, LogOut, User, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User as SupabaseUser } from "@supabase/supabase-js";
@@ -28,6 +28,7 @@ const Index = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showPinterestView, setShowPinterestView] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -322,13 +323,35 @@ const Index = () => {
               </Button>
             )}
             
+            {/* Pinterest View Toggle - Only show when there are events */}
+            {(activeEvents.length > 0 || expiredEvents.length > 0) && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPinterestView(!showPinterestView)}
+                className="h-9"
+              >
+                {showPinterestView ? (
+                  <>
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Events
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Explore
+                  </>
+                )}
+              </Button>
+            )}
+
             <LanguageToggle />
-            
+
             <Button
               variant="outline"
               size="sm"
               onClick={toggleDarkMode}
-              className="h-10 w-10 p-0 ml-2"
+              className="h-9"
             >
               {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
@@ -337,19 +360,20 @@ const Index = () => {
       </header>
 
       {/* Hero Section */}
-      {activeEvents.length === 0 && expiredEvents.length === 0 && (
+      {((activeEvents.length === 0 && expiredEvents.length === 0) || showPinterestView) && (
         <PinterestHero onTileClick={() => setShowAddDialog(true)} />
       )}
 
       {/* Main Content */}
-      <main className="relative z-10 container mx-auto px-4 py-6">
-        {/* Active Events */}
-        {activeEvents.length > 0 && (
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <Sparkles className="h-6 w-6 text-accent" />
-              الأحداث القادمة
-            </h2>
+      {!showPinterestView && (
+        <main className="relative z-10 container mx-auto px-4 py-6">
+          {/* Active Events */}
+          {activeEvents.length > 0 && (
+            <section className="mb-8">
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                <Sparkles className="h-6 w-6 text-accent" />
+                الأحداث القادمة
+              </h2>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {activeEvents.map((event) => (
                 <CountdownCard
@@ -387,6 +411,7 @@ const Index = () => {
           </section>
         )}
       </main>
+      )}
 
       {/* Floating Add Button */}
       <FloatingAddButton onClick={() => setShowAddDialog(true)} />
