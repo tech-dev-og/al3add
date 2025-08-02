@@ -224,7 +224,14 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
                   onSelect={setDate}
                   initialFocus
                   className="p-3 pointer-events-auto"
-                  disabled={(date) => date < new Date()}
+                  disabled={(date) => 
+                    calculationType === "days-passed" || 
+                    calculationType === "months-duration" || 
+                    calculationType === "weeks-duration" || 
+                    calculationType === "years-months" 
+                      ? false 
+                      : date < new Date()
+                  }
                 />
               </PopoverContent>
             </Popover>
