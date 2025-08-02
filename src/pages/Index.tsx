@@ -335,7 +335,7 @@ const Index = () => {
 
       {/* Hero Section */}
       {activeEvents.length === 0 && expiredEvents.length === 0 && (
-        <PinterestHero />
+        <PinterestHero onTileClick={() => setShowAddDialog(true)} />
       )}
 
       {/* Main Content */}

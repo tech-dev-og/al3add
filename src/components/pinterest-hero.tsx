@@ -25,7 +25,11 @@ const getTileClassName = (size: string) => {
   }
 };
 
-export function PinterestHero() {
+interface PinterestHeroProps {
+  onTileClick: () => void;
+}
+
+export function PinterestHero({ onTileClick }: PinterestHeroProps) {
   const { t } = useTranslation();
 
   const LIFE_EVENTS: LifeEvent[] = [
@@ -127,6 +131,7 @@ export function PinterestHero() {
           {LIFE_EVENTS.map((event) => (
             <div
               key={event.id}
+              onClick={onTileClick}
               className={`
                 ${getTileClassName(event.size)}
                 bg-gradient-to-br ${event.bgGradient}

@@ -152,7 +152,8 @@
       "hours": "hours", 
       "minutes": "minutes",
       "seconds": "seconds",
-      "remaining": "remaining"
+      "remaining": "remaining",
+      "passed": "passed"
     },
     "lifeEvents": {
       "eidFitr": "Eid al-Fitr",

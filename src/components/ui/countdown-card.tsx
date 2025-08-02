@@ -90,7 +90,7 @@ export function CountdownCard({ title, eventDate, eventType, isExpired = false, 
         <div className="flex items-center gap-2 text-muted-foreground text-sm">
           <Calendar className="h-4 w-4" />
           <span className="arabic-numerals">
-            {eventDate.toLocaleDateString('ar-SA', {
+            {eventDate.toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US', {
               year: 'numeric',
               month: 'long',
               day: 'numeric',

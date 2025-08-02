@@ -152,7 +152,8 @@
       "hours": "ساعة",
       "minutes": "دقيقة",
       "seconds": "ثانية",
-      "remaining": "باقي"
+      "remaining": "باقي",
+      "passed": "مضت"
     },
     "lifeEvents": {
       "eidFitr": "عيد الفطر",
