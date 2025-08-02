@@ -276,7 +276,10 @@ const Index = () => {
       {/* Header */}
       <header className="relative z-10 border-b border-border/50 bg-background/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div 
+            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => navigate("/")}
+          >
             <div className="h-10 w-10 bg-gradient-primary rounded-full flex items-center justify-center">
               <Sparkles className="h-5 w-5 text-primary-foreground" />
             </div>
