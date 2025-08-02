@@ -334,12 +334,12 @@ const Index = () => {
                 {showPinterestView ? (
                   <>
                     <Calendar className="h-4 w-4 mr-2" />
-                    My Events
+                    {t('navigation.myEvents')}
                   </>
                 ) : (
                   <>
                     <Sparkles className="h-4 w-4 mr-2" />
-                    Explore
+                    {t('navigation.explore')}
                   </>
                 )}
               </Button>

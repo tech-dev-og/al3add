@@ -84,7 +84,9 @@
     "profile": "Profile",
     "settings": "Settings",
     "signOut": "Sign Out",
-    "signIn": "Sign In"
+    "signIn": "Sign In",
+    "myEvents": "My Events",
+    "explore": "Explore"
   },
   "language": {
     "switchLanguage": "Switch Language",

@@ -84,7 +84,9 @@
     "profile": "الملف الشخصي",
     "settings": "الإعدادات",
     "signOut": "تسجيل الخروج",
-    "signIn": "تسجيل الدخول"
+    "signIn": "تسجيل الدخول",
+    "myEvents": "أحداثي",
+    "explore": "استكشاف"
   },
   "language": {
     "switchLanguage": "تبديل اللغة",
