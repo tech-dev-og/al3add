@@ -114,8 +114,8 @@ const Index = () => {
         title: event.title,
         date: new Date(event.event_date),
         type: event.event_type,
-        calculationType: "days-left",
-        repeatOption: "none"
+        calculationType: event.calculation_type || "days-left",
+        repeatOption: event.repeat_option || "none"
       }));
 
       setEvents(formattedEvents);
@@ -137,7 +137,9 @@ const Index = () => {
         user_id: user.id,
         title: event.title,
         event_date: event.date,
-        event_type: event.type
+        event_type: event.type,
+        calculation_type: event.calculationType || 'days-left',
+        repeat_option: event.repeatOption || 'none'
       }));
 
       const { error } = await supabase
@@ -214,7 +216,9 @@ const Index = () => {
           user_id: user.id,
           title: newEvent.title,
           event_date: newEvent.date.toISOString(),
-          event_type: newEvent.type
+          event_type: newEvent.type,
+          calculation_type: newEvent.calculationType || 'days-left',
+          repeat_option: newEvent.repeatOption || 'none'
         })
         .select()
         .single();

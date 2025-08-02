@@ -16,28 +16,34 @@ export type Database = {
     Tables: {
       events: {
         Row: {
+          calculation_type: string | null
           created_at: string
           event_date: string
           event_type: string
           id: string
+          repeat_option: string | null
           title: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          calculation_type?: string | null
           created_at?: string
           event_date: string
           event_type?: string
           id?: string
+          repeat_option?: string | null
           title: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          calculation_type?: string | null
           created_at?: string
           event_date?: string
           event_type?: string
           id?: string
+          repeat_option?: string | null
           title?: string
           updated_at?: string
           user_id?: string
