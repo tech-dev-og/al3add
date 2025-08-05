@@ -408,6 +408,7 @@ const Index = () => {
               size="sm"
               onClick={toggleDarkMode}
               className="h-9"
+              aria-label={isDarkMode ? t('theme.lightMode') : t('theme.darkMode')}
             >
               {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>

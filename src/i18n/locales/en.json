@@ -90,8 +90,13 @@
   },
   "language": {
     "switchLanguage": "Switch Language",
+    "changeLanguage": "Change Language",
     "arabic": "العربية",
     "english": "English"
+  },
+  "theme": {
+    "lightMode": "Switch to Light Mode",
+    "darkMode": "Switch to Dark Mode"
   },
   "addEvent": {
     "whatEventType": "What type of event?",
