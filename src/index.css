@@ -150,8 +150,25 @@ All colors MUST be HSL.
     opacity: 0.1;
   }
 
+  /* Performance optimizations */
+  img {
+    content-visibility: auto;
+    contain-intrinsic-size: 300px 200px;
+  }
+  
   /* Smooth animations */
   .transition-smooth {
     transition: var(--transition-smooth);
+  }
+
+  /* Critical path optimization */
+  .hero-section {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  /* Reduce layout shifts */
+  .countdown-grid {
+    contain: layout style;
   }
 }

@@ -62,15 +62,17 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Real-time countdown updates
+  // Optimized countdown updates - only update visible cards
   useEffect(() => {
     const interval = setInterval(() => {
-      // Force re-render every second to update countdowns
-      setEvents(prev => [...prev]);
+      // Only force re-render if there are active events
+      if (events.length > 0) {
+        setEvents(prev => [...prev]);
+      }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [events.length]);
 
   // Load events on initial page load
   useEffect(() => {
@@ -428,7 +430,7 @@ const Index = () => {
                 <Sparkles className="h-6 w-6 text-accent" />
                 الأحداث القادمة
               </h2>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 countdown-grid">
               {activeEvents.map((event) => (
                 <CountdownCard
                   key={event.id}
