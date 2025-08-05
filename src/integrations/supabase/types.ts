@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       events: {
         Row: {
+          background_image: string | null
           calculation_type: string | null
           created_at: string
           event_date: string
@@ -27,6 +28,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          background_image?: string | null
           calculation_type?: string | null
           created_at?: string
           event_date: string
@@ -38,6 +40,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          background_image?: string | null
           calculation_type?: string | null
           created_at?: string
           event_date?: string

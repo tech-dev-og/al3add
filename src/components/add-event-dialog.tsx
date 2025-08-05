@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Upload, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { useToast } from "@/hooks/use-toast";
 
 interface AddEventDialogProps {
   open: boolean;
@@ -18,19 +19,23 @@ interface AddEventDialogProps {
     type: string;
     calculationType: string;
     repeatOption: string;
+    backgroundImage?: string;
   }) => void;
 }
 
-
 export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialogProps) {
   const { t, i18n } = useTranslation();
+  const { toast } = useToast();
   const [title, setTitle] = useState("");
   const [date, setDate] = useState<Date>();
   const [eventType, setEventType] = useState("");
   const [calculationType, setCalculationType] = useState("days-left");
   const [repeatOption, setRepeatOption] = useState("none");
+  const [backgroundImage, setBackgroundImage] = useState<string>("");
+  const [isUploading, setIsUploading] = useState(false);
   const [showEventTypes, setShowEventTypes] = useState(true);
   const [showCalculationTypes, setShowCalculationTypes] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const EVENT_TYPES = [
     { id: 'eid', label: t('addEvent.eventTypes.eid'), icon: '🌙' },
@@ -136,13 +141,15 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
         date,
         type: eventType,
         calculationType,
-        repeatOption
+        repeatOption,
+        backgroundImage: backgroundImage || undefined,
       });
       setTitle("");
       setDate(undefined);
       setEventType("");
       setCalculationType("days-left");
       setRepeatOption("none");
+      setBackgroundImage("");
       onOpenChange(false);
     }
   };
@@ -267,6 +274,55 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
               }
               placeholder={t('addEvent.chooseDate')}
             />
+          </div>
+
+          {/* Background Image Section */}
+          <div className="space-y-2">
+            <Label htmlFor="background-image">Event Background Image (Optional)</Label>
+            <div className="space-y-2">
+              {backgroundImage && (
+                <div className="relative">
+                  <img 
+                    src={backgroundImage} 
+                    alt="Event background" 
+                    className="w-full h-32 object-cover rounded-md border"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => setBackgroundImage("")}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+              
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="w-full"
+              >
+                {isUploading ? (
+                  "Uploading..."
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4 mr-2" />
+                    {backgroundImage ? "Change Image" : "Add Background Image"}
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
 
           {/* Repeat Options */}

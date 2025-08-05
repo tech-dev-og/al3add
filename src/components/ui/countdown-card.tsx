@@ -14,6 +14,7 @@ interface CountdownCardProps {
   isExpired?: boolean;
   calculationType?: string;
   repeatOption?: string;
+  backgroundImage?: string;
   onDelete?: (id: string) => void;
 }
 
@@ -24,7 +25,17 @@ interface TimeLeft {
   seconds: number;
 }
 
-export function CountdownCard({ id, title, eventDate, eventType, isExpired = false, calculationType = "days-left", repeatOption = "none", onDelete }: CountdownCardProps) {
+export function CountdownCard({ 
+  id, 
+  title, 
+  eventDate, 
+  eventType, 
+  isExpired = false, 
+  calculationType = "days-left", 
+  repeatOption = "none", 
+  backgroundImage,
+  onDelete 
+}: CountdownCardProps) {
   const { t, i18n } = useTranslation();
   
   const getTimeLeft = (): TimeLeft => {
@@ -82,8 +93,18 @@ export function CountdownCard({ id, title, eventDate, eventType, isExpired = fal
   };
 
   return (
-    <Card className={`transition-smooth hover:shadow-islamic ${(isExpired && !isDurationCalculation) ? 'opacity-60' : ''} ${isNearExpiry ? 'ring-2 ring-accent' : ''}`}>
-      <CardHeader className="pb-3">
+    <Card className={`relative overflow-hidden transition-smooth hover:shadow-islamic ${(isExpired && !isDurationCalculation) ? 'opacity-60' : ''} ${isNearExpiry ? 'ring-2 ring-accent' : ''}`}>
+      {/* Background Image */}
+      {backgroundImage && (
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${backgroundImage})` }}
+        >
+          <div className="absolute inset-0 bg-background/85 backdrop-blur-sm" />
+        </div>
+      )}
+      
+      <CardHeader className="pb-3 relative z-10">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold leading-relaxed">{title}</h3>
           <div className="flex items-center gap-2">
@@ -114,7 +135,7 @@ export function CountdownCard({ id, title, eventDate, eventType, isExpired = fal
           </span>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="relative z-10">
         {(isExpired && !isDurationCalculation) ? (
           <div className="text-center py-6">
             <Clock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
