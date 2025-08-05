@@ -5,10 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
-import { ChevronDown, ChevronUp, Upload, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Upload, X, Wand2, Image } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AddEventDialogProps {
   open: boolean;
@@ -33,8 +34,10 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
   const [repeatOption, setRepeatOption] = useState("none");
   const [backgroundImage, setBackgroundImage] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [showEventTypes, setShowEventTypes] = useState(true);
   const [showCalculationTypes, setShowCalculationTypes] = useState(false);
+  const [imageOption, setImageOption] = useState<'upload' | 'generate'>('upload');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const EVENT_TYPES = [
@@ -122,6 +125,55 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
         variant: "destructive",
       });
       setIsUploading(false);
+    }
+  };
+
+  const handleGenerateImage = async () => {
+    if (!title.trim()) {
+      toast({
+        title: t("error"),
+        description: "Please enter an event title first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+
+    try {
+      const eventTypeName = EVENT_TYPES.find(type => type.id === eventType)?.label || eventType;
+      const prompt = `A beautiful, high-quality image for "${title}" ${eventTypeName ? `related to ${eventTypeName}` : ''}. Make it colorful, inspiring and suitable as a background image.`;
+      
+      console.log('Generating image with prompt:', prompt);
+
+      const { data, error } = await supabase.functions.invoke('generate-event-image', {
+        body: { prompt }
+      });
+
+      if (error) {
+        console.error('Error calling edge function:', error);
+        throw new Error(error.message || 'Failed to generate image');
+      }
+
+      if (data.success && data.imageData) {
+        const imageUrl = `data:image/${data.format || 'webp'};base64,${data.imageData}`;
+        setBackgroundImage(imageUrl);
+        toast({
+          title: t("success"),
+          description: "Image generated successfully!",
+        });
+      } else {
+        throw new Error(data.error || 'Failed to generate image');
+      }
+    } catch (error) {
+      console.error('Error generating image:', error);
+      toast({
+        title: t("error"),
+        description: error instanceof Error ? error.message : "Failed to generate image",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -277,52 +329,113 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
           </div>
 
           {/* Background Image Section */}
-          <div className="space-y-2">
-            <Label htmlFor="background-image">Event Background Image (Optional)</Label>
-            <div className="space-y-2">
-              {backgroundImage && (
-                <div className="relative">
-                  <img 
-                    src={backgroundImage} 
-                    alt="Event background" 
-                    className="w-full h-32 object-cover rounded-md border"
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    className="absolute top-2 right-2"
-                    onClick={() => setBackgroundImage("")}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
-              
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileSelect}
-                className="hidden"
-              />
+          <div className="space-y-3">
+            <Label>Event Background Image (Optional)</Label>
+            
+            {/* Image Option Toggle */}
+            <div className="flex gap-2 p-1 bg-muted rounded-lg">
+              <button
+                type="button"
+                onClick={() => setImageOption('upload')}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm transition-all",
+                  imageOption === 'upload' 
+                    ? "bg-background shadow-sm text-foreground" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Upload className="h-4 w-4" />
+                Upload Image
+              </button>
+              <button
+                type="button"
+                onClick={() => setImageOption('generate')}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm transition-all",
+                  imageOption === 'generate' 
+                    ? "bg-background shadow-sm text-foreground" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Wand2 className="h-4 w-4" />
+                Generate with AI
+              </button>
+            </div>
+
+            {/* Image Preview */}
+            {backgroundImage && (
+              <div className="relative">
+                <img 
+                  src={backgroundImage} 
+                  alt="Event background" 
+                  className="w-full h-32 object-cover rounded-md border"
+                />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  className="absolute top-2 right-2"
+                  onClick={() => setBackgroundImage("")}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+            
+            {/* Upload Option */}
+            {imageOption === 'upload' && (
+              <>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="w-full"
+                >
+                  {isUploading ? (
+                    "Uploading..."
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      {backgroundImage ? "Change Image" : "Upload Image"}
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
+
+            {/* Generate Option */}
+            {imageOption === 'generate' && (
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
+                onClick={handleGenerateImage}
+                disabled={isGenerating || !title.trim()}
                 className="w-full"
               >
-                {isUploading ? (
-                  "Uploading..."
+                {isGenerating ? (
+                  "Generating..."
                 ) : (
                   <>
-                    <Upload className="h-4 w-4 mr-2" />
-                    {backgroundImage ? "Change Image" : "Add Background Image"}
+                    <Wand2 className="h-4 w-4 mr-2" />
+                    {backgroundImage ? "Generate New Image" : "Generate Image with AI"}
                   </>
                 )}
               </Button>
-            </div>
+            )}
+
+            {imageOption === 'generate' && !title.trim() && (
+              <p className="text-xs text-muted-foreground">
+                Enter an event title to generate an AI image
+              </p>
+            )}
           </div>
 
           {/* Repeat Options */}
