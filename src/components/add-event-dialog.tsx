@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -211,10 +211,10 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl text-center">{t('addEvent.whatEventType')}</DialogTitle>
-          <p className="text-sm text-muted-foreground text-center">
+          <DialogDescription className="text-sm text-muted-foreground text-center">
             {t('addEvent.cantFindEvent')}<br />
             {t('addEvent.chooseHereToCreate')}
-          </p>
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 mt-4">
