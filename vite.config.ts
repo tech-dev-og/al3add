@@ -24,12 +24,14 @@ export default defineConfig(({ mode }) => ({
     minify: 'esbuild',
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-popover', '@radix-ui/react-select'],
-          supabase: ['@supabase/supabase-js'],
-          utils: ['date-fns', 'clsx', 'tailwind-merge'],
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) return 'react';
+            if (id.includes('@radix-ui')) return 'ui';
+            if (id.includes('supabase')) return 'supabase';
+            if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) return 'utils';
+            return 'vendor';
+          }
         },
       },
     },

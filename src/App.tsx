@@ -20,14 +20,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Suspense fallback={
-          <div className="min-h-screen bg-gradient-background flex items-center justify-center">
-            <div className="animate-pulse text-center">
-              <div className="h-10 w-10 bg-gradient-primary rounded-full mx-auto mb-4 animate-pulse"></div>
-              <p className="text-muted-foreground">جاري التحميل...</p>
-            </div>
-          </div>
-        }>
+        <Suspense fallback={<div style={{display:'none'}}></div>}>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />

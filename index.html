@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-K7SZJB53');</script>
-    <!-- End Google Tag Manager -->
-    
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>العد التنازلي - تطبيق الأحداث المهمة</title>
@@ -20,8 +12,33 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://brtpixpzaequyohuvtin.supabase.co">
     
-    <!-- Critical CSS inlining hint -->
-    <link rel="preload" href="/src/index.css" as="style">
+    <!-- Critical CSS for instant render -->
+    <style>
+      body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+      #loading { 
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex; align-items: center; justify-content: center; z-index: 9999;
+      }
+      .spinner { 
+        width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.3);
+        border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      #root { opacity: 0; transition: opacity 0.3s ease; }
+      #root.loaded { opacity: 1; }
+    </style>
+    
+    <!-- Defer Google Tag Manager to not block rendering -->
+    <script>
+      setTimeout(() => {
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-K7SZJB53');
+      }, 100);
+    </script>
 
     <meta property="og:title" content="arabian-countdown-hub" />
     <meta property="og:description" content="Lovable Generated Project" />
@@ -34,11 +51,30 @@
   </head>
 
   <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K7SZJB53"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
+    <div id="loading">
+      <div class="spinner"></div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Show content immediately when React is ready
+      const observer = new MutationObserver(() => {
+        const root = document.getElementById('root');
+        if (root && root.children.length > 0) {
+          document.getElementById('loading').style.display = 'none';
+          root.classList.add('loaded');
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.getElementById('root'), { childList: true });
+      
+      // Fallback timeout
+      setTimeout(() => {
+        const loading = document.getElementById('loading');
+        const root = document.getElementById('root');
+        if (loading) loading.style.display = 'none';
+        if (root) root.classList.add('loaded');
+      }, 2000);
+    </script>
   </body>
 </html>
