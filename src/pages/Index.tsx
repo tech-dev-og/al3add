@@ -5,7 +5,6 @@ import { CountdownCard } from "@/components/ui/countdown-card";
 import { FloatingAddButton } from "@/components/ui/floating-add-button";
 import { AddEventDialog } from "@/components/add-event-dialog";
 import { PinterestHero } from "@/components/pinterest-hero";
-import { BackgroundSettings } from "@/components/background-settings";
 import { Sparkles, Moon, Sun, LogOut, User, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,7 +29,6 @@ const Index = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPinterestView, setShowPinterestView] = useState(false);
-  const [customBackground, setCustomBackground] = useState<string | null>(null);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -77,11 +75,6 @@ const Index = () => {
   // Load events on initial page load
   useEffect(() => {
     loadUserEvents();
-    // Load custom background from localStorage
-    const savedBackground = localStorage.getItem('customBackground');
-    if (savedBackground) {
-      setCustomBackground(savedBackground);
-    }
   }, []);
 
   const loadUserEvents = async () => {
@@ -320,10 +313,6 @@ const Index = () => {
     document.documentElement.classList.toggle('dark');
   };
 
-  const handleBackgroundChange = (imageUrl: string | null) => {
-    setCustomBackground(imageUrl);
-  };
-
   const activeEvents = events.filter(event => {
     const isDurationCalculation = ['days-passed', 'months-duration', 'weeks-duration', 'years-months'].includes(event.calculationType || 'days-left');
     return event.date > new Date() || isDurationCalculation;
@@ -335,22 +324,7 @@ const Index = () => {
   });
 
   return (
-    <div 
-      className={`min-h-screen bg-gradient-background transition-smooth ${isDarkMode ? 'dark' : ''}`}
-      style={{
-        ...(customBackground && {
-          backgroundImage: `url(${customBackground})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        })
-      }}
-    >
-      {/* Background overlay for custom backgrounds */}
-      {customBackground && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm pointer-events-none" />
-      )}
-      
+    <div className={`min-h-screen bg-gradient-background transition-smooth ${isDarkMode ? 'dark' : ''}`}>
       {/* Islamic pattern overlay */}
       <div className="islamic-pattern fixed inset-0 pointer-events-none" />
       
@@ -424,11 +398,6 @@ const Index = () => {
                 )}
               </Button>
             )}
-
-            <BackgroundSettings 
-              onBackgroundChange={handleBackgroundChange}
-              currentBackground={customBackground}
-            />
 
             <LanguageToggle />
 
