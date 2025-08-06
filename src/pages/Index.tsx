@@ -62,17 +62,15 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Optimized countdown updates - only update visible cards
+  // Real-time countdown updates
   useEffect(() => {
     const interval = setInterval(() => {
-      // Only force re-render if there are active events
-      if (events.length > 0) {
-        setEvents(prev => [...prev]);
-      }
+      // Force re-render every second to update countdowns
+      setEvents(prev => [...prev]);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [events.length]);
+  }, []);
 
   // Load events on initial page load
   useEffect(() => {
@@ -408,7 +406,6 @@ const Index = () => {
               size="sm"
               onClick={toggleDarkMode}
               className="h-9"
-              aria-label={isDarkMode ? t('theme.lightMode') : t('theme.darkMode')}
             >
               {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
@@ -431,7 +428,7 @@ const Index = () => {
                 <Sparkles className="h-6 w-6 text-accent" />
                 الأحداث القادمة
               </h2>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 countdown-grid">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {activeEvents.map((event) => (
                 <CountdownCard
                   key={event.id}

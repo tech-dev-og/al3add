@@ -116,7 +116,7 @@ export function PinterestHero({ onTileClick }: PinterestHeroProps) {
     }
   ];
   return (
-    <div className="relative container mx-auto px-4 py-12 hero-section">
+    <div className="relative container mx-auto px-4 py-12">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">
           {t('hero.welcomeTitle')}

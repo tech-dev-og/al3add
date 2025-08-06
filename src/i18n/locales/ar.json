@@ -90,13 +90,8 @@
   },
   "language": {
     "switchLanguage": "تبديل اللغة",
-    "changeLanguage": "تغيير اللغة",
     "arabic": "العربية",
     "english": "English"
-  },
-  "theme": {
-    "lightMode": "التبديل إلى الوضع الفاتح",
-    "darkMode": "التبديل إلى الوضع الداكن"
   },
   "addEvent": {
     "whatEventType": "ما نوع الحدث؟",
