@@ -143,7 +143,8 @@ const Index = () => {
         event_date: event.date,
         event_type: event.type,
         calculation_type: event.calculationType || 'days-left',
-        repeat_option: event.repeatOption || 'none'
+        repeat_option: event.repeatOption || 'none',
+        background_image: event.backgroundImage
       }));
 
       const { error } = await supabase
@@ -182,7 +183,8 @@ const Index = () => {
         date: newEvent.date.toISOString(),
         type: newEvent.type,
         calculationType: newEvent.calculationType,
-        repeatOption: newEvent.repeatOption
+        repeatOption: newEvent.repeatOption,
+        backgroundImage: newEvent.backgroundImage
       };
       
       pendingEvents.push(eventToStore);
@@ -222,7 +224,8 @@ const Index = () => {
           event_date: newEvent.date.toISOString(),
           event_type: newEvent.type,
           calculation_type: newEvent.calculationType || 'days-left',
-          repeat_option: newEvent.repeatOption || 'none'
+          repeat_option: newEvent.repeatOption || 'none',
+          background_image: newEvent.backgroundImage
         })
         .select()
         .single();
@@ -243,7 +246,8 @@ const Index = () => {
         date: new Date(data.event_date),
         type: data.event_type,
         calculationType: newEvent.calculationType,
-        repeatOption: newEvent.repeatOption
+        repeatOption: newEvent.repeatOption,
+        backgroundImage: data.background_image
       };
 
       setEvents(prev => [...prev, formattedEvent]);
