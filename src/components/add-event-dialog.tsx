@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,20 +11,35 @@ import { useTranslation } from "react-i18next";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
+interface EventData {
+  title: string;
+  date: Date;
+  type: string;
+  calculationType: string;
+  repeatOption: string;
+  backgroundImage?: string;
+}
+
+interface EventToEdit {
+  id: string;
+  title: string;
+  date: Date;
+  type: string;
+  calculationType?: string;
+  repeatOption?: string;
+  backgroundImage?: string;
+}
+
 interface AddEventDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddEvent: (event: {
-    title: string;
-    date: Date;
-    type: string;
-    calculationType: string;
-    repeatOption: string;
-    backgroundImage?: string;
-  }) => void;
+  onAddEvent: (event: EventData) => void;
+  onEditEvent?: (event: EventToEdit) => void;
+  eventToEdit?: EventToEdit;
+  isEdit?: boolean;
 }
 
-export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialogProps) {
+export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, eventToEdit, isEdit = false }: AddEventDialogProps) {
   const { t, i18n } = useTranslation();
   const { toast } = useToast();
   const [title, setTitle] = useState("");
@@ -70,6 +85,25 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
     { id: 'monthly', label: t('addEvent.repeatOptions.monthly') },
     { id: 'yearly', label: t('addEvent.repeatOptions.yearly') }
   ];
+
+  // Reset form fields when dialog opens/closes or when switching between add/edit modes
+  useEffect(() => {
+    if (open && isEdit && eventToEdit) {
+      setTitle(eventToEdit.title);
+      setDate(eventToEdit.date);
+      setEventType(eventToEdit.type);
+      setCalculationType(eventToEdit.calculationType || "days-left");
+      setRepeatOption(eventToEdit.repeatOption || "none");
+      setBackgroundImage(eventToEdit.backgroundImage || "");
+    } else if (open && !isEdit) {
+      setTitle("");
+      setDate(undefined);
+      setEventType("");
+      setCalculationType("days-left");
+      setRepeatOption("none");
+      setBackgroundImage("");
+    }
+  }, [open, isEdit, eventToEdit]);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -187,20 +221,33 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
       // Sanitize title to prevent XSS
       const sanitizedTitle = title.replace(/<[^>]*>/g, '').trim();
 
-      onAddEvent({
+      const eventData = {
         title: sanitizedTitle,
         date,
         type: eventType,
         calculationType,
         repeatOption,
         backgroundImage: backgroundImage || undefined,
-      });
-      setTitle("");
-      setDate(undefined);
-      setEventType("");
-      setCalculationType("days-left");
-      setRepeatOption("none");
-      setBackgroundImage("");
+      };
+
+      if (isEdit && eventToEdit && onEditEvent) {
+        onEditEvent({
+          ...eventData,
+          id: eventToEdit.id,
+        });
+      } else {
+        onAddEvent(eventData);
+      }
+
+      // Reset form only if not in edit mode (edit mode form gets reset by useEffect)
+      if (!isEdit) {
+        setTitle("");
+        setDate(undefined);
+        setEventType("");
+        setCalculationType("days-left");
+        setRepeatOption("none");
+        setBackgroundImage("");
+      }
       onOpenChange(false);
     }
   };
@@ -209,7 +256,9 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl text-center">{t('addEvent.whatEventType')}</DialogTitle>
+          <DialogTitle className="text-xl text-center">
+            {isEdit ? "Edit Event" : t('addEvent.whatEventType')}
+          </DialogTitle>
           <p className="text-sm text-muted-foreground text-center">
             {t('addEvent.cantFindEvent')}<br />
             {t('addEvent.chooseHereToCreate')}
@@ -459,7 +508,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
               {t('addEvent.cancel')}
             </Button>
             <Button type="submit" className="flex-1 bg-gradient-primary" disabled={!title || !date || !eventType}>
-              {t('addEvent.addEvent')}
+              {isEdit ? "Update Event" : t('addEvent.addEvent')}
             </Button>
           </div>
         </form>

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, Trash2 } from "lucide-react";
+import { Calendar, Clock, Trash2, Edit } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ar, enUS } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
@@ -16,6 +16,7 @@ interface CountdownCardProps {
   repeatOption?: string;
   backgroundImage?: string;
   onDelete?: (id: string) => void;
+  onEdit?: (id: string) => void;
 }
 
 interface TimeLeft {
@@ -34,7 +35,8 @@ export function CountdownCard({
   calculationType = "days-left", 
   repeatOption = "none", 
   backgroundImage,
-  onDelete 
+  onDelete,
+  onEdit
 }: CountdownCardProps) {
   const { t, i18n } = useTranslation();
   
@@ -111,16 +113,28 @@ export function CountdownCard({
             <Badge className={`${getEventTypeColor(eventType)} text-sm px-3 py-1`}>
               {eventType}
             </Badge>
-            {onDelete && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onDelete(id)}
-                className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            )}
+            <div className="flex items-center gap-1">
+              {onEdit && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onEdit(id)}
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              )}
+              {onDelete && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDelete(id)}
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2 text-muted-foreground text-sm">

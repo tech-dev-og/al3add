@@ -19,6 +19,7 @@ interface Event {
   type: string;
   calculationType?: string;
   repeatOption?: string;
+  backgroundImage?: string;
 }
 
 const Index = () => {
@@ -29,6 +30,8 @@ const Index = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPinterestView, setShowPinterestView] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -300,6 +303,97 @@ const Index = () => {
     }
   };
 
+  const handleEditEvent = async (updatedEvent: Event) => {
+    if (!user) {
+      // Handle editing pending events in localStorage
+      const pendingEvents = JSON.parse(localStorage.getItem('pendingEvents') || '[]');
+      const updatedPendingEvents = pendingEvents.map((event: any) => 
+        event.id === updatedEvent.id 
+          ? { 
+              ...event, 
+              title: updatedEvent.title,
+              date: updatedEvent.date.toISOString(),
+              type: updatedEvent.type,
+              calculationType: updatedEvent.calculationType,
+              repeatOption: updatedEvent.repeatOption,
+              backgroundImage: updatedEvent.backgroundImage
+            }
+          : event
+      );
+      localStorage.setItem('pendingEvents', JSON.stringify(updatedPendingEvents));
+      
+      // Update local state
+      setEvents(prev => prev.map(event => 
+        event.id === updatedEvent.id ? updatedEvent : event
+      ));
+      
+      toast({
+        title: "تم تحديث الحدث مؤقتاً ✨",
+        description: "سجل دخولك لحفظ التغييرات نهائياً",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('events')
+        .update({
+          title: updatedEvent.title,
+          event_date: updatedEvent.date.toISOString(),
+          event_type: updatedEvent.type,
+          calculation_type: updatedEvent.calculationType || 'days-left',
+          repeat_option: updatedEvent.repeatOption || 'none',
+          background_image: updatedEvent.backgroundImage
+        })
+        .eq('id', updatedEvent.id)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error updating event:', error);
+        toast({
+          title: "خطأ في تحديث الحدث",
+          description: "حاول مرة أخرى لاحقاً",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Update local state
+      setEvents(prev => prev.map(event => 
+        event.id === updatedEvent.id ? updatedEvent : event
+      ));
+      
+      toast({
+        title: "تم تحديث الحدث! ✨",
+        description: "تم حفظ التغييرات بنجاح",
+      });
+    } catch (error) {
+      console.error('Error updating event:', error);
+      toast({
+        title: "حدث خطأ",
+        description: "حاول مرة أخرى لاحقاً",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleEditEventDialog = (eventId: string) => {
+    const eventToEdit = events.find(event => event.id === eventId);
+    if (eventToEdit) {
+      setEditingEvent(eventToEdit);
+      setIsEditMode(true);
+      setShowAddDialog(true);
+    }
+  };
+
+  const handleCloseDialog = (open: boolean) => {
+    setShowAddDialog(open);
+    if (!open) {
+      setEditingEvent(null);
+      setIsEditMode(false);
+    }
+  };
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     toast({
@@ -438,7 +532,9 @@ const Index = () => {
                   eventType={event.type}
                   calculationType={event.calculationType}
                   repeatOption={event.repeatOption}
+                  backgroundImage={event.backgroundImage}
                   onDelete={handleDeleteEvent}
+                  onEdit={handleEditEventDialog}
                 />
               ))}
             </div>
@@ -461,8 +557,10 @@ const Index = () => {
                   eventType={event.type}
                   calculationType={event.calculationType}
                   repeatOption={event.repeatOption}
+                  backgroundImage={event.backgroundImage}
                   isExpired={false}
                   onDelete={handleDeleteEvent}
+                  onEdit={handleEditEventDialog}
                 />
               ))}
             </div>
@@ -477,8 +575,11 @@ const Index = () => {
       {/* Add Event Dialog */}
       <AddEventDialog
         open={showAddDialog}
-        onOpenChange={setShowAddDialog}
+        onOpenChange={handleCloseDialog}
         onAddEvent={handleAddEvent}
+        onEditEvent={handleEditEvent}
+        eventToEdit={editingEvent}
+        isEdit={isEditMode}
       />
     </div>
   );
