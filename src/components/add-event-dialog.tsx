@@ -95,6 +95,13 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
       setCalculationType(eventToEdit.calculationType || "days-left");
       setRepeatOption(eventToEdit.repeatOption || "none");
       setBackgroundImage(eventToEdit.backgroundImage || "");
+      // Set image option based on existing background image
+      if (eventToEdit.backgroundImage) {
+        // If it starts with data: it's likely AI generated, otherwise uploaded
+        setImageOption(eventToEdit.backgroundImage.startsWith('data:') ? 'generate' : 'upload');
+      } else {
+        setImageOption('upload');
+      }
     } else if (open && !isEdit) {
       setTitle("");
       setDate(undefined);
@@ -102,6 +109,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
       setCalculationType("days-left");
       setRepeatOption("none");
       setBackgroundImage("");
+      setImageOption('upload');
     }
   }, [open, isEdit, eventToEdit]);
 
