@@ -37,9 +37,10 @@ interface AddEventDialogProps {
   onEditEvent?: (event: EventToEdit) => void;
   eventToEdit?: EventToEdit;
   isEdit?: boolean;
+  preSelectedEventType?: string;
 }
 
-export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, eventToEdit, isEdit = false }: AddEventDialogProps) {
+export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, eventToEdit, isEdit = false, preSelectedEventType }: AddEventDialogProps) {
   const { t, i18n } = useTranslation();
   const { toast } = useToast();
   const [title, setTitle] = useState("");
@@ -105,13 +106,13 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
     } else if (open && !isEdit) {
       setTitle("");
       setDate(undefined);
-      setEventType("");
+      setEventType(preSelectedEventType || "");
       setCalculationType("days-left");
       setRepeatOption("none");
       setBackgroundImage("");
       setImageOption('upload');
     }
-  }, [open, isEdit, eventToEdit]);
+  }, [open, isEdit, eventToEdit, preSelectedEventType]);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

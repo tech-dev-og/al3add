@@ -9,6 +9,7 @@ interface LifeEvent {
   bgGradient: string;
   textColor: string;
   size: 'small' | 'medium' | 'large';
+  type: string;
 }
 
 
@@ -26,7 +27,7 @@ const getTileClassName = (size: string) => {
 };
 
 interface PinterestHeroProps {
-  onTileClick: () => void;
+  onTileClick: (eventType: string) => void;
 }
 
 export function PinterestHero({ onTileClick }: PinterestHeroProps) {
@@ -40,7 +41,8 @@ export function PinterestHero({ onTileClick }: PinterestHeroProps) {
       icon: <Sparkles className="h-6 w-6" />,
       bgGradient: 'from-emerald-400 to-green-500',
       textColor: 'text-white',
-      size: 'large'
+      size: 'large',
+      type: 'eid'
     },
     {
       id: '2', 
@@ -49,7 +51,8 @@ export function PinterestHero({ onTileClick }: PinterestHeroProps) {
       icon: <Gift className="h-5 w-5" />,
       bgGradient: 'from-amber-200 to-yellow-300',
       textColor: 'text-slate-800',
-      size: 'medium'
+      size: 'medium',
+      type: 'birthday'
     },
     {
       id: '3',
@@ -58,7 +61,8 @@ export function PinterestHero({ onTileClick }: PinterestHeroProps) {
       icon: <Heart className="h-5 w-5" />,
       bgGradient: 'from-purple-500 to-indigo-600',
       textColor: 'text-white',
-      size: 'small'
+      size: 'small',
+      type: 'marriage'
     },
     {
       id: '4',
@@ -67,7 +71,8 @@ export function PinterestHero({ onTileClick }: PinterestHeroProps) {
       icon: <GraduationCap className="h-6 w-6" />,
       bgGradient: 'from-blue-500 to-cyan-600',
       textColor: 'text-white',
-      size: 'large'
+      size: 'large',
+      type: 'exams'
     },
     {
       id: '5',
@@ -76,7 +81,8 @@ export function PinterestHero({ onTileClick }: PinterestHeroProps) {
       icon: <Plane className="h-5 w-5" />,
       bgGradient: 'from-orange-200 to-amber-300',
       textColor: 'text-slate-800',
-      size: 'medium'
+      size: 'medium',
+      type: 'travel'
     },
     {
       id: '6',
@@ -85,7 +91,8 @@ export function PinterestHero({ onTileClick }: PinterestHeroProps) {
       icon: <Baby className="h-4 w-4" />,
       bgGradient: 'from-green-500 to-emerald-600',
       textColor: 'text-white',
-      size: 'small'
+      size: 'small',
+      type: 'newborn'
     },
     {
       id: '7',
@@ -94,7 +101,8 @@ export function PinterestHero({ onTileClick }: PinterestHeroProps) {
       icon: <Briefcase className="h-4 w-4" />,
       bgGradient: 'from-slate-500 to-gray-600',
       textColor: 'text-white',
-      size: 'small'
+      size: 'small',
+      type: 'work'
     },
     {
       id: '8',
@@ -103,7 +111,8 @@ export function PinterestHero({ onTileClick }: PinterestHeroProps) {
       icon: <Heart className="h-5 w-5" />,
       bgGradient: 'from-pink-300 to-rose-400',
       textColor: 'text-slate-800',
-      size: 'medium'
+      size: 'medium',
+      type: 'love'
     },
     {
       id: '9',
@@ -112,7 +121,8 @@ export function PinterestHero({ onTileClick }: PinterestHeroProps) {
       icon: <Calendar className="h-6 w-6" />,
       bgGradient: 'from-indigo-500 to-purple-600',
       textColor: 'text-white',
-      size: 'large'
+      size: 'large',
+      type: 'ramadan'
     }
   ];
   return (
@@ -131,7 +141,7 @@ export function PinterestHero({ onTileClick }: PinterestHeroProps) {
           {LIFE_EVENTS.map((event) => (
             <div
               key={event.id}
-              onClick={onTileClick}
+              onClick={() => onTileClick(event.type)}
               className={`
                 ${getTileClassName(event.size)}
                 bg-gradient-to-br ${event.bgGradient}

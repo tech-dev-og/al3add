@@ -32,6 +32,7 @@ const Index = () => {
   const [showPinterestView, setShowPinterestView] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [preSelectedEventType, setPreSelectedEventType] = useState<string>("");
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -411,6 +412,7 @@ const Index = () => {
     if (!open) {
       setEditingEvent(null);
       setIsEditMode(false);
+      setPreSelectedEventType("");
     }
   };
 
@@ -529,7 +531,10 @@ const Index = () => {
 
       {/* Hero Section */}
       {((activeEvents.length === 0 && expiredEvents.length === 0) || showPinterestView) && (
-        <PinterestHero onTileClick={() => setShowAddDialog(true)} />
+        <PinterestHero onTileClick={(eventType: string) => {
+          setPreSelectedEventType(eventType);
+          setShowAddDialog(true);
+        }} />
       )}
 
       {/* Main Content */}
@@ -600,6 +605,7 @@ const Index = () => {
         onEditEvent={handleEditEvent}
         eventToEdit={editingEvent}
         isEdit={isEditMode}
+        preSelectedEventType={preSelectedEventType}
       />
     </div>
   );
