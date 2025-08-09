@@ -45,11 +45,16 @@ serve(async (req) => {
     const result = await response.json()
     console.log('Image generation successful')
 
-    // OpenAI dall-e-3 returns image URLs by default
+    // Download the image from the URL and convert to base64 for permanent storage
+    const imageUrl = result.data[0].url;
+    const imageResponse = await fetch(imageUrl);
+    const imageBuffer = await imageResponse.arrayBuffer();
+    const base64Image = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
+
     return new Response(
       JSON.stringify({ 
         success: true,
-        imageUrl: result.data[0].url,
+        imageData: base64Image,
         format: 'png'
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
