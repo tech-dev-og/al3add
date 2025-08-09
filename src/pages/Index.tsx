@@ -118,7 +118,8 @@ const Index = () => {
         date: new Date(event.event_date),
         type: event.event_type,
         calculationType: event.calculation_type || "days-left",
-        repeatOption: event.repeat_option || "none"
+        repeatOption: event.repeat_option || "none",
+        backgroundImage: event.background_image
       }));
 
       setEvents(formattedEvents);
