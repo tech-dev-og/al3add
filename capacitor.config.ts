@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.2e882832a7454ee0a0509b67c3f2bde5',
+  appId: 'app.lovable.countdown2e882832a7454ee0a0509b67c3f2bde5',
   appName: 'العد التنازلي',
   webDir: 'dist',
   server: {
