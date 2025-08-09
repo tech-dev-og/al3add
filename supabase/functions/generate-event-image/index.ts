@@ -49,7 +49,14 @@ serve(async (req) => {
     const imageUrl = result.data[0].url;
     const imageResponse = await fetch(imageUrl);
     const imageBuffer = await imageResponse.arrayBuffer();
-    const base64Image = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
+    
+    // Convert to base64 using a more efficient method for large files
+    const uint8Array = new Uint8Array(imageBuffer);
+    let binaryString = '';
+    for (let i = 0; i < uint8Array.length; i++) {
+      binaryString += String.fromCharCode(uint8Array[i]);
+    }
+    const base64Image = btoa(binaryString);
 
     return new Response(
       JSON.stringify({ 
