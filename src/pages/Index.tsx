@@ -40,26 +40,25 @@ const Index = () => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Load events when user signs in or signs out
-        setTimeout(() => {
-          loadUserEvents();
-        }, 0);
+        // Load events when authentication state changes
+        loadUserEvents();
       }
     );
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session check:', session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
       
-      if (session?.user) {
-        loadUserEvents();
-      }
+      // Load events for existing session
+      loadUserEvents();
     });
 
     return () => subscription.unsubscribe();
@@ -75,16 +74,13 @@ const Index = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Load events on initial page load
-  useEffect(() => {
-    loadUserEvents();
-  }, []);
-
   const loadUserEvents = async () => {
+    console.log('Loading events for user:', user?.id);
     // Load pending events from localStorage
     const pendingEvents = JSON.parse(localStorage.getItem('pendingEvents') || '[]');
     
     if (!user) {
+      console.log('No user, showing pending events:', pendingEvents.length);
       // Show only pending events if not logged in
       const tempEvents = pendingEvents.map((event: any) => ({
         ...event,
