@@ -155,9 +155,8 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent }: AddEventDialo
         throw new Error(error.message || 'Failed to generate image');
       }
 
-      if (data.success && data.imageData) {
-        const imageUrl = `data:image/${data.format || 'webp'};base64,${data.imageData}`;
-        setBackgroundImage(imageUrl);
+      if (data.success && data.imageUrl) {
+        setBackgroundImage(data.imageUrl);
         toast({
           title: t("success"),
           description: "Image generated successfully!",

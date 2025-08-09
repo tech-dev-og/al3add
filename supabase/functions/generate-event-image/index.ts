@@ -28,13 +28,11 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-image-1',
+        model: 'dall-e-3',
         prompt: prompt,
         n: 1,
         size: '1024x1024',
-        quality: 'high',
-        output_format: 'webp',
-        output_compression: 80
+        quality: 'hd'
       }),
     })
 
@@ -47,12 +45,12 @@ serve(async (req) => {
     const result = await response.json()
     console.log('Image generation successful')
 
-    // OpenAI gpt-image-1 returns base64 data directly
+    // OpenAI dall-e-3 returns image URLs by default
     return new Response(
       JSON.stringify({ 
         success: true,
-        imageData: result.data[0].b64_json,
-        format: 'webp'
+        imageUrl: result.data[0].url,
+        format: 'png'
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
