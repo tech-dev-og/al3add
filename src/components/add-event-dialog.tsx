@@ -264,7 +264,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl w-full max-w-[95vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl text-center">
             {isEdit ? "Edit Event" : t('addEvent.whatEventType')}
@@ -278,7 +278,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
         <form onSubmit={handleSubmit} className="space-y-6 mt-4">
           {/* Event Type Selection */}
           <div className="space-y-3">
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {EVENT_TYPES.slice(0, 6).map((type) => (
                 <button
                   key={type.id}
@@ -298,7 +298,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
               ))}
             </div>
             {EVENT_TYPES.length > 6 && (
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {EVENT_TYPES.slice(6).map((type) => (
                   <button
                     key={type.id}
