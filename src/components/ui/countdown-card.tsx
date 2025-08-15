@@ -95,7 +95,7 @@ export function CountdownCard({
   };
 
   return (
-    <Card className={`relative overflow-hidden transition-smooth hover:shadow-islamic aspect-[5/3] w-full ${(isExpired && !isDurationCalculation) ? 'opacity-60' : ''} ${isNearExpiry ? 'ring-2 ring-accent' : ''}`}>
+    <Card className={`relative overflow-hidden transition-smooth hover:shadow-islamic aspect-[3/1] w-full min-h-[250px] ${(isExpired && !isDurationCalculation) ? 'opacity-60' : ''} ${isNearExpiry ? 'ring-2 ring-accent' : ''}`}>
       {/* Background Image */}
       {backgroundImage && (
         <div 
@@ -153,7 +153,7 @@ export function CountdownCard({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="relative z-10">
+      <CardContent className="relative z-10 pb-6">
         {(isExpired && !isDurationCalculation) ? (
           <div className="text-center py-6">
             <Clock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
