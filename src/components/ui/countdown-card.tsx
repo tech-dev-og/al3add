@@ -106,7 +106,7 @@ export function CountdownCard({
         </div>
       )}
       
-      <CardHeader className="pb-3 relative z-10">
+      <CardHeader className="pb-2 relative z-10">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
             <h3 className={`text-xl font-bold leading-relaxed mb-2 ${backgroundImage ? 'text-white' : ''}`} style={backgroundImage ? { textShadow: '0 0 8px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.9)' } : {}}>{title}</h3>
@@ -153,7 +153,7 @@ export function CountdownCard({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="relative z-10 pb-6">
+      <CardContent className="relative z-10 pt-2 pb-3">
         {(isExpired && !isDurationCalculation) ? (
           <div className="text-center py-6">
             <Clock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
@@ -184,7 +184,7 @@ export function CountdownCard({
           </div>
         )}
         
-        <div className={`mt-4 text-center text-sm ${backgroundImage ? 'text-white' : 'text-muted-foreground'}`} style={backgroundImage ? { textShadow: '0 0 8px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.9)' } : {}}>
+        <div className={`mt-2 text-center text-sm ${backgroundImage ? 'text-white' : 'text-muted-foreground'}`} style={backgroundImage ? { textShadow: '0 0 8px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.9)' } : {}}>
           {(isDurationCalculation && isPastEvent) ? (
             `${t('hero.timeUnits.passed')} ${formatDistanceToNow(eventDate, { locale: i18n.language === 'ar' ? ar : enUS, addSuffix: false })}`
           ) : !isExpired ? (
