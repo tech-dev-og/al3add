@@ -108,9 +108,9 @@ export function CountdownCard({
       
       <CardHeader className="pb-3 relative z-10">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold leading-relaxed">{title}</h3>
+          <h3 className={`text-lg font-semibold leading-relaxed ${backgroundImage ? 'text-white drop-shadow-md' : ''}`}>{title}</h3>
           <div className="flex items-center gap-2">
-            <Badge className={`${getEventTypeColor(eventType)} text-sm px-3 py-1`}>
+            <Badge className={`${getEventTypeColor(eventType)} text-sm px-3 py-1 ${backgroundImage ? 'shadow-lg' : ''}`}>
               {eventType}
             </Badge>
             <div className="flex items-center gap-1">
@@ -119,7 +119,7 @@ export function CountdownCard({
                   variant="ghost"
                   size="sm"
                   onClick={() => onEdit(id)}
-                  className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
+                  className={`h-8 w-8 p-0 ${backgroundImage ? 'text-white hover:text-white hover:bg-white/20' : 'text-muted-foreground hover:text-primary'}`}
                 >
                   <Edit className="h-4 w-4" />
                 </Button>
@@ -129,7 +129,7 @@ export function CountdownCard({
                   variant="ghost"
                   size="sm"
                   onClick={() => onDelete(id)}
-                  className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                  className={`h-8 w-8 p-0 ${backgroundImage ? 'text-white hover:text-red-300 hover:bg-red-500/20' : 'text-muted-foreground hover:text-destructive'}`}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -137,7 +137,7 @@ export function CountdownCard({
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-muted-foreground text-sm">
+        <div className={`flex items-center gap-2 text-sm ${backgroundImage ? 'text-white/90 drop-shadow' : 'text-muted-foreground'}`}>
           <Calendar className="h-4 w-4" />
           <span className="arabic-numerals">
             {eventDate.toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US', {
@@ -180,7 +180,7 @@ export function CountdownCard({
           </div>
         )}
         
-        <div className="mt-4 text-center text-sm text-muted-foreground">
+        <div className={`mt-4 text-center text-sm ${backgroundImage ? 'text-white/80 drop-shadow' : 'text-muted-foreground'}`}>
           {(isDurationCalculation && isPastEvent) ? (
             `${t('hero.timeUnits.passed')} ${formatDistanceToNow(eventDate, { locale: i18n.language === 'ar' ? ar : enUS, addSuffix: false })}`
           ) : !isExpired ? (
