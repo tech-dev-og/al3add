@@ -95,7 +95,7 @@ export function CountdownCard({
   };
 
   return (
-    <Card className={`relative overflow-hidden transition-smooth hover:shadow-islamic min-h-[280px] aspect-[4/3] ${(isExpired && !isDurationCalculation) ? 'opacity-60' : ''} ${isNearExpiry ? 'ring-2 ring-accent' : ''}`}>
+    <Card className={`relative overflow-hidden transition-smooth hover:shadow-islamic h-[200px] w-full ${(isExpired && !isDurationCalculation) ? 'opacity-60' : ''} ${isNearExpiry ? 'ring-2 ring-accent' : ''}`}>
       {/* Background Image */}
       {backgroundImage && (
         <div 
@@ -123,9 +123,11 @@ export function CountdownCard({
             </div>
           </div>
           <div className="flex items-start gap-2 flex-shrink-0">
-            <Badge className={`${getEventTypeColor(eventType)} text-sm px-3 py-1 ${backgroundImage ? 'shadow-xl' : ''}`} style={backgroundImage ? { textShadow: '0 0 6px rgba(0,0,0,0.8)' } : {}}>
-              {eventType}
-            </Badge>
+            {eventType && eventType.toLowerCase() !== title.toLowerCase() && (
+              <Badge className={`${getEventTypeColor(eventType)} text-sm px-3 py-1 ${backgroundImage ? 'shadow-xl' : ''}`} style={backgroundImage ? { textShadow: '0 0 6px rgba(0,0,0,0.8)' } : {}}>
+                {eventType}
+              </Badge>
+            )}
             <div className="flex items-center gap-1">
               {onEdit && (
                 <Button
