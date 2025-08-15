@@ -102,15 +102,28 @@ export function CountdownCard({
           className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-lg"
           style={{ backgroundImage: `url(${backgroundImage})` }}
         >
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent rounded-lg" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 rounded-lg" />
         </div>
       )}
       
       <CardHeader className="pb-3 relative z-10">
-        <div className="flex items-center justify-between">
-          <h3 className={`text-lg font-semibold leading-relaxed ${backgroundImage ? 'text-white px-3 py-1 rounded-lg bg-black/40 backdrop-blur-sm border border-white/10' : ''}`} style={backgroundImage ? { textShadow: '2px 2px 4px rgba(0,0,0,0.8)' } : {}}>{title}</h3>
-          <div className="flex items-center gap-2">
-            <Badge className={`${getEventTypeColor(eventType)} text-sm px-3 py-1 ${backgroundImage ? 'shadow-lg backdrop-blur-sm bg-black/40 border border-white/20' : ''}`}>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1">
+            <h3 className={`text-xl font-bold leading-relaxed mb-2 ${backgroundImage ? 'text-white' : ''}`} style={backgroundImage ? { textShadow: '0 0 8px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.9)' } : {}}>{title}</h3>
+            <div className={`flex items-center gap-2 text-sm ${backgroundImage ? 'text-white' : 'text-muted-foreground'}`} style={backgroundImage ? { textShadow: '0 0 8px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.9)' } : {}}>
+              <Calendar className={`h-4 w-4 ${backgroundImage ? 'drop-shadow-lg' : ''}`} />
+              <span className="arabic-numerals">
+                {eventDate.toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  weekday: 'long'
+                })}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-start gap-2 flex-shrink-0">
+            <Badge className={`${getEventTypeColor(eventType)} text-sm px-3 py-1 ${backgroundImage ? 'shadow-xl' : ''}`} style={backgroundImage ? { textShadow: '0 0 6px rgba(0,0,0,0.8)' } : {}}>
               {eventType}
             </Badge>
             <div className="flex items-center gap-1">
@@ -136,17 +149,6 @@ export function CountdownCard({
               )}
             </div>
           </div>
-        </div>
-        <div className={`flex items-center gap-2 text-sm ${backgroundImage ? 'text-white px-3 py-1 rounded-lg bg-black/30 backdrop-blur-sm border border-white/10 inline-flex' : 'text-muted-foreground'}`} style={backgroundImage ? { textShadow: '2px 2px 4px rgba(0,0,0,0.8)' } : {}}>
-          <Calendar className={`h-4 w-4 ${backgroundImage ? 'drop-shadow-lg' : ''}`} />
-          <span className="arabic-numerals">
-            {eventDate.toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-              weekday: 'long'
-            })}
-          </span>
         </div>
       </CardHeader>
       <CardContent className="relative z-10">
@@ -180,7 +182,7 @@ export function CountdownCard({
           </div>
         )}
         
-        <div className={`mt-4 text-center text-sm ${backgroundImage ? 'text-white px-3 py-1 rounded-lg bg-black/30 backdrop-blur-sm border border-white/10 inline-block' : 'text-muted-foreground'}`} style={backgroundImage ? { textShadow: '2px 2px 4px rgba(0,0,0,0.8)' } : {}}>
+        <div className={`mt-4 text-center text-sm ${backgroundImage ? 'text-white' : 'text-muted-foreground'}`} style={backgroundImage ? { textShadow: '0 0 8px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.9)' } : {}}>
           {(isDurationCalculation && isPastEvent) ? (
             `${t('hero.timeUnits.passed')} ${formatDistanceToNow(eventDate, { locale: i18n.language === 'ar' ? ar : enUS, addSuffix: false })}`
           ) : !isExpired ? (
