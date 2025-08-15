@@ -86,7 +86,9 @@
     "signOut": "Sign Out",
     "signIn": "Sign In",
     "myEvents": "My Events",
-    "explore": "Explore"
+    "explore": "Explore",
+    "signOutConfirm": "Are you sure you want to sign out? You'll need to sign in again to manage your events.",
+    "cancel": "Cancel"
   },
   "language": {
     "switchLanguage": "Switch Language",

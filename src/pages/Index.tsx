@@ -621,11 +621,11 @@ const Index = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>{t('navigation.signOut')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to sign out? You'll need to sign in again to manage your events.
+              {t('navigation.signOutConfirm')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('navigation.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleSignOut}>
               {t('navigation.signOut')}
             </AlertDialogAction>
