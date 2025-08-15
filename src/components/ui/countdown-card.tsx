@@ -102,13 +102,13 @@ export function CountdownCard({
           className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-lg"
           style={{ backgroundImage: `url(${backgroundImage})` }}
         >
-          <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-background/20 rounded-lg" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent rounded-lg" />
         </div>
       )}
       
       <CardHeader className="pb-3 relative z-10">
         <div className="flex items-center justify-between">
-          <h3 className={`text-lg font-semibold leading-relaxed ${backgroundImage ? 'text-white drop-shadow-md' : ''}`}>{title}</h3>
+          <h3 className={`text-lg font-semibold leading-relaxed ${backgroundImage ? 'text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : ''}`} style={backgroundImage ? { textShadow: '2px 2px 4px rgba(0,0,0,0.8)' } : {}}>{title}</h3>
           <div className="flex items-center gap-2">
             <Badge className={`${getEventTypeColor(eventType)} text-sm px-3 py-1 ${backgroundImage ? 'shadow-lg' : ''}`}>
               {eventType}
@@ -121,7 +121,7 @@ export function CountdownCard({
                   onClick={() => onEdit(id)}
                   className={`h-8 w-8 p-0 ${backgroundImage ? 'text-white hover:text-white hover:bg-white/20' : 'text-muted-foreground hover:text-primary'}`}
                 >
-                  <Edit className="h-4 w-4" />
+                  <Edit className={`h-4 w-4 ${backgroundImage ? 'drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : ''}`} />
                 </Button>
               )}
               {onDelete && (
@@ -131,14 +131,14 @@ export function CountdownCard({
                   onClick={() => onDelete(id)}
                   className={`h-8 w-8 p-0 ${backgroundImage ? 'text-white hover:text-red-300 hover:bg-red-500/20' : 'text-muted-foreground hover:text-destructive'}`}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className={`h-4 w-4 ${backgroundImage ? 'drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : ''}`} />
                 </Button>
               )}
             </div>
           </div>
         </div>
-        <div className={`flex items-center gap-2 text-sm ${backgroundImage ? 'text-white/90 drop-shadow' : 'text-muted-foreground'}`}>
-          <Calendar className="h-4 w-4" />
+        <div className={`flex items-center gap-2 text-sm ${backgroundImage ? 'text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : 'text-muted-foreground'}`} style={backgroundImage ? { textShadow: '2px 2px 4px rgba(0,0,0,0.8)' } : {}}>
+          <Calendar className={`h-4 w-4 ${backgroundImage ? 'drop-shadow-lg' : ''}`} />
           <span className="arabic-numerals">
             {eventDate.toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US', {
               year: 'numeric',
@@ -180,7 +180,7 @@ export function CountdownCard({
           </div>
         )}
         
-        <div className={`mt-4 text-center text-sm ${backgroundImage ? 'text-white/80 drop-shadow' : 'text-muted-foreground'}`}>
+        <div className={`mt-4 text-center text-sm ${backgroundImage ? 'text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : 'text-muted-foreground'}`} style={backgroundImage ? { textShadow: '2px 2px 4px rgba(0,0,0,0.8)' } : {}}>
           {(isDurationCalculation && isPastEvent) ? (
             `${t('hero.timeUnits.passed')} ${formatDistanceToNow(eventDate, { locale: i18n.language === 'ar' ? ar : enUS, addSuffix: false })}`
           ) : !isExpired ? (
