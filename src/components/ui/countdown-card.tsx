@@ -106,7 +106,7 @@ export function CountdownCard({
         </div>
       )}
       
-      <CardHeader className="pb-2 relative z-10">
+      <CardHeader className="pb-1 relative z-10">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
             <h3 className={`text-xl font-bold leading-relaxed mb-2 ${backgroundImage ? 'text-white' : ''}`} style={backgroundImage ? { textShadow: '0 0 8px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.9)' } : {}}>{title}</h3>
@@ -153,38 +153,38 @@ export function CountdownCard({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="relative z-10 pt-2 pb-3">
+      <CardContent className="relative z-10 pt-1 pb-2 flex-1 flex flex-col justify-center">
         {(isExpired && !isDurationCalculation) ? (
           <div className="text-center py-6">
             <Clock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
             <p className="text-lg font-medium text-muted-foreground">{t('addEvent.eventExpired')}</p>
           </div>
         ) : (
-          <div className={`grid gap-3 text-center ${calculationType === 'days-passed' ? 'grid-cols-1' : 'grid-cols-2'}`}>
-            <div className="bg-gradient-primary rounded-lg p-4 text-primary-foreground">
-              <div className="text-3xl font-bold arabic-numerals">{displayTime.days}</div>
-              <div className="text-xs opacity-90">{t('hero.timeUnits.days')}</div>
+          <div className={`grid gap-2 text-center ${calculationType === 'days-passed' ? 'grid-cols-1' : 'grid-cols-2'}`}>
+            <div className="bg-gradient-primary rounded-lg p-5 text-primary-foreground">
+              <div className="text-4xl font-bold arabic-numerals">{displayTime.days}</div>
+              <div className="text-sm opacity-90">{t('hero.timeUnits.days')}</div>
             </div>
             {calculationType !== 'days-passed' && (
               <>
-                <div className="bg-secondary rounded-lg p-4">
-                  <div className="text-3xl font-bold arabic-numerals">{displayTime.hours}</div>
-                  <div className="text-xs text-secondary-foreground">{t('hero.timeUnits.hours')}</div>
+                <div className="bg-secondary rounded-lg p-5">
+                  <div className="text-4xl font-bold arabic-numerals">{displayTime.hours}</div>
+                  <div className="text-sm text-secondary-foreground">{t('hero.timeUnits.hours')}</div>
                 </div>
-                <div className="bg-secondary rounded-lg p-4">
-                  <div className="text-3xl font-bold arabic-numerals">{displayTime.minutes}</div>
-                  <div className="text-xs text-secondary-foreground">{t('hero.timeUnits.minutes')}</div>
+                <div className="bg-secondary rounded-lg p-5">
+                  <div className="text-4xl font-bold arabic-numerals">{displayTime.minutes}</div>
+                  <div className="text-sm text-secondary-foreground">{t('hero.timeUnits.minutes')}</div>
                 </div>
-                <div className="bg-accent rounded-lg p-4 text-accent-foreground">
-                  <div className="text-3xl font-bold arabic-numerals">{displayTime.seconds}</div>
-                  <div className="text-xs opacity-90">{t('hero.timeUnits.seconds')}</div>
+                <div className="bg-accent rounded-lg p-5 text-accent-foreground">
+                  <div className="text-4xl font-bold arabic-numerals">{displayTime.seconds}</div>
+                  <div className="text-sm opacity-90">{t('hero.timeUnits.seconds')}</div>
                 </div>
               </>
             )}
           </div>
         )}
         
-        <div className={`mt-2 text-center text-sm ${backgroundImage ? 'text-white' : 'text-muted-foreground'}`} style={backgroundImage ? { textShadow: '0 0 8px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.9)' } : {}}>
+        <div className={`mt-1 text-center text-xs ${backgroundImage ? 'text-white' : 'text-muted-foreground'}`} style={backgroundImage ? { textShadow: '0 0 8px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.9)' } : {}}>
           {(isDurationCalculation && isPastEvent) ? (
             `${t('hero.timeUnits.passed')} ${formatDistanceToNow(eventDate, { locale: i18n.language === 'ar' ? ar : enUS, addSuffix: false })}`
           ) : !isExpired ? (
