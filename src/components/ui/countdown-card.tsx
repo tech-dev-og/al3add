@@ -108,7 +108,7 @@ export function CountdownCard({
       
       <CardHeader className="pb-3 relative z-10">
         <div className="flex items-center justify-between">
-          <h3 className={`text-lg font-semibold leading-relaxed ${backgroundImage ? 'text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : ''}`} style={backgroundImage ? { textShadow: '2px 2px 4px rgba(0,0,0,0.8)' } : {}}>{title}</h3>
+          <h3 className={`text-lg font-semibold leading-relaxed ${backgroundImage ? 'text-white px-3 py-1 rounded-lg bg-black/40 backdrop-blur-sm border border-white/10' : ''}`} style={backgroundImage ? { textShadow: '2px 2px 4px rgba(0,0,0,0.8)' } : {}}>{title}</h3>
           <div className="flex items-center gap-2">
             <Badge className={`${getEventTypeColor(eventType)} text-sm px-3 py-1 ${backgroundImage ? 'shadow-lg backdrop-blur-sm bg-black/40 border border-white/20' : ''}`}>
               {eventType}
@@ -137,7 +137,7 @@ export function CountdownCard({
             </div>
           </div>
         </div>
-        <div className={`flex items-center gap-2 text-sm ${backgroundImage ? 'text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : 'text-muted-foreground'}`} style={backgroundImage ? { textShadow: '2px 2px 4px rgba(0,0,0,0.8)' } : {}}>
+        <div className={`flex items-center gap-2 text-sm ${backgroundImage ? 'text-white px-3 py-1 rounded-lg bg-black/30 backdrop-blur-sm border border-white/10 inline-flex' : 'text-muted-foreground'}`} style={backgroundImage ? { textShadow: '2px 2px 4px rgba(0,0,0,0.8)' } : {}}>
           <Calendar className={`h-4 w-4 ${backgroundImage ? 'drop-shadow-lg' : ''}`} />
           <span className="arabic-numerals">
             {eventDate.toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US', {
@@ -180,7 +180,7 @@ export function CountdownCard({
           </div>
         )}
         
-        <div className={`mt-4 text-center text-sm ${backgroundImage ? 'text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : 'text-muted-foreground'}`} style={backgroundImage ? { textShadow: '2px 2px 4px rgba(0,0,0,0.8)' } : {}}>
+        <div className={`mt-4 text-center text-sm ${backgroundImage ? 'text-white px-3 py-1 rounded-lg bg-black/30 backdrop-blur-sm border border-white/10 inline-block' : 'text-muted-foreground'}`} style={backgroundImage ? { textShadow: '2px 2px 4px rgba(0,0,0,0.8)' } : {}}>
           {(isDurationCalculation && isPastEvent) ? (
             `${t('hero.timeUnits.passed')} ${formatDistanceToNow(eventDate, { locale: i18n.language === 'ar' ? ar : enUS, addSuffix: false })}`
           ) : !isExpired ? (
