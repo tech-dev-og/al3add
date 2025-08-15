@@ -99,10 +99,10 @@ export function CountdownCard({
       {/* Background Image */}
       {backgroundImage && (
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-lg"
           style={{ backgroundImage: `url(${backgroundImage})` }}
         >
-          <div className="absolute inset-0 bg-background/85 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-background/20 rounded-lg" />
         </div>
       )}
       
