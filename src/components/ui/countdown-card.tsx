@@ -95,14 +95,14 @@ export function CountdownCard({
   };
 
   return (
-    <Card className={`relative overflow-hidden transition-smooth hover:shadow-islamic ${(isExpired && !isDurationCalculation) ? 'opacity-60' : ''} ${isNearExpiry ? 'ring-2 ring-accent' : ''}`}>
+    <Card className={`relative overflow-hidden transition-smooth hover:shadow-islamic min-h-[280px] aspect-[4/3] ${(isExpired && !isDurationCalculation) ? 'opacity-60' : ''} ${isNearExpiry ? 'ring-2 ring-accent' : ''}`}>
       {/* Background Image */}
       {backgroundImage && (
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-lg"
           style={{ backgroundImage: `url(${backgroundImage})` }}
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 rounded-lg" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60 rounded-lg" />
         </div>
       )}
       
