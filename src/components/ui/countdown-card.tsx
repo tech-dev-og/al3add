@@ -95,7 +95,7 @@ export function CountdownCard({
   };
 
   return (
-    <Card className={`relative overflow-hidden transition-smooth hover:shadow-islamic h-[200px] w-full ${(isExpired && !isDurationCalculation) ? 'opacity-60' : ''} ${isNearExpiry ? 'ring-2 ring-accent' : ''}`}>
+    <Card className={`relative overflow-hidden transition-smooth hover:shadow-islamic aspect-[16/9] w-full ${(isExpired && !isDurationCalculation) ? 'opacity-60' : ''} ${isNearExpiry ? 'ring-2 ring-accent' : ''}`}>
       {/* Background Image */}
       {backgroundImage && (
         <div 
