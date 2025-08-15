@@ -110,7 +110,7 @@ export function CountdownCard({
         <div className="flex items-center justify-between">
           <h3 className={`text-lg font-semibold leading-relaxed ${backgroundImage ? 'text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : ''}`} style={backgroundImage ? { textShadow: '2px 2px 4px rgba(0,0,0,0.8)' } : {}}>{title}</h3>
           <div className="flex items-center gap-2">
-            <Badge className={`${getEventTypeColor(eventType)} text-sm px-3 py-1 ${backgroundImage ? 'shadow-lg' : ''}`}>
+            <Badge className={`${getEventTypeColor(eventType)} text-sm px-3 py-1 ${backgroundImage ? 'shadow-lg backdrop-blur-sm bg-black/40 border border-white/20' : ''}`}>
               {eventType}
             </Badge>
             <div className="flex items-center gap-1">
@@ -119,7 +119,7 @@ export function CountdownCard({
                   variant="ghost"
                   size="sm"
                   onClick={() => onEdit(id)}
-                  className={`h-8 w-8 p-0 ${backgroundImage ? 'text-white hover:text-white hover:bg-white/20' : 'text-muted-foreground hover:text-primary'}`}
+                  className={`h-8 w-8 p-0 rounded-full ${backgroundImage ? 'text-white hover:text-white hover:bg-white/30 bg-black/30 backdrop-blur-sm border border-white/20' : 'text-muted-foreground hover:text-primary'}`}
                 >
                   <Edit className={`h-4 w-4 ${backgroundImage ? 'drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : ''}`} />
                 </Button>
@@ -129,7 +129,7 @@ export function CountdownCard({
                   variant="ghost"
                   size="sm"
                   onClick={() => onDelete(id)}
-                  className={`h-8 w-8 p-0 ${backgroundImage ? 'text-white hover:text-red-300 hover:bg-red-500/20' : 'text-muted-foreground hover:text-destructive'}`}
+                  className={`h-8 w-8 p-0 rounded-full ${backgroundImage ? 'text-white hover:text-red-300 hover:bg-red-500/40 bg-black/30 backdrop-blur-sm border border-white/20' : 'text-muted-foreground hover:text-destructive'}`}
                 >
                   <Trash2 className={`h-4 w-4 ${backgroundImage ? 'drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : ''}`} />
                 </Button>
