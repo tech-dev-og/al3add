@@ -153,7 +153,7 @@ export function CountdownCard({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="relative z-10 pt-1 pb-2 flex-1 flex flex-col justify-center">
+      <CardContent className="relative z-10 pt-1 pb-2 flex flex-col justify-center flex-1">
         {(isExpired && !isDurationCalculation) ? (
           <div className="text-center py-6">
             <Clock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
