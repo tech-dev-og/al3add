@@ -95,7 +95,7 @@ export function CountdownCard({
   };
 
   return (
-    <Card className={`relative overflow-hidden transition-smooth hover:shadow-islamic aspect-square w-full ${(isExpired && !isDurationCalculation) ? 'opacity-60' : ''} ${isNearExpiry ? 'ring-2 ring-accent' : ''}`}>
+    <Card className={`relative overflow-hidden transition-smooth hover:shadow-islamic aspect-[3/2] w-full ${(isExpired && !isDurationCalculation) ? 'opacity-60' : ''} ${isNearExpiry ? 'ring-2 ring-accent' : ''}`}>
       {/* Background Image */}
       {backgroundImage && (
         <div 
@@ -160,23 +160,23 @@ export function CountdownCard({
             <p className="text-lg font-medium text-muted-foreground">{t('addEvent.eventExpired')}</p>
           </div>
         ) : (
-          <div className={`grid gap-2 text-center ${calculationType === 'days-passed' ? 'grid-cols-1' : 'grid-cols-2'}`}>
-            <div className="bg-gradient-primary rounded-lg p-5 text-primary-foreground">
-              <div className="text-4xl font-bold arabic-numerals">{displayTime.days}</div>
+          <div className={`grid gap-3 text-center ${calculationType === 'days-passed' ? 'grid-cols-1' : 'grid-cols-4'}`}>
+            <div className="bg-gradient-primary rounded-lg p-4 text-primary-foreground">
+              <div className="text-3xl font-bold arabic-numerals">{displayTime.days}</div>
               <div className="text-sm opacity-90">{t('hero.timeUnits.days')}</div>
             </div>
             {calculationType !== 'days-passed' && (
               <>
-                <div className="bg-secondary rounded-lg p-5">
-                  <div className="text-4xl font-bold arabic-numerals">{displayTime.hours}</div>
+                <div className="bg-secondary rounded-lg p-4">
+                  <div className="text-3xl font-bold arabic-numerals">{displayTime.hours}</div>
                   <div className="text-sm text-secondary-foreground">{t('hero.timeUnits.hours')}</div>
                 </div>
-                <div className="bg-secondary rounded-lg p-5">
-                  <div className="text-4xl font-bold arabic-numerals">{displayTime.minutes}</div>
+                <div className="bg-secondary rounded-lg p-4">
+                  <div className="text-3xl font-bold arabic-numerals">{displayTime.minutes}</div>
                   <div className="text-sm text-secondary-foreground">{t('hero.timeUnits.minutes')}</div>
                 </div>
-                <div className="bg-accent rounded-lg p-5 text-accent-foreground">
-                  <div className="text-4xl font-bold arabic-numerals">{displayTime.seconds}</div>
+                <div className="bg-accent rounded-lg p-4 text-accent-foreground">
+                  <div className="text-3xl font-bold arabic-numerals">{displayTime.seconds}</div>
                   <div className="text-sm opacity-90">{t('hero.timeUnits.seconds')}</div>
                 </div>
               </>
