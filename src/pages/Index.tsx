@@ -7,6 +7,7 @@ import { AddEventDialog } from "@/components/add-event-dialog";
 import { PinterestHero } from "@/components/pinterest-hero";
 import { Sparkles, Moon, Sun, LogOut, User, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User as SupabaseUser } from "@supabase/supabase-js";
 import { toast } from "@/hooks/use-toast";
@@ -33,6 +34,7 @@ const Index = () => {
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [preSelectedEventType, setPreSelectedEventType] = useState<string>("");
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -418,10 +420,15 @@ const Index = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
+    setShowLogoutDialog(false);
     toast({
       title: "Signed out",
       description: "See you later! ✨",
     });
+  };
+
+  const handleLogoutClick = () => {
+    setShowLogoutDialog(true);
   };
 
   const toggleDarkMode = () => {
@@ -474,7 +481,7 @@ const Index = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleSignOut}
+                  onClick={handleLogoutClick}
                   className="h-9"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
@@ -607,6 +614,24 @@ const Index = () => {
         isEdit={isEditMode}
         preSelectedEventType={preSelectedEventType}
       />
+
+      {/* Logout Confirmation Dialog */}
+      <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('navigation.signOut')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to sign out? You'll need to sign in again to manage your events.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleSignOut}>
+              {t('navigation.signOut')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
