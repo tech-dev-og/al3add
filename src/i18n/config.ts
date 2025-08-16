@@ -83,7 +83,10 @@ i18n
 loadDatabaseTranslations().then((resources) => {
   if (resources) {
     Object.keys(resources).forEach((lng) => {
-      i18n.addResourceBundle(lng, 'translation', resources[lng].translation, true, true);
+      // Merge with existing fallback translations to ensure all keys are available
+      const existingTranslations = i18n.getResourceBundle(lng, 'translation') || {};
+      const mergedTranslations = { ...existingTranslations, ...resources[lng].translation };
+      i18n.addResourceBundle(lng, 'translation', mergedTranslations, true, true);
     });
   }
 });
@@ -93,7 +96,10 @@ export const refreshTranslations = async () => {
   const resources = await loadDatabaseTranslations();
   if (resources) {
     Object.keys(resources).forEach((lng) => {
-      i18n.addResourceBundle(lng, 'translation', resources[lng].translation, true, true);
+      // Merge with existing fallback translations to ensure all keys are available
+      const existingTranslations = i18n.getResourceBundle(lng, 'translation') || {};
+      const mergedTranslations = { ...existingTranslations, ...resources[lng].translation };
+      i18n.addResourceBundle(lng, 'translation', mergedTranslations, true, true);
     });
   }
 };
