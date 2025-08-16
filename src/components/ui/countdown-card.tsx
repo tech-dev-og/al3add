@@ -30,168 +30,182 @@ export function CountdownCard({
   id, 
   title, 
   eventDate, 
-  eventType, 
-  isExpired = false, 
-  calculationType = "days-left", 
-  repeatOption = "none", 
+  eventType,
+  isExpired = false,
+  calculationType = "days-left",
+  repeatOption = "none",
   backgroundImage,
   onDelete,
   onEdit
 }: CountdownCardProps) {
-  const { t, i18n } = useTranslation(); 
-  
-  const getTimeLeft = (): TimeLeft => {
-    const now = new Date().getTime();
-    const eventTime = eventDate.getTime();
-    const difference = eventTime - now;
+  const { t, i18n } = useTranslation();
 
-    if (difference <= 0) {
-      return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  const getTimeLeft = (): TimeLeft | null => {
+    const now = new Date();
+    const target = new Date(eventDate);
+    
+    if (target <= now && calculationType === 'days-left') {
+      return null;
     }
+    
+    const diff = Math.abs(target.getTime() - now.getTime());
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    return {
-      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-      minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-      seconds: Math.floor((difference % (1000 * 60)) / 1000)
-    };
+    return { days, hours, minutes, seconds };
   };
 
-  const getTimePassed = (): TimeLeft => {
-    const now = new Date().getTime();
-    const eventTime = eventDate.getTime();
-    const difference = now - eventTime;
-
-    if (difference <= 0) {
-      return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  const getTimePassed = (): TimeLeft | null => {
+    const now = new Date();
+    const target = new Date(eventDate);
+    
+    if (target > now) {
+      return null;
     }
+    
+    const diff = now.getTime() - target.getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    return {
-      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-      minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-      seconds: Math.floor((difference % (1000 * 60)) / 1000)
-    };
+    return { days, hours, minutes, seconds };
   };
 
-  const isPastEvent = eventDate.getTime() < new Date().getTime();
-  const isDurationCalculation = ['days-passed', 'months-duration', 'weeks-duration', 'years-months'].includes(calculationType);
-  
-  const timeLeft = getTimeLeft();
-  const timePassed = getTimePassed();
-  const displayTime = (isDurationCalculation && isPastEvent) ? timePassed : timeLeft;
-  
-  const isNearExpiry = timeLeft.days <= 7 && !isExpired && !isDurationCalculation;
+  const timeLeft = calculationType === 'days-left' ? getTimeLeft() : getTimePassed();
 
-  const getEventTypeColor = (type: string) => {
-    const colors: Record<string, string> = {
-      'العيد': 'bg-gradient-primary text-primary-foreground',
-      'رمضان': 'bg-gradient-primary text-primary-foreground',
-      'الزواج': 'bg-gradient-secondary text-accent-foreground',
-      'السفر': 'bg-accent text-accent-foreground',
-      'الاختبارات': 'bg-destructive text-destructive-foreground'
-    };
-    return colors[type] || 'bg-muted text-muted-foreground';
-  };
+  // Calculate distance for different types
+  let distance = 0;
+  const now = new Date();
+  const target = new Date(eventDate);
+
+  switch (calculationType) {
+    case 'days-left':
+      distance = (target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+      break;
+    case 'days-passed':
+      distance = (now.getTime() - target.getTime()) / (1000 * 60 * 60 * 24);
+      break;
+    default:
+      distance = (target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+  }
 
   return (
-    <Card className={`relative overflow-hidden transition-smooth hover:shadow-islamic w-full min-h-[200px] ${(isExpired && !isDurationCalculation) ? 'opacity-60' : ''} ${isNearExpiry ? 'ring-2 ring-accent' : ''}`}>
-      {/* Background Image */}
+    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group min-h-[240px] sm:min-h-[280px] relative">
       {backgroundImage && (
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-lg"
+          className="absolute inset-0 bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity duration-300"
           style={{ backgroundImage: `url(${backgroundImage})` }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60 rounded-lg" />
-        </div>
+        />
       )}
       
-      <CardHeader className="pb-1 relative z-10">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1">
-            <h3 className={`text-xl font-bold leading-relaxed mb-2 ${backgroundImage ? 'text-white' : ''}`} style={backgroundImage ? { textShadow: '0 0 8px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.9)' } : {}}>{title}</h3>
-            <div className={`flex items-center gap-2 text-sm ${backgroundImage ? 'text-white' : 'text-muted-foreground'}`} style={backgroundImage ? { textShadow: '0 0 8px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.9)' } : {}}>
-              <Calendar className={`h-4 w-4 ${backgroundImage ? 'drop-shadow-lg' : ''}`} />
-              <span className="arabic-numerals">
-                {eventDate.toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  weekday: 'long'
-                })}
-              </span>
-            </div>
-          </div>
-          <div className="flex items-start gap-2 flex-shrink-0">
-            {eventType && eventType.toLowerCase() !== title.toLowerCase() && (
-              <Badge className={`${getEventTypeColor(eventType)} text-sm px-3 py-1 ${backgroundImage ? 'shadow-xl' : ''}`} style={backgroundImage ? { textShadow: '0 0 6px rgba(0,0,0,0.8)' } : {}}>
+      <div className="relative z-10 h-full flex flex-col">
+        <CardHeader className="flex-shrink-0 pb-2 sm:pb-4">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-bold text-base sm:text-lg leading-tight mb-2 line-clamp-2">
+                {title}
+              </h3>
+              <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground mb-2">
+                <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                <span className="truncate">
+                  {eventDate.toLocaleDateString(i18n.language === 'ar' ? 'ar-EG' : 'en-US')}
+                </span>
+              </div>
+              <Badge variant="secondary" className="text-xs px-2 py-0.5">
                 {eventType}
               </Badge>
+            </div>
+            
+            {(onEdit || onDelete) && (
+              <div className="flex gap-1 sm:gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                {onEdit && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onEdit(id)}
+                    className="h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-primary/10"
+                  >
+                    <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                  </Button>
+                )}
+                {onDelete && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onDelete(id)}
+                    className="h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-destructive/10"
+                  >
+                    <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 text-destructive" />
+                  </Button>
+                )}
+              </div>
             )}
-            <div className="flex items-center gap-1">
-              {onEdit && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onEdit(id)}
-                  className={`h-8 w-8 p-0 rounded-full ${backgroundImage ? 'text-white hover:text-white hover:bg-white/30 bg-black/30 backdrop-blur-sm border border-white/20' : 'text-muted-foreground hover:text-primary'}`}
-                >
-                  <Edit className={`h-4 w-4 ${backgroundImage ? 'drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : ''}`} />
-                </Button>
-              )}
-              {onDelete && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onDelete(id)}
-                  className={`h-8 w-8 p-0 rounded-full ${backgroundImage ? 'text-white hover:text-red-300 hover:bg-red-500/40 bg-black/30 backdrop-blur-sm border border-white/20' : 'text-muted-foreground hover:text-destructive'}`}
-                >
-                  <Trash2 className={`h-4 w-4 ${backgroundImage ? 'drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : ''}`} />
-                </Button>
-              )}
-            </div>
           </div>
-        </div>
-      </CardHeader>
-      <CardContent className="relative z-10 pt-1 pb-2 flex flex-col justify-center flex-1">
-        {(isExpired && !isDurationCalculation) ? (
-          <div className="text-center py-6">
-            <Clock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-            <p className="text-lg font-medium text-muted-foreground">{t('addEvent.eventExpired')}</p>
-          </div>
-        ) : (
-          <div className={`grid gap-3 text-center ${calculationType === 'days-passed' ? 'grid-cols-1' : 'grid-cols-4'}`}>
-            <div className="bg-gradient-primary rounded-lg p-4 text-primary-foreground">
-              <div className="text-3xl font-bold arabic-numerals">{displayTime.days}</div>
-              <div className="text-sm opacity-90">{t('hero.timeUnits.days')}</div>
+        </CardHeader>
+        
+        <CardContent className="flex-1 flex flex-col justify-center pt-0 px-4 sm:px-6">
+          <div className="text-center space-y-3 sm:space-y-4">
+            <div className="flex items-center justify-center mb-2 sm:mb-3">
+              <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-primary mr-2" />
+              <span className="text-xs sm:text-sm font-medium text-muted-foreground">
+                {calculationType === 'days-left' && t('events.timeUntil')}
+                {calculationType === 'days-passed' && t('events.timeSince')}
+                {['months-duration', 'weeks-duration', 'years-months'].includes(calculationType || 'days-left') && t('events.duration')}
+              </span>
             </div>
-            {calculationType !== 'days-passed' && (
+            
+            {calculationType === 'days-left' && distance > 0 && timeLeft ? (
               <>
-                <div className="bg-secondary rounded-lg p-4">
-                  <div className="text-3xl font-bold arabic-numerals">{displayTime.hours}</div>
-                  <div className="text-sm text-secondary-foreground">{t('hero.timeUnits.hours')}</div>
-                </div>
-                <div className="bg-secondary rounded-lg p-4">
-                  <div className="text-3xl font-bold arabic-numerals">{displayTime.minutes}</div>
-                  <div className="text-sm text-secondary-foreground">{t('hero.timeUnits.minutes')}</div>
-                </div>
-                <div className="bg-accent rounded-lg p-4 text-accent-foreground">
-                  <div className="text-3xl font-bold arabic-numerals">{displayTime.seconds}</div>
-                  <div className="text-sm opacity-90">{t('hero.timeUnits.seconds')}</div>
+                <div className="space-y-2 sm:space-y-3">
+                  <div className="text-2xl sm:text-3xl font-bold text-primary">
+                    {Math.abs(Math.ceil(distance))} {t('events.days')}
+                  </div>
+                  {timeLeft && timeLeft.days > 0 && (
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      <div className="space-y-1">
+                        <div className="text-base sm:text-lg font-semibold text-accent">
+                          {timeLeft.hours}
+                        </div>
+                        <div className="text-xs text-muted-foreground">{t('events.hours')}</div>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="text-base sm:text-lg font-semibold text-accent">
+                          {timeLeft.minutes}
+                        </div>
+                        <div className="text-xs text-muted-foreground">{t('events.minutes')}</div>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="text-base sm:text-lg font-semibold text-accent">
+                          {timeLeft.seconds}
+                        </div>
+                        <div className="text-xs text-muted-foreground">{t('events.seconds')}</div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </>
+            ) : calculationType === 'days-passed' && distance > 0 ? (
+              <div className="text-2xl sm:text-3xl font-bold text-accent">
+                {Math.abs(Math.ceil(distance))} {t('events.days')}
+              </div>
+            ) : distance < 0 && calculationType === 'days-left' ? (
+              <div className="text-lg sm:text-xl font-bold text-muted-foreground">
+                {t('events.eventPassed')}
+              </div>
+            ) : (
+              <div className="text-xl sm:text-2xl font-bold text-muted-foreground">
+                {formatDistanceToNow(eventDate, { 
+                  addSuffix: true, 
+                  locale: i18n.language === 'ar' ? ar : enUS 
+                })}
+              </div>
             )}
           </div>
-        )}
-        
-        <div className={`mt-1 text-center text-xs ${backgroundImage ? 'text-white' : 'text-muted-foreground'}`} style={backgroundImage ? { textShadow: '0 0 8px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.9)' } : {}}>
-          {(isDurationCalculation && isPastEvent) ? (
-            `${t('hero.timeUnits.passed')} ${formatDistanceToNow(eventDate, { locale: i18n.language === 'ar' ? ar : enUS, addSuffix: false })}`
-          ) : !isExpired ? (
-            `${t('hero.timeUnits.remaining')} ${formatDistanceToNow(eventDate, { locale: i18n.language === 'ar' ? ar : enUS, addSuffix: false })}`
-          ) : null}
-        </div>
-      </CardContent>
+        </CardContent>
+      </div>
     </Card>
   );
 }

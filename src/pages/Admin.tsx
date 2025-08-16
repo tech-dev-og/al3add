@@ -29,25 +29,28 @@ const Admin = () => {
   }, [navigate, toast]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <div className="border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={() => navigate('/')}
-              className="flex items-center gap-2"
+              className="flex items-center gap-1 sm:gap-2 text-sm"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to App
+              <span className="hidden sm:inline">Back to App</span>
+              <span className="sm:hidden">عودة</span>
             </Button>
-            <h1 className="text-xl font-semibold">Admin Panel</h1>
+            <h1 className="text-lg sm:text-xl font-semibold">Admin Panel</h1>
           </div>
         </div>
       </div>
       
-      <TranslationManager />
+      <div className="flex-1 px-3 sm:px-4 lg:px-6">
+        <TranslationManager />
+      </div>
     </div>
   );
 };

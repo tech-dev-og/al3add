@@ -447,34 +447,34 @@ const Index = () => {
   });
 
   return (
-    <div className={`min-h-screen bg-background transition-smooth ${isDarkMode ? 'dark' : ''}`}>
+    <div className={`min-h-screen bg-background transition-smooth flex flex-col ${isDarkMode ? 'dark' : ''}`}>
       {/* Islamic pattern overlay */}
       <div className="islamic-pattern fixed inset-0 pointer-events-none" />
       
       {/* Header */}
       <header className="relative z-10 border-b border-border/50 bg-background/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4 flex items-center justify-between">
           <div 
-            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 sm:gap-3 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => navigate("/")}
           >
-            <div className="h-10 w-10 bg-gradient-primary rounded-full flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-primary-foreground" />
+            <div className="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-primary rounded-full flex items-center justify-center">
+              <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
             </div>
-            <div>
-              <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            <div className="hidden sm:block">
+              <h1 className="text-lg sm:text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
                 العد التنازلي
               </h1>
               <p className="text-xs text-muted-foreground">Al-Add Al-Tanazuli</p>
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {user ? (
               <>
-                <div className="hidden sm:flex items-center gap-2 mr-2">
+                <div className="hidden md:flex items-center gap-2 mr-2">
                   <User className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-sm text-muted-foreground truncate max-w-[100px]">
                     {user.email?.split('@')[0]}
                   </span>
                 </div>
@@ -482,10 +482,10 @@ const Index = () => {
                   variant="outline"
                   size="sm"
                   onClick={handleLogoutClick}
-                  className="h-9"
+                  className="h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-3"
                 >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  {t('navigation.signOut')}
+                  <LogOut className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">{t('navigation.signOut')}</span>
                 </Button>
               </>
             ) : (
@@ -493,10 +493,11 @@ const Index = () => {
                 variant="default"
                 size="sm"
                 onClick={() => navigate("/auth")}
-                className="h-9"
+                className="h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-3"
               >
-                <User className="h-4 w-4 mr-2" />
-                {t('navigation.signIn')}
+                <User className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                <span className="hidden sm:inline">{t('navigation.signIn')}</span>
+                <span className="sm:hidden">دخول</span>
               </Button>
             )}
             
@@ -506,17 +507,19 @@ const Index = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowPinterestView(!showPinterestView)}
-                className="h-9"
+                className="h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-3"
               >
                 {showPinterestView ? (
                   <>
-                    <Calendar className="h-4 w-4 mr-2" />
-                    {t('navigation.myEvents')}
+                    <Calendar className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">{t('navigation.myEvents')}</span>
+                    <span className="sm:hidden">أحداثي</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    {t('navigation.explore')}
+                    <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">{t('navigation.explore')}</span>
+                    <span className="sm:hidden">استكشف</span>
                   </>
                 )}
               </Button>
@@ -528,9 +531,9 @@ const Index = () => {
               variant="outline"
               size="sm"
               onClick={toggleDarkMode}
-              className="h-9"
+              className="h-8 w-8 sm:h-9 sm:w-9 p-0"
             >
-              {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {isDarkMode ? <Sun className="h-3 w-3 sm:h-4 sm:w-4" /> : <Moon className="h-3 w-3 sm:h-4 sm:w-4" />}
             </Button>
           </div>
         </div>
@@ -546,74 +549,102 @@ const Index = () => {
 
       {/* Main Content */}
       {!showPinterestView && (
-        <main className="relative z-10 container mx-auto px-4 py-6">
-          {/* Active Events */}
-          {activeEvents.length > 0 && (
-            <section className="mb-8">
-              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                <Sparkles className="h-6 w-6 text-accent" />
-                الأحداث القادمة
-              </h2>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {activeEvents.map((event) => (
-                <CountdownCard
-                  key={event.id}
-                  id={event.id}
-                  title={event.title}
-                  eventDate={event.date}
-                  eventType={event.type}
-                  calculationType={event.calculationType}
-                  repeatOption={event.repeatOption}
-                  backgroundImage={event.backgroundImage}
-                  onDelete={handleDeleteEvent}
-                  onEdit={handleEditEventDialog}
-                />
-              ))}
-            </div>
-          </section>
-        )}
+        <main className="flex-1 relative z-10">
+          <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
+            {activeEvents.length === 0 && expiredEvents.length === 0 ? (
+              /* Empty State */
+              <div className="flex-1 flex items-center justify-center min-h-[50vh]">
+                <div className="text-center space-y-4 px-4 sm:px-6 max-w-md mx-auto">
+                  <Calendar className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground mx-auto" />
+                  <div className="space-y-2">
+                    <h3 className="text-lg sm:text-xl font-semibold">لا توجد أحداث بعد</h3>
+                    <p className="text-sm sm:text-base text-muted-foreground">
+                      ابدأ بإضافة حدثك الأول للعد التنازلي
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={() => setShowAddDialog(true)}
+                    size="lg"
+                    className="w-full sm:w-auto px-6 sm:px-8"
+                  >
+                    إضافة حدث جديد
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Active Events */}
+                {activeEvents.length > 0 && (
+                  <section className="space-y-4 sm:space-y-6">
+                    <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2 px-2 sm:px-0">
+                      <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
+                      أحداثك القادمة
+                    </h2>
+                    <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                      {activeEvents.map((event) => (
+                        <CountdownCard
+                          key={event.id}
+                          id={event.id}
+                          title={event.title}
+                          eventDate={event.date}
+                          eventType={event.type}
+                          calculationType={event.calculationType}
+                          repeatOption={event.repeatOption}
+                          backgroundImage={event.backgroundImage}
+                          onDelete={handleDeleteEvent}
+                          onEdit={handleEditEventDialog}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                )}
 
-        {/* Expired Events */}
-        {expiredEvents.length > 0 && (
-          <section>
-            <h2 className="text-xl font-semibold mb-4 text-muted-foreground">
-              الأحداث المنتهية
-            </h2>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {expiredEvents.map((event) => (
-                <CountdownCard
-                  key={event.id}
-                  id={event.id}
-                  title={event.title}
-                  eventDate={event.date}
-                  eventType={event.type}
-                  calculationType={event.calculationType}
-                  repeatOption={event.repeatOption}
-                  backgroundImage={event.backgroundImage}
-                  isExpired={false}
-                  onDelete={handleDeleteEvent}
-                  onEdit={handleEditEventDialog}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-      </main>
+                {/* Expired Events */}
+                {expiredEvents.length > 0 && (
+                  <section className="space-y-4 sm:space-y-6">
+                    <h2 className="text-lg sm:text-xl font-semibold text-muted-foreground px-2 sm:px-0">
+                      الأحداث المنتهية
+                    </h2>
+                    <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                      {expiredEvents.map((event) => (
+                        <CountdownCard
+                          key={event.id}
+                          id={event.id}
+                          title={event.title}
+                          eventDate={event.date}
+                          eventType={event.type}
+                          calculationType={event.calculationType}
+                          repeatOption={event.repeatOption}
+                          backgroundImage={event.backgroundImage}
+                          isExpired={false}
+                          onDelete={handleDeleteEvent}
+                          onEdit={handleEditEventDialog}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                )}
+              </>
+            )}
+          </div>
+        </main>
       )}
 
-      {/* Footer */}
-      <footer className="relative z-10 py-6 text-center border-t border-border/20">
-        <p className="text-sm text-muted-foreground">
-          powered by{' '}
-          <a 
-            href="https://al3add.com" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-primary hover:underline transition-colors"
-          >
-            al3add.com
-          </a>
-        </p>
+      {/* Footer - mt-auto pushes it to bottom */}
+      <footer className="relative z-10 py-4 sm:py-6 text-center border-t border-border/20 mt-auto">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6">
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            powered by{' '}
+            <a 
+              href="https://al3add.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:underline transition-colors"
+            >
+              al3add.com
+            </a>
+          </p>
+        </div>
       </footer>
 
       {/* Floating Add Button */}

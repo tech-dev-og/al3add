@@ -196,41 +196,43 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 flex items-center justify-center p-3 sm:p-4">
+      <div className="w-full max-w-md space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
             <Button
               variant="ghost"
+              size="sm"
               onClick={() => navigate("/")}
-              className="text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground text-sm"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              {t('auth.backToApp')}
+              <ArrowLeft className="h-4 w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">{t('auth.backToApp')}</span>
+              <span className="sm:hidden">عودة</span>
             </Button>
             <LanguageToggle />
           </div>
           <div className="flex items-center justify-center space-x-2">
-            <Sparkles className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
               {t('auth.welcomeTitle')}
             </h1>
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground px-2">
             {t('auth.welcomeSubtitle')}
           </p>
         </div>
 
         {/* Auth Card */}
         <Card className="border-0 shadow-lg bg-card/50 backdrop-blur">
-          <CardHeader>
-            <CardTitle className="text-center">{t('auth.getStarted')}</CardTitle>
-            <CardDescription className="text-center">
+          <CardHeader className="pb-4 sm:pb-6">
+            <CardTitle className="text-center text-lg sm:text-xl">{t('auth.getStarted')}</CardTitle>
+            <CardDescription className="text-center text-sm sm:text-base">
               {t('auth.createAccount')}
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 sm:px-6">
             <Tabs defaultValue="signin" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="signin">{t('auth.signIn')}</TabsTrigger>
@@ -401,7 +403,7 @@ const Auth = () => {
         </Card>
 
         {/* Footer */}
-        <p className="text-center text-sm text-muted-foreground">
+        <p className="text-center text-xs sm:text-sm text-muted-foreground px-2">
           {t('auth.joinThousands')}
         </p>
       </div>
