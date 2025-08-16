@@ -601,6 +601,21 @@ const Index = () => {
       </main>
       )}
 
+      {/* Footer */}
+      <footer className="relative z-10 py-6 text-center border-t border-border/20">
+        <p className="text-sm text-muted-foreground">
+          powered by{' '}
+          <a 
+            href="https://al3add.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-primary hover:underline transition-colors"
+          >
+            al3add.com
+          </a>
+        </p>
+      </footer>
+
       {/* Floating Add Button */}
       <FloatingAddButton onClick={() => setShowAddDialog(true)} />
 
