@@ -104,6 +104,7 @@
     "english": "English"
   },
   "addEvent": {
+    "editEvent": "تعديل الحدث",
     "whatEventType": "ما نوع الحدث؟",
     "cantFindEvent": "صعب العثور على حدثك؟",
     "chooseHereToCreate": "اختر هنا لإنشائه بنفسك 👇",

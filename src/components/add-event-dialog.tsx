@@ -264,10 +264,13 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl w-full max-w-[95vw] max-h-[90vh] overflow-y-auto">
+      <DialogContent className={cn(
+        "sm:max-w-2xl w-full max-w-[95vw] max-h-[90vh] overflow-y-auto",
+        i18n.language === 'ar' ? "text-right" : "text-left"
+      )}>
         <DialogHeader>
           <DialogTitle className="text-xl text-center">
-            {isEdit ? "Edit Event" : t('addEvent.whatEventType')}
+            {isEdit ? t('addEvent.editEvent') : t('addEvent.whatEventType')}
           </DialogTitle>
           <p className="text-sm text-muted-foreground text-center">
             {t('addEvent.cantFindEvent')}<br />
