@@ -447,7 +447,7 @@ const Index = () => {
   });
 
   return (
-    <div className={`min-h-screen bg-white transition-smooth ${isDarkMode ? 'dark' : ''}`}>
+    <div className={`min-h-screen bg-background transition-smooth ${isDarkMode ? 'dark' : ''}`}>
       {/* Islamic pattern overlay */}
       <div className="islamic-pattern fixed inset-0 pointer-events-none" />
       
