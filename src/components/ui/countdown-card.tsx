@@ -38,7 +38,7 @@ export function CountdownCard({
   onDelete,
   onEdit
 }: CountdownCardProps) {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(); 
   
   const getTimeLeft = (): TimeLeft => {
     const now = new Date().getTime();
