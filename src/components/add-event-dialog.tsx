@@ -330,7 +330,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
               onClick={() => setShowCalculationTypes(!showCalculationTypes)}
               className="w-full flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
             >
-              <div className="text-right">
+              <div className={cn(i18n.language === 'ar' ? "text-right" : "text-left")}>
                 <h3 className="font-medium">{t('addEvent.dayCalculation')}</h3>
                 <p className="text-sm text-muted-foreground">{t('addEvent.dayCalculationDesc')}</p>
               </div>
@@ -345,7 +345,8 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
                     type="button"
                     onClick={() => setCalculationType(type.id)}
                     className={cn(
-                      "p-3 rounded-lg border text-right transition-all hover:bg-muted/50",
+                      "p-3 rounded-lg border transition-all hover:bg-muted/50",
+                      i18n.language === 'ar' ? "text-right" : "text-left",
                       calculationType === type.id && "bg-primary/10 border-primary"
                     )}
                   >
@@ -365,7 +366,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder={t('addEvent.eventTitlePlaceholder')}
-              className="text-right"
+              className={cn(i18n.language === 'ar' ? "text-right" : "text-left")}
               maxLength={100}
               required
             />
