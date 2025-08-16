@@ -79,6 +79,20 @@ i18n
     },
   });
 
+// Set initial document direction based on detected/default language
+const setDocumentDirection = (language: string) => {
+  document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+  document.documentElement.lang = language;
+};
+
+// Set initial direction
+setDocumentDirection(i18n.language || 'ar');
+
+// Listen for language changes and update document direction
+i18n.on('languageChanged', (lng) => {
+  setDocumentDirection(lng);
+});
+
 // Load database translations asynchronously and update i18n
 loadDatabaseTranslations().then((resources) => {
   if (resources) {
