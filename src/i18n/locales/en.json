@@ -155,7 +155,16 @@
       "weekly": "Weekly", 
       "monthly": "Monthly",
       "yearly": "Yearly"
-    }
+    },
+    "backgroundImage": "Event Background Image (Optional)",
+    "uploadImage": "Upload Image",
+    "generateWithAI": "Generate with AI", 
+    "changeImage": "Change Image",
+    "generateNewImage": "Generate New Image",
+    "generateImageWithAI": "Generate Image with AI",
+    "enterTitleToGenerate": "Enter an event title to generate an AI image",
+    "uploading": "Uploading...",
+    "generating": "Generating..."
   },
   "hero": {
     "welcomeTitle": "Welcome to the Countdown App",

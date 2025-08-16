@@ -155,7 +155,16 @@
       "weekly": "أسبوعي",
       "monthly": "شهري",
       "yearly": "سنوي"
-    }
+    },
+    "backgroundImage": "صورة خلفية الحدث (اختياري)",
+    "uploadImage": "رفع صورة",
+    "generateWithAI": "إنشاء بالذكاء الاصطناعي",
+    "changeImage": "تغيير الصورة", 
+    "generateNewImage": "إنشاء صورة جديدة",
+    "generateImageWithAI": "إنشاء صورة بالذكاء الاصطناعي",
+    "enterTitleToGenerate": "أدخل عنوان الحدث لإنشاء صورة بالذكاء الاصطناعي",
+    "uploading": "جاري الرفع...",
+    "generating": "جاري الإنشاء..."
   },
   "hero": {
     "welcomeTitle": "مرحباً بك في تطبيق العد التنازلي",

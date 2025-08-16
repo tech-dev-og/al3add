@@ -392,7 +392,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
 
           {/* Background Image Section */}
           <div className="space-y-3">
-            <Label>Event Background Image (Optional)</Label>
+            <Label>{t('addEvent.backgroundImage')}</Label>
             
             {/* Image Option Toggle */}
             <div className="flex gap-2 p-1 bg-muted rounded-lg">
@@ -407,7 +407,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
                 )}
               >
                 <Upload className="h-4 w-4" />
-                Upload Image
+                {t('addEvent.uploadImage')}
               </button>
               <button
                 type="button"
@@ -420,7 +420,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
                 )}
               >
                 <Wand2 className="h-4 w-4" />
-                Generate with AI
+                {t('addEvent.generateWithAI')}
               </button>
             </div>
 
@@ -462,11 +462,11 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
                   className="w-full"
                 >
                   {isUploading ? (
-                    "Uploading..."
+                    t('addEvent.uploading')
                   ) : (
                     <>
                       <Upload className="h-4 w-4 mr-2" />
-                      {backgroundImage ? "Change Image" : "Upload Image"}
+                      {backgroundImage ? t('addEvent.changeImage') : t('addEvent.uploadImage')}
                     </>
                   )}
                 </Button>
@@ -483,11 +483,11 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
                 className="w-full"
               >
                 {isGenerating ? (
-                  "Generating..."
+                  t('addEvent.generating')
                 ) : (
                   <>
                     <Wand2 className="h-4 w-4 mr-2" />
-                    {backgroundImage ? "Generate New Image" : "Generate Image with AI"}
+                    {backgroundImage ? t('addEvent.generateNewImage') : t('addEvent.generateImageWithAI')}
                   </>
                 )}
               </Button>
@@ -495,7 +495,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
 
             {imageOption === 'generate' && !title.trim() && (
               <p className="text-xs text-muted-foreground">
-                Enter an event title to generate an AI image
+                {t('addEvent.enterTitleToGenerate')}
               </p>
             )}
           </div>
@@ -522,7 +522,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
               {t('addEvent.cancel')}
             </Button>
             <Button type="submit" className="flex-1 bg-gradient-primary" disabled={!title || !date || !eventType}>
-              {isEdit ? "Update Event" : t('addEvent.addEvent')}
+              {isEdit ? t('addEvent.editEvent') : t('addEvent.addEvent')}
             </Button>
           </div>
         </form>
