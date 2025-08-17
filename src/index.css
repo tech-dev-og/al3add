@@ -167,9 +167,17 @@ All colors MUST be HSL.
   left: 1.5rem;
 }
 
-@media (min-width: 640px) {
-  [dir="rtl"] .fixed.sm\\:right-6 {
-    right: auto;
-    left: 1.5rem;
-  }
+/* Force LTR for English content to fix punctuation positioning */
+[dir="ltr"] * {
+  direction: ltr;
+  text-align: inherit;
+}
+
+/* Specific fixes for text elements in LTR mode */
+[dir="ltr"] p,
+[dir="ltr"] h1,
+[dir="ltr"] h2, 
+[dir="ltr"] h3,
+[dir="ltr"] span {
+  direction: ltr;
 }
