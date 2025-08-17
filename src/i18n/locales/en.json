@@ -47,7 +47,7 @@
     "tomorrow": "Tomorrow"
   },
   "auth": {
-    "welcomeTitle": "Join the countdown",
+    "welcomeTitle": "Join The Countdown",
     "welcomeSubtitle": "Track events that matter to you ✨",
     "getStarted": "Get started",
     "createAccount": "Create an account or sign in to sync your events",
@@ -178,7 +178,7 @@
       "passed": "passed"
     },
     "lifeEvents": {
-      "eidFitr": "Eid al-Fitr",
+      "eidFitr": "Eid Al-Fitr",
       "eidFitrSub": "Blessed Celebration",
       "birthday": "Birthday",
       "birthdaySub": "Special Day",
@@ -189,13 +189,13 @@
       "travel": "Travel",
       "travelSub": "New Adventure",
       "newborn": "Newborn",
-      "newbornSub": "Blessing and Joy",
-      "workStart": "Work Start",
-      "workStartSub": "Important Step",
+      "newbornSub": "Blessing And Joy",
+      "workStart": "Start Of Work",
+      "workStartSub": "An Important Step",
       "valentine": "Valentine's Day",
       "valentineSub": "Romantic Moments",
       "ramadan": "Ramadan",
-      "ramadanSub": "Month of Goodness"
+      "ramadanSub": "Month Of Goodness"
     }
   }
 }

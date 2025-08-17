@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/config";
 import { CountdownCard } from "@/components/ui/countdown-card";
 import { FloatingAddButton } from "@/components/ui/floating-add-button";
 import { AddEventDialog } from "@/components/add-event-dialog";
@@ -463,9 +464,9 @@ const Index = () => {
             </div>
             <div className="hidden sm:block">
               <h1 className="text-lg sm:text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                العد التنازلي
+                {i18n.language === 'ar' ? 'العد التنازلي' : 'The Countdown'}
               </h1>
-              <p className="text-xs text-muted-foreground">Al-Add Al-Tanazuli</p>
+              <p className="text-xs text-muted-foreground">{i18n.language === 'ar' ? 'Al-Add Al-Tanazuli' : 'Al-Add Al-Tanazuli'}</p>
             </div>
           </div>
           
