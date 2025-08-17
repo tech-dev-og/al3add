@@ -558,9 +558,9 @@ const Index = () => {
                 <div className="text-center space-y-4 px-4 sm:px-6 max-w-md mx-auto">
                   <Calendar className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground mx-auto" />
                   <div className="space-y-2">
-                    <h3 className="text-lg sm:text-xl font-semibold">لا توجد أحداث بعد</h3>
+                    <h3 className="text-lg sm:text-xl font-semibold">{t('events.noEvents')}</h3>
                     <p className="text-sm sm:text-base text-muted-foreground">
-                      ابدأ بإضافة حدثك الأول للعد التنازلي
+                      {t('events.noEventsDescription')}
                     </p>
                   </div>
                   <Button 
@@ -568,7 +568,7 @@ const Index = () => {
                     size="lg"
                     className="w-full sm:w-auto px-6 sm:px-8"
                   >
-                    إضافة حدث جديد
+                    {t('events.addEvent')}
                   </Button>
                 </div>
               </div>
@@ -579,7 +579,7 @@ const Index = () => {
                   <section className="space-y-4 sm:space-y-6">
                     <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2 px-2 sm:px-0">
                       <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
-                      أحداثك القادمة
+                      {t('navigation.myEvents')}
                     </h2>
                     <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                       {activeEvents.map((event) => (
@@ -604,7 +604,7 @@ const Index = () => {
                 {expiredEvents.length > 0 && (
                   <section className="space-y-4 sm:space-y-6">
                     <h2 className="text-lg sm:text-xl font-semibold text-muted-foreground px-2 sm:px-0">
-                      الأحداث المنتهية
+                      {t('events.expired')}
                     </h2>
                     <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                       {expiredEvents.map((event) => (
