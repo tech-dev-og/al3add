@@ -166,23 +166,3 @@ All colors MUST be HSL.
   right: auto;
   left: 1.5rem;
 }
-
-/* Force LTR for English content to fix punctuation positioning */
-[dir="ltr"] .text-center {
-  text-align: center;
-  direction: ltr;
-}
-
-[dir="rtl"] .text-center {
-  text-align: center;
-  direction: rtl;
-}
-
-/* Fix punctuation in English while preserving alignment */
-[dir="ltr"] p,
-[dir="ltr"] h1,
-[dir="ltr"] h2, 
-[dir="ltr"] h3 {
-  direction: ltr;
-  unicode-bidi: embed;
-}
