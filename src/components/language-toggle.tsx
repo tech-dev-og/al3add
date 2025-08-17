@@ -13,6 +13,9 @@ const LanguageToggle = () => {
 
   const toggleLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+    // Force immediate document direction update
+    document.documentElement.dir = lng === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = lng;
   };
 
   return (
