@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -19,7 +20,81 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Create Supabase client
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+    );
+
+    // Get JWT token from Authorization header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: 'Missing authorization header' }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders }
+      });
+    }
+
+    // Verify user and get user info
+    const { data: { user }, error: authError } = await supabase.auth.getUser(
+      authHeader.replace('Bearer ', '')
+    );
+
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: 'Invalid token' }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders }
+      });
+    }
+
+    // Check if user has admin role
+    const { data: userRole, error: roleError } = await supabase
+      .rpc('has_role', { _user_id: user.id, _role: 'admin' });
+
+    if (roleError || !userRole) {
+      return new Response(JSON.stringify({ error: 'Access denied: Admin role required' }), {
+        status: 403,
+        headers: { "Content-Type": "application/json", ...corsHeaders }
+      });
+    }
+
+    // Rate limiting - check if user has sent emails recently
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { data: recentEmails, error: logError } = await supabase
+      .from('smtp_email_logs')
+      .select('id')
+      .eq('user_id', user.id)
+      .gte('sent_at', oneHourAgo);
+
+    if (logError) {
+      console.error('Error checking email logs:', logError);
+    } else if (recentEmails && recentEmails.length >= 10) {
+      return new Response(JSON.stringify({ 
+        error: 'Rate limit exceeded: Maximum 10 emails per hour' 
+      }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", ...corsHeaders }
+      });
+    }
+
     const { to, subject, html, from }: EmailRequest = await req.json();
+
+    // Input validation
+    if (!to || !subject || !html) {
+      return new Response(JSON.stringify({ error: 'Missing required fields: to, subject, html' }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders }
+      });
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(to)) {
+      return new Response(JSON.stringify({ error: 'Invalid email address' }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders }
+      });
+    }
     
     const smtpHost = Deno.env.get("SMTP_HOST");
     const smtpPort = parseInt(Deno.env.get("SMTP_PORT") || "587");
@@ -89,10 +164,10 @@ const handler = async (req: Request): Promise<Response> => {
       const passResponse = await sendCommand(passwordB64);
       console.log("Password response:", passResponse);
 
-      // Send email
-      const fromEmail = from || smtpUser;
-      const mailFromResponse = await sendCommand(`MAIL FROM:<${fromEmail}>`);
-      console.log("MAIL FROM response:", mailFromResponse);
+    // Send email - enforce from address for security
+    const fromEmail = smtpUser; // Always use SMTP user as from address
+    const mailFromResponse = await sendCommand(`MAIL FROM:<${fromEmail}>`);
+    console.log("MAIL FROM response:", mailFromResponse);
 
       const rcptToResponse = await sendCommand(`RCPT TO:<${to}>`);
       console.log("RCPT TO response:", rcptToResponse);
@@ -124,6 +199,16 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Email sent successfully via SMTP");
 
+    // Log the successful email
+    await supabase
+      .from('smtp_email_logs')
+      .insert({
+        user_id: user.id,
+        recipient_email: to,
+        subject: subject,
+        status: 'sent'
+      });
+
     return new Response(JSON.stringify({ 
       success: true, 
       message: "Email sent successfully" 
@@ -137,6 +222,34 @@ const handler = async (req: Request): Promise<Response> => {
 
   } catch (error: any) {
     console.error("Error in send-smtp-email function:", error);
+    
+    // Try to log the failed email if we have user context
+    try {
+      const authHeader = req.headers.get('Authorization');
+      if (authHeader) {
+        const supabase = createClient(
+          Deno.env.get('SUPABASE_URL') ?? '',
+          Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+        );
+        const { data: { user } } = await supabase.auth.getUser(
+          authHeader.replace('Bearer ', '')
+        );
+        if (user) {
+          await supabase
+            .from('smtp_email_logs')
+            .insert({
+              user_id: user.id,
+              recipient_email: 'unknown',
+              subject: 'failed',
+              status: 'failed',
+              error_message: error.message
+            });
+        }
+      }
+    } catch (logError) {
+      console.error("Failed to log error:", logError);
+    }
+
     return new Response(
       JSON.stringify({ 
         success: false, 
