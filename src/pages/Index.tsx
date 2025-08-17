@@ -635,7 +635,7 @@ const Index = () => {
       <footer className="relative z-10 py-4 sm:py-6 text-center border-t border-border/20 mt-auto">
         <div className="container mx-auto px-3 sm:px-4 lg:px-6">
           <p className="text-xs sm:text-sm text-muted-foreground">
-            powered by{' '}
+            {t('common.poweredBy')}{' '}
             <a 
               href="https://al3add.com" 
               target="_blank" 

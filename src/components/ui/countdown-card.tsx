@@ -115,7 +115,7 @@ export function CountdownCard({
                 </span>
               </div>
               <Badge variant="secondary" className="text-xs px-2 py-0.5">
-                {eventType}
+                {t(`addEvent.eventTypes.${eventType}`) || eventType}
               </Badge>
             </div>
             
