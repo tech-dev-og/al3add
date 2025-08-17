@@ -168,16 +168,21 @@ All colors MUST be HSL.
 }
 
 /* Force LTR for English content to fix punctuation positioning */
-[dir="ltr"] * {
+[dir="ltr"] .text-center {
+  text-align: center;
   direction: ltr;
-  text-align: inherit;
 }
 
-/* Specific fixes for text elements in LTR mode */
+[dir="rtl"] .text-center {
+  text-align: center;
+  direction: rtl;
+}
+
+/* Fix punctuation in English while preserving alignment */
 [dir="ltr"] p,
 [dir="ltr"] h1,
 [dir="ltr"] h2, 
-[dir="ltr"] h3,
-[dir="ltr"] span {
+[dir="ltr"] h3 {
   direction: ltr;
+  unicode-bidi: embed;
 }
