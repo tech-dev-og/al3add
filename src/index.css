@@ -155,3 +155,21 @@ All colors MUST be HSL.
     transition: var(--transition-smooth);
   }
 }
+
+/* RTL support for floating elements */
+[dir="rtl"] .fixed.right-4 {
+  right: auto;
+  left: 1rem;
+}
+
+[dir="rtl"] .fixed.sm\\:right-6 {
+  right: auto;
+  left: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  [dir="rtl"] .fixed.sm\\:right-6 {
+    right: auto;
+    left: 1.5rem;
+  }
+}
