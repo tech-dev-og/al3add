@@ -280,36 +280,17 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
 
         <form onSubmit={handleSubmit} className="space-y-6 mt-4">
           {/* Event Type Selection */}
-          <div className="space-y-3">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {EVENT_TYPES.slice(0, 6).map((type) => (
-                <button
-                  key={type.id}
-                  type="button"
-                  onClick={() => setEventType(type.id)}
-                  className={cn(
-                    "relative h-20 rounded-xl overflow-hidden text-white font-medium transition-all",
-                    "bg-gradient-to-br from-primary/80 to-primary",
-                    "hover:scale-105 hover:shadow-lg",
-                    "flex flex-col items-center justify-center gap-1",
-                    eventType === type.id && "ring-2 ring-accent scale-105"
-                  )}
-                >
-                  <span className="text-2xl">{type.icon}</span>
-                  <span className="text-xs text-center px-1">{type.label}</span>
-                </button>
-              ))}
-            </div>
-            {EVENT_TYPES.length > 6 && (
+          {!eventType && (
+            <div className="space-y-3">
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {EVENT_TYPES.slice(6).map((type) => (
+                {EVENT_TYPES.slice(0, 6).map((type) => (
                   <button
                     key={type.id}
                     type="button"
                     onClick={() => setEventType(type.id)}
                     className={cn(
-                      "relative h-20 rounded-xl overflow-hidden text-slate-800 font-medium transition-all",
-                      "bg-gradient-to-br from-amber-200 to-yellow-300",
+                      "relative h-20 rounded-xl overflow-hidden text-white font-medium transition-all",
+                      "bg-gradient-to-br from-primary/80 to-primary",
                       "hover:scale-105 hover:shadow-lg",
                       "flex flex-col items-center justify-center gap-1",
                       eventType === type.id && "ring-2 ring-accent scale-105"
@@ -320,8 +301,29 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
                   </button>
                 ))}
               </div>
-            )}
-          </div>
+              {EVENT_TYPES.length > 6 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {EVENT_TYPES.slice(6).map((type) => (
+                    <button
+                      key={type.id}
+                      type="button"
+                      onClick={() => setEventType(type.id)}
+                      className={cn(
+                        "relative h-20 rounded-xl overflow-hidden text-slate-800 font-medium transition-all",
+                        "bg-gradient-to-br from-amber-200 to-yellow-300",
+                        "hover:scale-105 hover:shadow-lg",
+                        "flex flex-col items-center justify-center gap-1",
+                        eventType === type.id && "ring-2 ring-accent scale-105"
+                      )}
+                    >
+                      <span className="text-2xl">{type.icon}</span>
+                      <span className="text-xs text-center px-1">{type.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Calculation Type Section */}
           <div className="space-y-3">
