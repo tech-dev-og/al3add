@@ -24,7 +24,20 @@ const Auth = () => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/");
+        // Check if user is admin and redirect accordingly
+        try {
+          const { data: hasAdminRole } = await supabase
+            .rpc('has_role', { _user_id: session.user.id, _role: 'admin' });
+          
+          if (hasAdminRole) {
+            navigate("/admin");
+          } else {
+            navigate("/");
+          }
+        } catch (error) {
+          console.error('Error checking admin role:', error);
+          navigate("/");
+        }
       }
     };
     checkUser();
@@ -128,7 +141,7 @@ const Auth = () => {
 
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -147,12 +160,28 @@ const Auth = () => {
             variant: "destructive",
           });
         }
-      } else {
+      } else if (data.user) {
         toast({
           title: t('auth.welcomeBack'),
           description: t('auth.allSetToTrack'),
         });
-        navigate("/");
+
+        // Check if user is admin and redirect accordingly
+        try {
+          const { data: hasAdminRole } = await supabase
+            .rpc('has_role', { _user_id: data.user.id, _role: 'admin' });
+          
+          if (hasAdminRole) {
+            console.log('User is admin, redirecting to /admin');
+            navigate("/admin");
+          } else {
+            console.log('User is not admin, redirecting to /');
+            navigate("/");
+          }
+        } catch (roleError) {
+          console.error('Error checking admin role:', roleError);
+          navigate("/");
+        }
       }
     } catch (error) {
       toast({
@@ -240,6 +269,13 @@ const Auth = () => {
               </TabsList>
               
               <TabsContent value="signin" className="space-y-4">
+                {/* Admin Login Helper */}
+                <div className="bg-muted/50 p-3 rounded-lg text-sm">
+                  <p className="font-medium mb-1">Admin Login:</p>
+                  <p className="text-muted-foreground">Email: admin@countdown.app</p>
+                  <p className="text-muted-foreground">Password: Admin123!</p>
+                </div>
+
                 {/* Social Login */}
                 <div className="space-y-3">
                   <Button
@@ -335,7 +371,7 @@ const Auth = () => {
                   <div className="absolute inset-0 flex items-center">
                     <span className="w-full border-t" />
                   </div>
-                  <div className="relative flex justify-center text-xs uppercase">
+                  <div className="relative flex justify center text-xs uppercase">
                     <span className="bg-background px-2 text-muted-foreground">{t('auth.or')}</span>
                   </div>
                 </div>
