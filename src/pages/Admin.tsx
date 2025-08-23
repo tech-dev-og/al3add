@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { TranslationManager } from '@/components/admin/translation-manager';
+import { AdminSidebar } from '@/components/admin/admin-sidebar';
+import { AdminDashboard } from '@/components/admin/admin-dashboard';
+import { UserManagement } from '@/components/admin/user-management';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -12,6 +15,7 @@ const Admin = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard');
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -92,9 +96,27 @@ const Admin = () => {
     return null; // This won't render since we redirect above
   }
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'users':
+        return <UserManagement />;
+      case 'translations':
+        return <TranslationManager />;
+      case 'settings':
+        return (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold">Settings</h2>
+            <p className="text-muted-foreground">System settings and configuration</p>
+          </div>
+        );
+      default:
+        return <AdminDashboard />;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <div className="border-b">
+      <div className="border-b bg-card">
         <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
           <div className="flex items-center gap-2 sm:gap-4">
             <Button 
@@ -112,8 +134,11 @@ const Admin = () => {
         </div>
       </div>
       
-      <div className="flex-1 px-3 sm:px-4 lg:px-6">
-        <TranslationManager />
+      <div className="flex flex-1">
+        <AdminSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        <main className="flex-1 p-6 overflow-auto">
+          {renderContent()}
+        </main>
       </div>
     </div>
   );

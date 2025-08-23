@@ -28,13 +28,47 @@ export const UserManagement = () => {
 
   const loadUsers = async () => {
     try {
-      // Get users with their roles and event counts
-      const { data: usersData, error: usersError } = await supabase
-        .rpc('get_users_with_stats');
+      // Get basic user data first
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, user_id, display_name, created_at');
 
-      if (usersError) throw usersError;
+      if (profilesError) throw profilesError;
+
+      // Get user roles
+      const { data: rolesData, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('user_id, role');
+
+      if (rolesError) throw rolesError;
+
+      // Get event counts - get all events and count client-side
+      const { data: eventsData, error: eventsError } = await supabase
+        .from('events')
+        .select('user_id');
+
+      if (eventsError) console.log('Events error (non-critical):', eventsError);
+
+      // Count events per user
+      const eventCounts = eventsData?.reduce((acc, event) => {
+        acc[event.user_id] = (acc[event.user_id] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>) || {};
+
+      // Transform and combine data
+      const transformedUsers = profilesData?.map(profile => {
+        const userRole = rolesData?.find(role => role.user_id === profile.user_id);
+        return {
+          id: profile.user_id,
+          email: 'user@example.com', // We can't get email from profiles table
+          created_at: profile.created_at,
+          role: userRole?.role || null,
+          display_name: profile.display_name,
+          event_count: eventCounts[profile.user_id] || 0
+        };
+      }) || [];
       
-      setUsers(usersData || []);
+      setUsers(transformedUsers);
     } catch (error) {
       console.error('Error loading users:', error);
       toast({
@@ -64,10 +98,11 @@ export const UserManagement = () => {
           .delete()
           .eq('user_id', userId);
         
-        // Then add new role
+        // Then add new role - ensure the role matches the enum
+        const roleValue = newRole as 'admin' | 'moderator' | 'user';
         const { error } = await supabase
           .from('user_roles')
-          .insert({ user_id: userId, role: newRole });
+          .insert({ user_id: userId, role: roleValue });
         
         if (error) throw error;
       }

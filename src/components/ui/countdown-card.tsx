@@ -125,7 +125,10 @@ export function CountdownCard({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => onEdit(id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit(id);
+                    }}
                     className="h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-primary/10"
                   >
                     <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -135,7 +138,10 @@ export function CountdownCard({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => onDelete(id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(id);
+                    }}
                     className="h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-destructive/10"
                   >
                     <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 text-destructive" />
