@@ -280,7 +280,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
 
         <form onSubmit={handleSubmit} className="space-y-6 mt-4">
           {/* Event Type Selection */}
-          {!eventType && (
+          {!eventType ? (
             <div className="space-y-3">
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {EVENT_TYPES.slice(0, 6).map((type) => (
@@ -322,6 +322,30 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
                   ))}
                 </div>
               )}
+            </div>
+          ) : (
+            <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">
+                  {EVENT_TYPES.find(type => type.id === eventType)?.icon}
+                </span>
+                <div>
+                  <div className="font-medium">
+                    {EVENT_TYPES.find(type => type.id === eventType)?.label}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {t('addEvent.selectedEventType')}
+                  </div>
+                </div>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setEventType("")}
+              >
+                {t('addEvent.change')}
+              </Button>
             </div>
           )}
 
