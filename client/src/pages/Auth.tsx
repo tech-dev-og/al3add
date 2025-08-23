@@ -270,11 +270,6 @@ const Auth = () => {
               
               <TabsContent value="signin" className="space-y-4">
                 {/* Admin Login Helper */}
-                <div className="bg-muted/50 p-3 rounded-lg text-sm">
-                  <p className="font-medium mb-1">Admin Login:</p>
-                  <p className="text-muted-foreground">Email: admin@countdown.app</p>
-                  <p className="text-muted-foreground">Password: Admin123!</p>
-                </div>
 
                 {/* Social Login */}
                 <div className="space-y-3">

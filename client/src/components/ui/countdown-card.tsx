@@ -17,6 +17,7 @@ interface CountdownCardProps {
   backgroundImage?: string;
   onDelete?: (id: string) => void;
   onEdit?: (id: string) => void;
+  onClick?: (id: string) => void;
 }
 
 interface TimeLeft {
@@ -36,7 +37,8 @@ export function CountdownCard({
   repeatOption = "none",
   backgroundImage,
   onDelete,
-  onEdit
+  onEdit,
+  onClick
 }: CountdownCardProps) {
   const { t, i18n } = useTranslation();
 
@@ -93,7 +95,10 @@ export function CountdownCard({
   }
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group min-h-[240px] sm:min-h-[280px] relative">
+    <Card 
+      className="overflow-hidden hover:shadow-lg transition-all duration-300 group min-h-[240px] sm:min-h-[280px] relative cursor-pointer"
+      onClick={() => onClick?.(id)}
+    >
       {backgroundImage && (
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity duration-300"

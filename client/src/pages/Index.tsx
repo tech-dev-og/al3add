@@ -6,9 +6,12 @@ import { CountdownCard } from "@/components/ui/countdown-card";
 import { FloatingAddButton } from "@/components/ui/floating-add-button";
 import { AddEventDialog } from "@/components/add-event-dialog";
 import { PinterestHero } from "@/components/pinterest-hero";
-import { Sparkles, Moon, Sun, LogOut, User, Calendar } from "lucide-react";
+import { Sparkles, Moon, Sun, LogOut, User, Calendar, Clock, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User as SupabaseUser } from "@supabase/supabase-js";
 import { toast } from "@/hooks/use-toast";
@@ -35,6 +38,8 @@ const Index = () => {
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [preSelectedEventType, setPreSelectedEventType] = useState<string>("");
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [showEventDetail, setShowEventDetail] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -410,6 +415,19 @@ const Index = () => {
     }
   };
 
+  const handleEventClick = (eventId: string) => {
+    const eventToView = events.find(event => event.id === eventId);
+    if (eventToView) {
+      setSelectedEvent(eventToView);
+      setShowEventDetail(true);
+    }
+  };
+
+  const handleCloseEventDetail = () => {
+    setShowEventDetail(false);
+    setSelectedEvent(null);
+  };
+
   const handleCloseDialog = (open: boolean) => {
     setShowAddDialog(open);
     if (!open) {
@@ -594,6 +612,7 @@ const Index = () => {
                           backgroundImage={event.backgroundImage}
                           onDelete={handleDeleteEvent}
                           onEdit={handleEditEventDialog}
+                          onClick={handleEventClick}
                         />
                       ))}
                     </div>
@@ -620,6 +639,7 @@ const Index = () => {
                           isExpired={false}
                           onDelete={handleDeleteEvent}
                           onEdit={handleEditEventDialog}
+                          onClick={handleEventClick}
                         />
                       ))}
                     </div>
@@ -679,6 +699,75 @@ const Index = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Event Detail Dialog */}
+      <Dialog open={showEventDetail} onOpenChange={setShowEventDetail}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-xl font-bold">
+                {selectedEvent?.title}
+              </DialogTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCloseEventDetail}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </DialogHeader>
+          {selectedEvent && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Calendar className="w-4 h-4" />
+                <span>
+                  {selectedEvent.date.toLocaleDateString(i18n.language === 'ar' ? 'ar-EG' : 'en-US')}
+                </span>
+              </div>
+              
+              <Badge variant="secondary" className="text-sm">
+                {t(`addEvent.eventTypes.${selectedEvent.type}`) || selectedEvent.type}
+              </Badge>
+
+              {selectedEvent.backgroundImage && (
+                <div className="rounded-lg overflow-hidden">
+                  <img 
+                    src={selectedEvent.backgroundImage} 
+                    alt={selectedEvent.title}
+                    className="w-full h-48 object-cover"
+                  />
+                </div>
+              )}
+
+              <Card>
+                <CardContent className="pt-4">
+                  <div className="text-center space-y-2">
+                    <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                      <Clock className="w-4 h-4" />
+                      <span>
+                        {selectedEvent.calculationType === 'days-left' && t('events.timeUntil')}
+                        {selectedEvent.calculationType === 'days-passed' && t('events.timeSince')}
+                      </span>
+                    </div>
+                    <div className="text-2xl font-bold text-primary">
+                      {(() => {
+                        const now = new Date();
+                        const target = new Date(selectedEvent.date);
+                        const distance = selectedEvent.calculationType === 'days-left' 
+                          ? (target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+                          : (now.getTime() - target.getTime()) / (1000 * 60 * 60 * 24);
+                        return `${Math.abs(Math.ceil(distance))} ${t('events.days')}`;
+                      })()}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
