@@ -306,10 +306,10 @@ export function AddEventDialog({
     e.preventDefault();
     if (title && date && eventType) {
       // Validate custom event type
-      if (eventType === 'custom' && !customEventType.trim()) {
+      if (eventType === "custom" && !customEventType.trim()) {
         toast({
-          title: t('addEvent.customEventRequired'),
-          description: t('addEvent.pleaseEnterCustomName'),
+          title: t("addEvent.customEventRequired"),
+          description: t("addEvent.pleaseEnterCustomName"),
           variant: "destructive",
         });
         return;
@@ -322,9 +322,10 @@ export function AddEventDialog({
 
       // Sanitize title to prevent XSS
       const sanitizedTitle = title.replace(/<[^>]*>/g, "").trim();
-      
+
       // Use custom event type if selected, otherwise use predefined type
-      const finalEventType = eventType === 'custom' ? customEventType.trim() : eventType;
+      const finalEventType =
+        eventType === "custom" ? customEventType.trim() : eventType;
 
       const eventData = {
         title: sanitizedTitle,
@@ -433,7 +434,10 @@ export function AddEventDialog({
                   </span>
                   <div>
                     <div className="font-medium">
-                      {eventType === 'custom' ? (customEventType || t('addEvent.eventTypes.custom')) : EVENT_TYPES.find((type) => type.id === eventType)?.label}
+                      {eventType === "custom"
+                        ? customEventType || t("addEvent.eventTypes.custom")
+                        : EVENT_TYPES.find((type) => type.id === eventType)
+                            ?.label}
                     </div>
                     <div className="text-sm text-muted-foreground">
                       {t("addEvent.selectedEventType")}
@@ -452,23 +456,26 @@ export function AddEventDialog({
                   {t("addEvent.change")}
                 </Button>
               </div>
-              
+
               {/* Custom Event Type Input */}
-              {eventType === 'custom' && (
+              {eventType === "custom" && (
                 <div className="space-y-2">
-                  <Label htmlFor="customEventType" className="text-sm font-medium">
-                    {t('addEvent.customEventName')}
+                  <Label
+                    htmlFor="customEventType"
+                    className="text-sm font-medium"
+                  >
+                    {t("addEvent.customEventName")}
                   </Label>
                   <Input
                     id="customEventType"
                     value={customEventType}
                     onChange={(e) => setCustomEventType(e.target.value)}
-                    placeholder={t('addEvent.customEventPlaceholder')}
+                    placeholder={t("addEvent.customEventPlaceholder")}
                     className="w-full"
                     maxLength={50}
                   />
                   <p className="text-xs text-muted-foreground">
-                    {t('addEvent.customEventHint')}
+                    {t("addEvent.customEventHint")}
                   </p>
                 </div>
               )}
@@ -699,8 +706,22 @@ export function AddEventDialog({
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-gradient-primary"
-              disabled={!title || !date || !eventType}
+              className={cn(
+                "flex-1 font-medium transition-all duration-200",
+                // Check if all mandatory fields are filled
+                title &&
+                  date &&
+                  eventType &&
+                  (eventType !== "custom" || customEventType.trim())
+                  ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white hover:shadow-lg cursor-pointer"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              )}
+              disabled={
+                !title ||
+                !date ||
+                !eventType ||
+                (eventType === "custom" && !customEventType.trim())
+              }
             >
               {isEdit ? t("addEvent.editEvent") : t("addEvent.addEvent")}
             </Button>
