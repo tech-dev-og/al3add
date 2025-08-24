@@ -32,7 +32,7 @@ export const appRoleEnum = pgEnum("app_role", ["admin", "moderator", "user"]);
 // User profiles table
 export const profiles = pgTable("profiles", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: uuid("user_id").notNull().unique(),
+  userId: varchar("user_id", { length: 255 }).notNull().unique(),
   username: text("username").unique(),
   displayName: text("display_name"),
   avatarUrl: text("avatar_url"),
@@ -44,7 +44,7 @@ export const profiles = pgTable("profiles", {
 // Events table
 export const events = pgTable("events", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: uuid("user_id").notNull(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
   title: text("title").notNull(),
   eventDate: timestamp("event_date", { withTimezone: true }).notNull(),
   eventType: text("event_type").notNull().default("countdown"),
@@ -58,7 +58,7 @@ export const events = pgTable("events", {
 // User roles table
 export const userRoles = pgTable("user_roles", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: uuid("user_id").notNull(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
   role: appRoleEnum("role").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -78,7 +78,7 @@ export const translations = pgTable("translations", {
 // SMTP email logs table
 export const smtpEmailLogs = pgTable("smtp_email_logs", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: uuid("user_id").notNull(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
   recipientEmail: text("recipient_email").notNull(),
   subject: text("subject").notNull(),
   sentAt: timestamp("sent_at", { withTimezone: true }).notNull().defaultNow(),
@@ -89,7 +89,7 @@ export const smtpEmailLogs = pgTable("smtp_email_logs", {
 // Image generation logs table
 export const imageGenerationLogs = pgTable("image_generation_logs", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: uuid("user_id").notNull(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
   prompt: text("prompt").notNull(),
   generatedAt: timestamp("generated_at", { withTimezone: true }).notNull().defaultNow(),
   status: text("status").notNull().default("success"),

@@ -78,21 +78,9 @@ export class PostgresStorage implements IStorage {
     return user;
   }
 
-  // Helper method to convert string user ID to UUID for existing tables
-  private getUserUuid(replitUserId: string): string {
-    // For now, we'll create a deterministic UUID from the Replit user ID
-    // In production, you might want to store this mapping in the database
-    const crypto = require('crypto');
-    const hash = crypto.createHash('sha256').update(replitUserId).digest('hex');
-    // Convert hash to UUID format
-    const uuid = [
-      hash.slice(0, 8),
-      hash.slice(8, 12),
-      hash.slice(12, 16),
-      hash.slice(16, 20),
-      hash.slice(20, 32)
-    ].join('-');
-    return uuid;
+  // Helper method to get user ID (now returns string directly)
+  private getUserId(replitUserId: string): string {
+    return replitUserId;
   }
 
   // Email/password auth methods
@@ -118,90 +106,71 @@ export class PostgresStorage implements IStorage {
 
   // Profile methods
   async getProfile(userId: string): Promise<Profile | undefined> {
-    const userUuid = this.getUserUuid(userId);
-    const result = await db.select().from(profiles).where(eq(profiles.userId, userUuid));
+    const result = await db.select().from(profiles).where(eq(profiles.userId, userId));
     return result[0];
   }
 
   async createProfile(profile: InsertProfile): Promise<Profile> {
-    const profileWithUuid = {
-      ...profile,
-      userId: this.getUserUuid(profile.userId)
-    };
-    const result = await db.insert(profiles).values(profileWithUuid).returning();
+    const result = await db.insert(profiles).values(profile).returning();
     return result[0];
   }
 
   async updateProfile(userId: string, updates: Partial<Profile>): Promise<Profile | undefined> {
-    const userUuid = this.getUserUuid(userId);
     const result = await db
       .update(profiles)
       .set({ ...updates, updatedAt: new Date() })
-      .where(eq(profiles.userId, userUuid))
+      .where(eq(profiles.userId, userId))
       .returning();
     return result[0];
   }
 
   // Event methods
   async getEvents(userId: string): Promise<Event[]> {
-    const userUuid = this.getUserUuid(userId);
     return await db
       .select()
       .from(events)
-      .where(eq(events.userId, userUuid))
+      .where(eq(events.userId, userId))
       .orderBy(desc(events.eventDate));
   }
 
   async createEvent(event: InsertEvent): Promise<Event> {
-    const eventWithUuid = {
-      ...event,
-      userId: this.getUserUuid(event.userId)
-    };
-    const result = await db.insert(events).values(eventWithUuid).returning();
+    const result = await db.insert(events).values(event).returning();
     return result[0];
   }
 
   async updateEvent(eventId: string, userId: string, updates: Partial<Event>): Promise<Event | undefined> {
-    const userUuid = this.getUserUuid(userId);
     const result = await db
       .update(events)
       .set({ ...updates, updatedAt: new Date() })
-      .where(and(eq(events.id, eventId), eq(events.userId, userUuid)))
+      .where(and(eq(events.id, eventId), eq(events.userId, userId)))
       .returning();
     return result[0];
   }
 
   async deleteEvent(eventId: string, userId: string): Promise<boolean> {
-    const userUuid = this.getUserUuid(userId);
     const result = await db
       .delete(events)
-      .where(and(eq(events.id, eventId), eq(events.userId, userUuid)))
+      .where(and(eq(events.id, eventId), eq(events.userId, userId)))
       .returning();
     return result.length > 0;
   }
 
   // User role methods
   async getUserRole(userId: string): Promise<UserRole | undefined> {
-    const userUuid = this.getUserUuid(userId);
-    const result = await db.select().from(userRoles).where(eq(userRoles.userId, userUuid));
+    const result = await db.select().from(userRoles).where(eq(userRoles.userId, userId));
     return result[0];
   }
 
   async hasRole(userId: string, role: string): Promise<boolean> {
-    const userUuid = this.getUserUuid(userId);
     const result = await db
       .select()
       .from(userRoles)
-      .where(and(eq(userRoles.userId, userUuid), eq(userRoles.role, role as any)));
+      .where(and(eq(userRoles.userId, userId), eq(userRoles.role, role as any)));
     return result.length > 0;
   }
 
   async assignRole(userRole: InsertUserRole): Promise<UserRole> {
-    const roleWithUuid = {
-      ...userRole,
-      userId: this.getUserUuid(userRole.userId)
-    };
-    const result = await db.insert(userRoles).values(roleWithUuid).returning();
+    const result = await db.insert(userRoles).values(userRole).returning();
     return result[0];
   }
 

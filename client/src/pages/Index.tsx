@@ -12,8 +12,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
-import { Session, User as SupabaseUser } from "@supabase/supabase-js";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
 import LanguageToggle from "@/components/language-toggle";
 
@@ -31,8 +30,7 @@ const Index = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const { user, isLoading: authLoading, isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
   const [showPinterestView, setShowPinterestView] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
@@ -42,53 +40,16 @@ const Index = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // Authentication state management
+  // Update loading state when auth loading changes
   useEffect(() => {
-    let mounted = true;
-
-    const initializeAuth = async () => {
-      try {
-        // Get initial session
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (mounted) {
-          setSession(session);
-          setUser(session?.user ?? null);
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error('Error getting session:', error);
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.id);
-        if (mounted) {
-          setSession(session);
-          setUser(session?.user ?? null);
-          setLoading(false);
-        }
-      }
-    );
-
-    initializeAuth();
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
+    setLoading(authLoading);
+  }, [authLoading]);
 
   // Load events when user state changes
   useEffect(() => {
     console.log('User state changed, loading events...', user?.id);
     loadUserEvents();
-  }, [user]);
+  }, [user, isAuthenticated]);
 
   // Real-time countdown updates
   useEffect(() => {
@@ -119,11 +80,7 @@ const Index = () => {
 
     try {
       // Load events from API with user authentication
-      const response = await fetch('/api/events', {
-        headers: {
-          'x-user-id': user.id
-        }
-      });
+      const response = await fetch('/api/events');
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -133,8 +90,6 @@ const Index = () => {
             description: t('auth.pleaseSignInAgain'),
             variant: "destructive",
           });
-          setUser(null);
-          setSession(null);
           return;
         }
         throw new Error('Failed to load events');
@@ -252,38 +207,34 @@ const Index = () => {
     }
 
     try {
-      const { data, error } = await supabase
-        .from('events')
-        .insert({
-          user_id: user.id,
+      const response = await fetch('/api/events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           title: newEvent.title,
-          event_date: newEvent.date.toISOString(),
-          event_type: newEvent.type,
-          calculation_type: newEvent.calculationType || 'days-left',
-          repeat_option: newEvent.repeatOption || 'none',
-          background_image: newEvent.backgroundImage
-        })
-        .select()
-        .single();
+          eventDate: newEvent.date.toISOString(),
+          eventType: newEvent.type,
+          calculationType: newEvent.calculationType || 'days-left',
+          repeatOption: newEvent.repeatOption || 'none',
+          backgroundImage: newEvent.backgroundImage,
+        }),
+      });
 
-      if (error) {
-        console.error('Error saving event:', error);
-        toast({
-          title: "Error saving event",
-          description: "Please try again",
-          variant: "destructive",
-        });
-        return;
+      if (!response.ok) {
+        throw new Error('Failed to create event');
       }
 
+      const data = await response.json();
       const formattedEvent = {
         id: data.id,
         title: data.title,
-        date: new Date(data.event_date),
-        type: data.event_type,
-        calculationType: newEvent.calculationType,
-        repeatOption: newEvent.repeatOption,
-        backgroundImage: data.background_image
+        date: new Date(data.eventDate),
+        type: data.eventType,
+        calculationType: data.calculationType,
+        repeatOption: data.repeatOption,
+        backgroundImage: data.backgroundImage
       };
 
       setEvents(prev => [...prev, formattedEvent]);
@@ -303,22 +254,14 @@ const Index = () => {
 
   const handleDeleteEvent = async (eventId: string) => {
     try {
-      if (user) {
-        // Delete from database
-        const { error } = await supabase
-          .from('events')
-          .delete()
-          .eq('id', eventId)
-          .eq('user_id', user.id);
+      if (user && isAuthenticated) {
+        // Delete from database via API
+        const response = await fetch(`/api/events/${eventId}`, {
+          method: 'DELETE',
+        });
 
-        if (error) {
-          console.error('Error deleting event:', error);
-          toast({
-            title: "خطأ في حذف الحدث",
-            description: "حاول مرة أخرى لاحقاً",
-            variant: "destructive",
-          });
-          return;
+        if (!response.ok) {
+          throw new Error('Failed to delete event');
         }
       } else {
         // Remove from localStorage for pending events
@@ -376,27 +319,23 @@ const Index = () => {
     }
 
     try {
-      const { error } = await supabase
-        .from('events')
-        .update({
+      const response = await fetch(`/api/events/${updatedEvent.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           title: updatedEvent.title,
-          event_date: updatedEvent.date.toISOString(),
-          event_type: updatedEvent.type,
-          calculation_type: updatedEvent.calculationType || 'days-left',
-          repeat_option: updatedEvent.repeatOption || 'none',
-          background_image: updatedEvent.backgroundImage
-        })
-        .eq('id', updatedEvent.id)
-        .eq('user_id', user.id);
+          eventDate: updatedEvent.date.toISOString(),
+          eventType: updatedEvent.type,
+          calculationType: updatedEvent.calculationType || 'days-left',
+          repeatOption: updatedEvent.repeatOption || 'none',
+          backgroundImage: updatedEvent.backgroundImage,
+        }),
+      });
 
-      if (error) {
-        console.error('Error updating event:', error);
-        toast({
-          title: "خطأ في تحديث الحدث",
-          description: "حاول مرة أخرى لاحقاً",
-          variant: "destructive",
-        });
-        return;
+      if (!response.ok) {
+        throw new Error('Failed to update event');
       }
 
       // Update local state
@@ -438,12 +377,12 @@ const Index = () => {
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setShowLogoutDialog(false);
-    toast({
-      title: "Signed out",
-      description: "See you later! ✨",
-    });
+    try {
+      // Redirect to logout endpoint
+      window.location.href = '/api/logout';
+    } catch (error) {
+      console.error('Unexpected error during sign out:', error);
+    }
   };
 
   const handleLogoutClick = () => {
