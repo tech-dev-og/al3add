@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
 import { CountdownCard } from "@/components/ui/countdown-card";
@@ -8,6 +8,7 @@ import { AddEventDialog } from "@/components/add-event-dialog";
 import { PinterestHero } from "@/components/pinterest-hero";
 import { Sparkles, Moon, Sun, LogOut, User, Calendar, Clock, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
@@ -37,7 +38,7 @@ const Index = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [preSelectedEventType, setPreSelectedEventType] = useState<string>("");
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const navigate = useNavigate();
+  const [location, setLocation] = useLocation();
   const { t } = useTranslation();
 
   // Update loading state when auth loading changes
@@ -196,7 +197,7 @@ const Index = () => {
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={() => navigate("/auth")}
+            onClick={() => setLocation("/auth")}
             className="ml-2"
           >
             تسجيل الدخول
@@ -414,7 +415,7 @@ const Index = () => {
         <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4 flex items-center justify-between">
           <div 
             className="flex items-center gap-2 sm:gap-3 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => navigate("/")}
+            onClick={() => setLocation("/")}
           >
             <div className="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-primary rounded-full flex items-center justify-center">
               <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
@@ -431,7 +432,16 @@ const Index = () => {
             {user ? (
               <>
                 <div className="hidden md:flex items-center gap-2 mr-2">
-                  <User className="h-4 w-4 text-muted-foreground" />
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage 
+                      src={user.profileImageUrl} 
+                      alt={user.email?.split('@')[0] || 'User'}
+                      className="object-cover"
+                    />
+                    <AvatarFallback className="text-xs bg-gradient-primary text-primary-foreground">
+                      {user.email?.charAt(0).toUpperCase() || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
                   <span className="text-sm text-muted-foreground truncate max-w-[100px]">
                     {user.email?.split('@')[0]}
                   </span>
@@ -450,7 +460,7 @@ const Index = () => {
               <Button
                 variant="default"
                 size="sm"
-                onClick={() => navigate("/auth")}
+                onClick={() => setLocation("/auth")}
                 className="h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-3"
               >
                 <User className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
