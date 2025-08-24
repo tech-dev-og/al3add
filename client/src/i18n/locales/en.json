@@ -156,6 +156,10 @@
     "secondsLeft": "{{count}} seconds left",
     "change": "Change",
     "selectedEventType": "Selected Event Type",
+    "customEventName": "Custom Event Name",
+    "customEventPlaceholder": "Example: Eid al-Fitr",
+    "customEventHint": "Choose here to create your own ✨",
+    "customEventRequired": "Custom event name is required",
     "eventTypes": {
       "eid": "Eid",
       "ramadan": "Ramadan",
@@ -168,7 +172,8 @@
       "marriage": "Marriage",
       "work": "Work",
       "quitSmoking": "Quit Smoking",
-      "newborn": "Newborn"
+      "newborn": "Newborn",
+      "custom": "Custom"
     },
     "calculationTypes": {
       "daysLeft": "Days Left",

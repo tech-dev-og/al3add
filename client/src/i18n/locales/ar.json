@@ -156,6 +156,10 @@
     "secondsLeft": "{{count}} ثانية متبقية",
     "change": "تغيير",
     "selectedEventType": "نوع الحدث المختار",
+    "customEventName": "اسم الحدث المخصص",
+    "customEventPlaceholder": "مثال: عيد الفطر المبارك",
+    "customEventHint": "اختر هنا لإنشائه بنفسك ✨",
+    "customEventRequired": "اسم الحدث المخصص مطلوب",
     "eventTypes": {
       "eid": "العيد",
       "ramadan": "رمضان",
@@ -168,7 +172,8 @@
       "marriage": "الزواج",
       "work": "العمل",
       "quitSmoking": "الإقلاع عن التدخين",
-      "newborn": "المولود الجديد"
+      "newborn": "المولود الجديد",
+      "custom": "مخصص"
     },
     "calculationTypes": {
       "daysLeft": "الأيام المتبقية",
