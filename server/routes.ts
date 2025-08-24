@@ -459,6 +459,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Translations API
+  app.get("/api/translations", async (req, res) => {
+    try {
+      const translations = await storage.getTranslations();
+      res.json(translations);
+    } catch (error) {
+      console.error("Error fetching translations:", error);
+      res.status(500).json({ error: "Failed to fetch translations" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

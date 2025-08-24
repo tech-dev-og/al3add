@@ -9,6 +9,7 @@ export const supabase = {
     onAuthStateChange: auth.onAuthStateChange,
     signUp: auth.signUp,
     signInWithPassword: auth.signInWithPassword,
+    signInWithOAuth: auth.signInWithOAuth,
     signOut: auth.signOut,
     getUser: auth.getUser,
   },

@@ -64,6 +64,7 @@ export function AddEventDialog({
   const [title, setTitle] = useState("");
   const [date, setDate] = useState<Date>();
   const [eventType, setEventType] = useState("");
+  const [customEventType, setCustomEventType] = useState("");
   const [calculationType, setCalculationType] = useState("days-left");
   const [repeatOption, setRepeatOption] = useState("none");
   const [backgroundImage, setBackgroundImage] = useState<string>("");
@@ -93,6 +94,7 @@ export function AddEventDialog({
       icon: "🚭",
     },
     { id: "newborn", label: t("addEvent.eventTypes.newborn"), icon: "👶" },
+    { id: "custom", label: t("addEvent.eventTypes.custom"), icon: "✨" },
   ];
 
   const CALCULATION_TYPES = [
@@ -155,6 +157,7 @@ export function AddEventDialog({
       setTitle("");
       setDate(undefined);
       setEventType(preSelectedEventType || "");
+      setCustomEventType("");
       setCalculationType("days-left");
       setRepeatOption("none");
       setBackgroundImage("");
@@ -302,6 +305,16 @@ export function AddEventDialog({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title && date && eventType) {
+      // Validate custom event type
+      if (eventType === 'custom' && !customEventType.trim()) {
+        toast({
+          title: t('addEvent.customEventRequired'),
+          description: t('addEvent.pleaseEnterCustomName'),
+          variant: "destructive",
+        });
+        return;
+      }
+
       // Input validation and sanitization
       if (title.length > 100) {
         return;
@@ -309,11 +322,14 @@ export function AddEventDialog({
 
       // Sanitize title to prevent XSS
       const sanitizedTitle = title.replace(/<[^>]*>/g, "").trim();
+      
+      // Use custom event type if selected, otherwise use predefined type
+      const finalEventType = eventType === 'custom' ? customEventType.trim() : eventType;
 
       const eventData = {
         title: sanitizedTitle,
         date,
-        type: eventType,
+        type: finalEventType,
         calculationType,
         repeatOption,
         backgroundImage: backgroundImage || undefined,
@@ -333,6 +349,7 @@ export function AddEventDialog({
         setTitle("");
         setDate(undefined);
         setEventType("");
+        setCustomEventType("");
         setCalculationType("days-left");
         setRepeatOption("none");
         setBackgroundImage("");
@@ -408,28 +425,53 @@ export function AddEventDialog({
               )}
             </div>
           ) : (
-            <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">
-                  {EVENT_TYPES.find((type) => type.id === eventType)?.icon}
-                </span>
-                <div>
-                  <div className="font-medium">
-                    {EVENT_TYPES.find((type) => type.id === eventType)?.label}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {t("addEvent.selectedEventType")}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">
+                    {EVENT_TYPES.find((type) => type.id === eventType)?.icon}
+                  </span>
+                  <div>
+                    <div className="font-medium">
+                      {eventType === 'custom' ? (customEventType || t('addEvent.eventTypes.custom')) : EVENT_TYPES.find((type) => type.id === eventType)?.label}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {t("addEvent.selectedEventType")}
+                    </div>
                   </div>
                 </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setEventType("");
+                    setCustomEventType("");
+                  }}
+                >
+                  {t("addEvent.change")}
+                </Button>
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setEventType("")}
-              >
-                {t("addEvent.change")}
-              </Button>
+              
+              {/* Custom Event Type Input */}
+              {eventType === 'custom' && (
+                <div className="space-y-2">
+                  <Label htmlFor="customEventType" className="text-sm font-medium">
+                    {t('addEvent.customEventName')}
+                  </Label>
+                  <Input
+                    id="customEventType"
+                    value={customEventType}
+                    onChange={(e) => setCustomEventType(e.target.value)}
+                    placeholder={t('addEvent.customEventPlaceholder')}
+                    className="w-full"
+                    maxLength={50}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t('addEvent.customEventHint')}
+                  </p>
+                </div>
+              )}
             </div>
           )}
 

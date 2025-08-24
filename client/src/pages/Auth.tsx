@@ -203,17 +203,24 @@ const Auth = () => {
         provider: 'google',
         options: {
           redirectTo: redirectUrl,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         },
       });
 
       if (error) {
+        console.error('Google OAuth error:', error);
         toast({
           title: t('auth.googleSignInFailed'),
           description: error.message,
           variant: "destructive",
         });
       }
+      // Success case is handled by the auth state change listener
     } catch (error) {
+      console.error('Google auth error:', error);
       toast({
         title: t('auth.somethingWentWrong'),
         description: t('auth.tryAgainLater'),

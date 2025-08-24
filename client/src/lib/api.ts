@@ -191,11 +191,15 @@ export const auth = {
   },
   signUp: (credentials: { email: string; password: string; options?: any }) => {
     // Mock implementation - return success for now
-    return Promise.resolve({ error: null });
+    return Promise.resolve({ data: { user: null }, error: null });
   },
   signInWithPassword: (credentials: { email: string; password: string }) => {
     // Mock implementation - return success for now
-    return Promise.resolve({ error: null });
+    return Promise.resolve({ data: { user: null }, error: null });
+  },
+  signInWithOAuth: (options: { provider: string; options?: any }) => {
+    // Mock implementation for OAuth
+    return Promise.resolve({ data: { url: null }, error: null });
   },
   signOut: () => {
     // Mock implementation

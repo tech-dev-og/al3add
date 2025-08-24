@@ -118,30 +118,38 @@ const Index = () => {
     }
 
     try {
-      const { data, error } = await supabase
-        .from('events')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('event_date', { ascending: true });
+      // Load events from API with user authentication
+      const response = await fetch('/api/events', {
+        headers: {
+          'x-user-id': user.id
+        }
+      });
 
-      if (error) {
-        console.error('Error loading events:', error);
-        toast({
-          title: "Error loading events",
-          description: "Please try refreshing the page",
-          variant: "destructive",
-        });
-        return;
+      if (!response.ok) {
+        if (response.status === 401) {
+          console.error('Unauthorized - user needs to re-authenticate');
+          toast({
+            title: t('auth.sessionExpired'),
+            description: t('auth.pleaseSignInAgain'),
+            variant: "destructive",
+          });
+          setUser(null);
+          setSession(null);
+          return;
+        }
+        throw new Error('Failed to load events');
       }
 
-      const formattedEvents = data.map(event => ({
+      const data = await response.json();
+      
+      const formattedEvents = data.map((event: any) => ({
         id: event.id,
         title: event.title,
-        date: new Date(event.event_date),
-        type: event.event_type,
-        calculationType: event.calculation_type || "days-left",
-        repeatOption: event.repeat_option || "none",
-        backgroundImage: event.background_image
+        date: new Date(event.eventDate),
+        type: event.eventType,
+        calculationType: event.calculationType || "days-left",
+        repeatOption: event.repeatOption || "none",
+        backgroundImage: event.backgroundImage
       }));
 
       setEvents(formattedEvents);
@@ -159,28 +167,34 @@ const Index = () => {
     if (!user || pendingEvents.length === 0) return;
 
     try {
-      const eventsToSave = pendingEvents.map(event => ({
-        user_id: user.id,
-        title: event.title,
-        event_date: event.date,
-        event_type: event.type,
-        calculation_type: event.calculationType || 'days-left',
-        repeat_option: event.repeatOption || 'none',
-        background_image: event.backgroundImage
-      }));
+      for (const event of pendingEvents) {
+        const response = await fetch('/api/events', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': user.id
+          },
+          body: JSON.stringify({
+            title: event.title,
+            eventDate: new Date(event.date).toISOString(),
+            eventType: event.type,
+            calculationType: event.calculationType || 'days-left',
+            repeatOption: event.repeatOption || 'none',
+            backgroundImage: event.backgroundImage
+          })
+        });
 
-      const { error } = await supabase
-        .from('events')
-        .insert(eventsToSave);
-
-      if (error) throw error;
+        if (!response.ok) {
+          throw new Error(`Failed to save event: ${response.statusText}`);
+        }
+      }
 
       // Clear pending events from localStorage
       localStorage.removeItem('pendingEvents');
       
       toast({
-        title: "أحداثك محفوظة! ✨",
-        description: `تم حفظ ${pendingEvents.length} حدث بنجاح`,
+        title: t('events.savedPending'),
+        description: t('events.savedPendingDescription', { count: pendingEvents.length }),
       });
       
       // Reload events to show the saved ones
@@ -188,8 +202,8 @@ const Index = () => {
     } catch (error) {
       console.error('Error saving pending events:', error);
       toast({
-        title: "خطأ في حفظ الأحداث",
-        description: "حدث خطأ أثناء حفظ الأحداث المعلقة",
+        title: t('events.errorSavingPending'),
+        description: t('events.pendingEventError'),
         variant: "destructive",
       });
     }
