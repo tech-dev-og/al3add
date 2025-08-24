@@ -3,9 +3,13 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 // Removed supabase import since we're using API calls now
 
-// Fallback resources for when database is unavailable
-import enFallback from './locales/en.json';
-import arFallback from './locales/ar.json';
+// Minimal fallback resources for when database is unavailable
+const minimalFallback: any = {
+  common: {
+    loading: "Loading...",
+    error: "Error"
+  }
+};
 
 let databaseResources: any = null;
 
@@ -55,25 +59,25 @@ const loadDatabaseTranslations = async () => {
     databaseResources = resources;
     return resources;
   } catch (error) {
-    console.warn('Failed to load translations from database, using fallback:', error);
+    console.warn('Failed to load translations from database, using minimal fallback:', error);
     return {
-      en: { translation: enFallback },
-      ar: { translation: arFallback }
+      en: { translation: minimalFallback },
+      ar: { translation: minimalFallback }
     };
   }
 };
 
-// Initialize with fallback resources first
-const fallbackResources = {
-  en: { translation: enFallback },
-  ar: { translation: arFallback }
+// Initialize with minimal resources first (database will load async)
+const initialResources: any = {
+  en: { translation: minimalFallback },
+  ar: { translation: minimalFallback }
 };
 
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources: fallbackResources,
+    resources: initialResources,
     lng: 'ar', // default language
     fallbackLng: 'ar',
     
@@ -108,15 +112,13 @@ setTimeout(() => {
     if (resources) {
       console.log('Merging database translations into i18n...');
       Object.keys(resources).forEach((lng) => {
-        // Merge with existing fallback translations to ensure all keys are available
-        const existingTranslations = i18n.getResourceBundle(lng, 'translation') || {};
-        const mergedTranslations = { ...existingTranslations, ...resources[lng].translation };
-        i18n.addResourceBundle(lng, 'translation', mergedTranslations, true, true);
-        console.log(`Added ${Object.keys(resources[lng].translation).length} translation keys for ${lng}`);
+        // Replace all translations with database translations (no merging needed)
+        i18n.addResourceBundle(lng, 'translation', resources[lng].translation, true, true);
+        console.log(`Loaded ${Object.keys(resources[lng].translation).length} translation keys from database for ${lng}`);
         
         // Debug: Check if custom translations are present
-        if (lng === 'ar' && mergedTranslations.addEvent?.eventTypes?.custom) {
-          console.log('✓ Custom event type translation found:', mergedTranslations.addEvent.eventTypes.custom);
+        if (lng === 'ar' && resources[lng].translation.addEvent?.eventTypes?.custom) {
+          console.log('✓ Custom event type translation found:', resources[lng].translation.addEvent.eventTypes.custom);
         }
       });
       
@@ -138,10 +140,8 @@ export const refreshTranslations = async () => {
   const resources = await loadDatabaseTranslations();
   if (resources) {
     Object.keys(resources).forEach((lng) => {
-      // Merge with existing fallback translations to ensure all keys are available
-      const existingTranslations = i18n.getResourceBundle(lng, 'translation') || {};
-      const mergedTranslations = { ...existingTranslations, ...resources[lng].translation };
-      i18n.addResourceBundle(lng, 'translation', mergedTranslations, true, true);
+      // Replace all translations with fresh database data
+      i18n.addResourceBundle(lng, 'translation', resources[lng].translation, true, true);
     });
   }
 };
