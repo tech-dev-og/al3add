@@ -1,18 +1,30 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import dotenv from "dotenv";
 dotenv.config();
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Events API routes
-  app.get("/api/events", async (req, res) => {
-    try {
-      const userId = req.headers["x-user-id"] as string;
-      if (!userId) {
-        return res.status(401).json({ error: "User ID required" });
-      }
+  // Auth middleware
+  await setupAuth(app);
 
+  // Auth routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Events API routes
+  app.get("/api/events", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
       const events = await storage.getEvents(userId);
       res.json(events);
     } catch (error) {
@@ -21,12 +33,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/events", async (req, res) => {
+  app.post("/api/events", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.headers["x-user-id"] as string;
-      if (!userId) {
-        return res.status(401).json({ error: "User ID required" });
-      }
+      const userId = req.user.claims.sub;
 
       const {
         title,
@@ -60,14 +69,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/events/:eventId", async (req, res) => {
+  app.put("/api/events/:eventId", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.user.claims.sub;
       const { eventId } = req.params;
-
-      if (!userId) {
-        return res.status(401).json({ error: "User ID required" });
-      }
 
       const {
         title,
@@ -98,14 +103,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/events/:eventId", async (req, res) => {
+  app.delete("/api/events/:eventId", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.user.claims.sub;
       const { eventId } = req.params;
-
-      if (!userId) {
-        return res.status(401).json({ error: "User ID required" });
-      }
 
       const deleted = await storage.deleteEvent(eventId, userId);
 
@@ -121,12 +122,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Profile API routes
-  app.get("/api/profile", async (req, res) => {
+  app.get("/api/profile", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.headers["x-user-id"] as string;
-      if (!userId) {
-        return res.status(401).json({ error: "User ID required" });
-      }
+      const userId = req.user.claims.sub;
 
       const profile = await storage.getProfile(userId);
       res.json(profile);
@@ -136,12 +134,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/profile", async (req, res) => {
+  app.post("/api/profile", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.headers["x-user-id"] as string;
-      if (!userId) {
-        return res.status(401).json({ error: "User ID required" });
-      }
+      const userId = req.user.claims.sub;
 
       const { displayName, username, bio, avatarUrl } = req.body;
 
@@ -160,12 +155,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/profile", async (req, res) => {
+  app.put("/api/profile", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.headers["x-user-id"] as string;
-      if (!userId) {
-        return res.status(401).json({ error: "User ID required" });
-      }
+      const userId = req.user.claims.sub;
 
       const { displayName, username, bio, avatarUrl } = req.body;
 
@@ -188,12 +180,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User roles API
-  app.get("/api/user/role", async (req, res) => {
+  app.get("/api/user/role", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.headers["x-user-id"] as string;
-      if (!userId) {
-        return res.status(401).json({ error: "User ID required" });
-      }
+      const userId = req.user.claims.sub;
 
       const userRole = await storage.getUserRole(userId);
       res.json(userRole);
@@ -203,14 +192,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/user/role/check", async (req, res) => {
+  app.post("/api/user/role/check", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.user.claims.sub;
       const { role } = req.body;
-
-      if (!userId) {
-        return res.status(401).json({ error: "User ID required" });
-      }
 
       const hasRole = await storage.hasRole(userId, role);
       res.json({ hasRole });
@@ -231,12 +216,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/translations", async (req, res) => {
+  app.post("/api/translations", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.headers["x-user-id"] as string;
-      if (!userId) {
-        return res.status(401).json({ error: "User ID required" });
-      }
+      const userId = req.user.claims.sub;
 
       // Check if user has admin role
       const hasAdminRole = await storage.hasRole(userId, "admin");
@@ -267,14 +249,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/translations/:key", async (req, res) => {
+  app.put("/api/translations/:key", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.user.claims.sub;
       const { key } = req.params;
-
-      if (!userId) {
-        return res.status(401).json({ error: "User ID required" });
-      }
 
       // Check if user has admin role
       const hasAdminRole = await storage.hasRole(userId, "admin");
@@ -302,14 +280,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/translations/:key", async (req, res) => {
+  app.delete("/api/translations/:key", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.user.claims.sub;
       const { key } = req.params;
-
-      if (!userId) {
-        return res.status(401).json({ error: "User ID required" });
-      }
 
       // Check if user has admin role
       const hasAdminRole = await storage.hasRole(userId, "admin");
@@ -331,12 +305,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // SMTP Email API (replacing Supabase Edge Function)
-  app.post("/api/send-email", async (req, res) => {
+  app.post("/api/send-email", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.headers["x-user-id"] as string;
-      if (!userId) {
-        return res.status(401).json({ error: "User ID required" });
-      }
+      const userId = req.user.claims.sub;
 
       // Check if user has admin role
       const hasAdminRole = await storage.hasRole(userId, "admin");
@@ -381,12 +352,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // OpenAI Image Generation API
-  app.post("/api/generate-image", async (req, res) => {
+  app.post("/api/generate-image", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.headers["x-user-id"] as string;
-      if (!userId) {
-        return res.status(401).json({ error: "User ID required" });
-      }
+      const userId = req.user.claims.sub;
 
       const { prompt } = req.body;
 

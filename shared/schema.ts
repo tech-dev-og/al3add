@@ -1,7 +1,29 @@
-import { pgTable, text, varchar, timestamp, pgEnum, uuid, bigint } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, pgEnum, uuid, bigint, index, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { sql } from "drizzle-orm";
+
+// Session storage table for Replit Auth
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
+// Users table for Replit Auth
+export const users = pgTable("users", {
+  id: varchar("id").primaryKey(),
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  profileImageUrl: varchar("profile_image_url"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
 
 // Enum for user roles
 export const appRoleEnum = pgEnum("app_role", ["admin", "moderator", "user"]);
@@ -21,7 +43,7 @@ export const profiles = pgTable("profiles", {
 // Events table
 export const events = pgTable("events", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: uuid("user_id").notNull(),
+  userId: varchar("user_id").notNull(),
   title: text("title").notNull(),
   eventDate: timestamp("event_date", { withTimezone: true }).notNull(),
   eventType: text("event_type").notNull().default("countdown"),
@@ -35,7 +57,7 @@ export const events = pgTable("events", {
 // User roles table
 export const userRoles = pgTable("user_roles", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: uuid("user_id").notNull(),
+  userId: varchar("user_id").notNull(),
   role: appRoleEnum("role").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -74,12 +96,15 @@ export const imageGenerationLogs = pgTable("image_generation_logs", {
 });
 
 // Schema for insertions
+export const insertUserSchema = createInsertSchema(users);
 export const insertProfileSchema = createInsertSchema(profiles);
 export const insertEventSchema = createInsertSchema(events);
 export const insertUserRoleSchema = createInsertSchema(userRoles);
 export const insertTranslationSchema = createInsertSchema(translations);
 
-// Types
+// Types  
+export type UpsertUser = typeof users.$inferInsert;
+export type User = typeof users.$inferSelect;
 export type Profile = typeof profiles.$inferSelect;
 export type InsertProfile = z.infer<typeof insertProfileSchema>;
 export type Event = typeof events.$inferSelect;

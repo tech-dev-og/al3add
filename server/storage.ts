@@ -1,12 +1,15 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { 
+  users,
   profiles, 
   events, 
   userRoles, 
   translations, 
   smtpEmailLogs, 
   imageGenerationLogs,
+  type User,
+  type UpsertUser,
   type Profile, 
   type Event, 
   type UserRole, 
@@ -23,6 +26,10 @@ const client = postgres(connectionString);
 export const db = drizzle(client);
 
 export interface IStorage {
+  // User operations (required by Replit Auth)
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  
   // Profile methods
   getProfile(userId: string): Promise<Profile | undefined>;
   createProfile(profile: InsertProfile): Promise<Profile>;
@@ -47,6 +54,27 @@ export interface IStorage {
 }
 
 export class PostgresStorage implements IStorage {
+  // User operations (required by Replit Auth)
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
+  }
+
   // Profile methods
   async getProfile(userId: string): Promise<Profile | undefined> {
     const result = await db.select().from(profiles).where(eq(profiles.userId, userId));
