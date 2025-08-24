@@ -2,12 +2,93 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import bcrypt from "bcryptjs";
+import { z } from "zod";
 import dotenv from "dotenv";
 dotenv.config();
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
+
+  // Email/password authentication routes
+  const signupSchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(6),
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+  });
+
+  const signinSchema = z.object({
+    email: z.string().email(),
+    password: z.string(),
+  });
+
+  app.post('/api/auth/signup', async (req, res) => {
+    try {
+      const { email, password, firstName, lastName } = signupSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ error: "User already exists with this email" });
+      }
+
+      // Hash password
+      const passwordHash = await bcrypt.hash(password, 10);
+      
+      // Create user
+      const user = await storage.createUserWithPassword(email, passwordHash, firstName, lastName);
+      
+      // Create session manually for email/password auth
+      req.login({ claims: { sub: user.id, email: user.email, first_name: user.firstName, last_name: user.lastName }, access_token: 'email_auth', expires_at: Math.floor(Date.now() / 1000) + 86400 }, (err) => {
+        if (err) {
+          console.error("Session creation error:", err);
+          return res.status(500).json({ error: "Failed to create session" });
+        }
+        res.status(201).json({ success: true, user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid input", details: error.errors });
+      }
+      console.error("Signup error:", error);
+      res.status(500).json({ error: "Failed to create account" });
+    }
+  });
+
+  app.post('/api/auth/signin', async (req, res) => {
+    try {
+      const { email, password } = signinSchema.parse(req.body);
+      
+      // Find user by email
+      const user = await storage.getUserByEmail(email);
+      if (!user || !user.passwordHash) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+
+      // Check password
+      const passwordMatch = await bcrypt.compare(password, user.passwordHash);
+      if (!passwordMatch) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+      
+      // Create session manually for email/password auth
+      req.login({ claims: { sub: user.id, email: user.email, first_name: user.firstName, last_name: user.lastName }, access_token: 'email_auth', expires_at: Math.floor(Date.now() / 1000) + 86400 }, (err) => {
+        if (err) {
+          console.error("Session creation error:", err);
+          return res.status(500).json({ error: "Failed to create session" });
+        }
+        res.json({ success: true, user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid input", details: error.errors });
+      }
+      console.error("Signin error:", error);
+      res.status(500).json({ error: "Failed to sign in" });
+    }
+  });
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {

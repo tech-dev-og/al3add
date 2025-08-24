@@ -117,7 +117,21 @@
     "somethingWentWrong": "Something went wrong",
     "tryAgainLater": "Please try again later",
     "welcome": "Welcome! 🎉",
-    "checkEmailToConfirm": "Check your email to confirm your account"
+    "checkEmailToConfirm": "Check your email to confirm your account",
+    "confirmPassword": "Confirm Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "firstNamePlaceholder": "First name",
+    "lastNamePlaceholder": "Last name",
+    "signupSuccess": "Account Created",
+    "signupSuccessDesc": "Welcome! Your account has been created successfully.",
+    "signupError": "Signup Failed",
+    "signinSuccess": "Welcome Back",
+    "signinSuccessDesc": "You have been signed in successfully.",
+    "signinError": "Sign In Failed",
+    "passwordMismatch": "Password Mismatch",
+    "passwordMismatchDesc": "Passwords do not match. Please try again."
   },
   "navigation": {
     "profile": "Profile",

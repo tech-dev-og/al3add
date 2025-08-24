@@ -29,6 +29,9 @@ export interface IStorage {
   // User operations (required by Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  // Email/password auth operations
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUserWithPassword(email: string, passwordHash: string, firstName?: string, lastName?: string): Promise<User>;
   
   // Profile methods
   getProfile(userId: string): Promise<Profile | undefined>;
@@ -90,6 +93,27 @@ export class PostgresStorage implements IStorage {
       hash.slice(20, 32)
     ].join('-');
     return uuid;
+  }
+
+  // Email/password auth methods
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async createUserWithPassword(email: string, passwordHash: string, firstName?: string, lastName?: string): Promise<User> {
+    const userId = `email_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const [user] = await db
+      .insert(users)
+      .values({
+        id: userId,
+        email,
+        passwordHash,
+        firstName,
+        lastName,
+      })
+      .returning();
+    return user;
   }
 
   // Profile methods
