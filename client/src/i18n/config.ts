@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import { supabase } from '@/integrations/supabase/client';
+// Removed supabase import since we're using API calls now
 
 // Fallback resources for when database is unavailable
 import enFallback from './locales/en.json';
@@ -12,16 +12,24 @@ let databaseResources: any = null;
 // Load translations from database
 const loadDatabaseTranslations = async () => {
   try {
-    const { data: translations, error } = await supabase
-      .from('translations')
-      .select('*');
-
-    if (error) throw error;
+    console.log('Loading translations from database...');
+    const response = await fetch('/api/translations');
+    if (!response.ok) {
+      console.error('Failed to fetch translations:', response.status, response.statusText);
+      throw new Error(`Failed to fetch translations: ${response.status}`);
+    }
+    const translations = await response.json();
+    console.log('Loaded', translations.length, 'translations from database');
 
     const resources = { en: { translation: {} }, ar: { translation: {} } };
     
     translations?.forEach((translation: any) => {
       const keyParts = translation.key.split('.');
+      
+      // Log custom event translations for debugging
+      if (translation.key.includes('custom')) {
+        console.log('Loading custom translation:', translation.key, '->', translation.arabic_text, '/', translation.english_text);
+      }
       
       // Set Arabic translation
       let currentAr = resources.ar.translation;
@@ -94,16 +102,36 @@ i18n.on('languageChanged', (lng) => {
 });
 
 // Load database translations asynchronously and update i18n
-loadDatabaseTranslations().then((resources) => {
-  if (resources) {
-    Object.keys(resources).forEach((lng) => {
-      // Merge with existing fallback translations to ensure all keys are available
-      const existingTranslations = i18n.getResourceBundle(lng, 'translation') || {};
-      const mergedTranslations = { ...existingTranslations, ...resources[lng].translation };
-      i18n.addResourceBundle(lng, 'translation', mergedTranslations, true, true);
-    });
-  }
-});
+// Add a small delay to ensure the app is fully initialized
+setTimeout(() => {
+  loadDatabaseTranslations().then((resources) => {
+    if (resources) {
+      console.log('Merging database translations into i18n...');
+      Object.keys(resources).forEach((lng) => {
+        // Merge with existing fallback translations to ensure all keys are available
+        const existingTranslations = i18n.getResourceBundle(lng, 'translation') || {};
+        const mergedTranslations = { ...existingTranslations, ...resources[lng].translation };
+        i18n.addResourceBundle(lng, 'translation', mergedTranslations, true, true);
+        console.log(`Added ${Object.keys(resources[lng].translation).length} translation keys for ${lng}`);
+        
+        // Debug: Check if custom translations are present
+        if (lng === 'ar' && mergedTranslations.addEvent?.eventTypes?.custom) {
+          console.log('✓ Custom event type translation found:', mergedTranslations.addEvent.eventTypes.custom);
+        }
+      });
+      
+      // Force reload the current language to pick up new translations
+      const currentLng = i18n.language;
+      i18n.reloadResources(currentLng).then(() => {
+        console.log('Translations reloaded successfully for language:', currentLng);
+        // Force a language change event to trigger React component re-renders
+        i18n.emit('languageChanged', currentLng);
+      });
+    }
+  }).catch((error) => {
+    console.error('Error loading database translations:', error);
+  });
+}, 1000); // 1 second delay
 
 // Function to refresh translations from database
 export const refreshTranslations = async () => {
