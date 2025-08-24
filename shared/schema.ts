@@ -43,7 +43,7 @@ export const profiles = pgTable("profiles", {
 // Events table
 export const events = pgTable("events", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull(),
+  userId: uuid("user_id").notNull(),
   title: text("title").notNull(),
   eventDate: timestamp("event_date", { withTimezone: true }).notNull(),
   eventType: text("event_type").notNull().default("countdown"),
@@ -57,7 +57,7 @@ export const events = pgTable("events", {
 // User roles table
 export const userRoles = pgTable("user_roles", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull(),
+  userId: uuid("user_id").notNull(),
   role: appRoleEnum("role").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
