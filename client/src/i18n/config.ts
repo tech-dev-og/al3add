@@ -28,7 +28,7 @@ const loadDatabaseTranslations = async () => {
       
       // Log custom event translations for debugging
       if (translation.key.includes('custom')) {
-        console.log('Loading custom translation:', translation.key, '->', translation.arabic_text, '/', translation.english_text);
+        console.log('Loading custom translation:', translation.key, '->', translation.arabicText, '/', translation.englishText);
       }
       
       // Set Arabic translation
@@ -39,7 +39,7 @@ const loadDatabaseTranslations = async () => {
         }
         currentAr = currentAr[keyParts[i]];
       }
-      currentAr[keyParts[keyParts.length - 1]] = translation.arabic_text;
+      currentAr[keyParts[keyParts.length - 1]] = translation.arabicText;
 
       // Set English translation
       let currentEn = resources.en.translation;
@@ -49,7 +49,7 @@ const loadDatabaseTranslations = async () => {
         }
         currentEn = currentEn[keyParts[i]];
       }
-      currentEn[keyParts[keyParts.length - 1]] = translation.english_text;
+      currentEn[keyParts[keyParts.length - 1]] = translation.englishText;
     });
 
     databaseResources = resources;
