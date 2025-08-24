@@ -1,17 +1,18 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import dotenv from "dotenv";
+dotenv.config();
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  
   // Events API routes
   app.get("/api/events", async (req, res) => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       if (!userId) {
         return res.status(401).json({ error: "User ID required" });
       }
-      
+
       const events = await storage.getEvents(userId);
       res.json(events);
     } catch (error) {
@@ -22,15 +23,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/events", async (req, res) => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       if (!userId) {
         return res.status(401).json({ error: "User ID required" });
       }
 
-      const { title, eventDate, eventType, calculationType, repeatOption, backgroundImage } = req.body;
-      
+      const {
+        title,
+        eventDate,
+        eventType,
+        calculationType,
+        repeatOption,
+        backgroundImage,
+      } = req.body;
+
       if (!title || !eventDate) {
-        return res.status(400).json({ error: "Title and event date are required" });
+        return res
+          .status(400)
+          .json({ error: "Title and event date are required" });
       }
 
       const event = await storage.createEvent({
@@ -40,7 +50,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         eventType: eventType || "countdown",
         calculationType: calculationType || "days-left",
         repeatOption: repeatOption || "none",
-        backgroundImage
+        backgroundImage,
       });
 
       res.status(201).json(event);
@@ -52,22 +62,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/events/:eventId", async (req, res) => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       const { eventId } = req.params;
-      
+
       if (!userId) {
         return res.status(401).json({ error: "User ID required" });
       }
 
-      const { title, eventDate, eventType, calculationType, repeatOption, backgroundImage } = req.body;
-      
+      const {
+        title,
+        eventDate,
+        eventType,
+        calculationType,
+        repeatOption,
+        backgroundImage,
+      } = req.body;
+
       const event = await storage.updateEvent(eventId, userId, {
         title,
         eventDate: eventDate ? new Date(eventDate) : undefined,
         eventType,
         calculationType,
         repeatOption,
-        backgroundImage
+        backgroundImage,
       });
 
       if (!event) {
@@ -83,15 +100,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/events/:eventId", async (req, res) => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       const { eventId } = req.params;
-      
+
       if (!userId) {
         return res.status(401).json({ error: "User ID required" });
       }
 
       const deleted = await storage.deleteEvent(eventId, userId);
-      
+
       if (!deleted) {
         return res.status(404).json({ error: "Event not found" });
       }
@@ -106,11 +123,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Profile API routes
   app.get("/api/profile", async (req, res) => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       if (!userId) {
         return res.status(401).json({ error: "User ID required" });
       }
-      
+
       const profile = await storage.getProfile(userId);
       res.json(profile);
     } catch (error) {
@@ -121,19 +138,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/profile", async (req, res) => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       if (!userId) {
         return res.status(401).json({ error: "User ID required" });
       }
 
       const { displayName, username, bio, avatarUrl } = req.body;
-      
+
       const profile = await storage.createProfile({
         userId,
         displayName,
         username,
         bio,
-        avatarUrl
+        avatarUrl,
       });
 
       res.status(201).json(profile);
@@ -145,18 +162,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/profile", async (req, res) => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       if (!userId) {
         return res.status(401).json({ error: "User ID required" });
       }
 
       const { displayName, username, bio, avatarUrl } = req.body;
-      
+
       const profile = await storage.updateProfile(userId, {
         displayName,
         username,
         bio,
-        avatarUrl
+        avatarUrl,
       });
 
       if (!profile) {
@@ -173,11 +190,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User roles API
   app.get("/api/user/role", async (req, res) => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       if (!userId) {
         return res.status(401).json({ error: "User ID required" });
       }
-      
+
       const userRole = await storage.getUserRole(userId);
       res.json(userRole);
     } catch (error) {
@@ -188,9 +205,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/user/role/check", async (req, res) => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       const { role } = req.body;
-      
+
       if (!userId) {
         return res.status(401).json({ error: "User ID required" });
       }
@@ -216,7 +233,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/translations", async (req, res) => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       if (!userId) {
         return res.status(401).json({ error: "User ID required" });
       }
@@ -228,9 +245,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { key, namespace, arabicText, englishText, description } = req.body;
-      
+
       if (!key || !arabicText || !englishText) {
-        return res.status(400).json({ error: "Key, Arabic text, and English text are required" });
+        return res
+          .status(400)
+          .json({ error: "Key, Arabic text, and English text are required" });
       }
 
       const translation = await storage.createTranslation({
@@ -238,7 +257,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         namespace: namespace || "common",
         arabicText,
         englishText,
-        description
+        description,
       });
 
       res.status(201).json(translation);
@@ -250,9 +269,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/translations/:key", async (req, res) => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       const { key } = req.params;
-      
+
       if (!userId) {
         return res.status(401).json({ error: "User ID required" });
       }
@@ -264,12 +283,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { namespace, arabicText, englishText, description } = req.body;
-      
+
       const translation = await storage.updateTranslation(key, {
         namespace,
         arabicText,
         englishText,
-        description
+        description,
       });
 
       if (!translation) {
@@ -285,9 +304,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/translations/:key", async (req, res) => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       const { key } = req.params;
-      
+
       if (!userId) {
         return res.status(401).json({ error: "User ID required" });
       }
@@ -299,7 +318,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const deleted = await storage.deleteTranslation(key);
-      
+
       if (!deleted) {
         return res.status(404).json({ error: "Translation not found" });
       }
@@ -314,7 +333,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // SMTP Email API (replacing Supabase Edge Function)
   app.post("/api/send-email", async (req, res) => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       if (!userId) {
         return res.status(401).json({ error: "User ID required" });
       }
@@ -328,7 +347,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { to, subject, html } = req.body;
 
       if (!to || !subject || !html) {
-        return res.status(400).json({ error: "Missing required fields: to, subject, html" });
+        return res
+          .status(400)
+          .json({ error: "Missing required fields: to, subject, html" });
       }
 
       // Email validation
@@ -339,7 +360,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Rate limiting check (basic implementation)
       // In production, you might want to use Redis or a more sophisticated rate limiter
-      
+
       const smtpHost = process.env.SMTP_HOST!;
       const smtpPort = parseInt(process.env.SMTP_PORT || "587");
       const smtpUser = process.env.SMTP_USER!;
@@ -348,7 +369,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Simple nodemailer-like implementation
       // For production, consider using nodemailer package
       console.log(`Sending email to ${to} with subject: ${subject}`);
-      
+
       // Log the email attempt
       // await logEmailAttempt(userId, to, subject, 'sent');
 
@@ -359,10 +380,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Image Generation API (replacing Supabase Edge Function)
+  // OpenAI Image Generation API
   app.post("/api/generate-image", async (req, res) => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       if (!userId) {
         return res.status(401).json({ error: "User ID required" });
       }
@@ -374,59 +395,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       if (prompt.length > 1000) {
-        return res.status(400).json({ error: "Prompt too long (max 1000 characters)" });
+        return res
+          .status(400)
+          .json({ error: "Prompt too long (max 1000 characters)" });
       }
 
       const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
       if (!OPENAI_API_KEY) {
+        console.error("OPENAI_API_KEY not found in environment variables");
         return res.status(500).json({ error: "OpenAI API key not configured" });
       }
 
-      console.log('Generating image with prompt:', prompt);
+      console.log("Generating image with prompt:", prompt);
 
-      const response = await fetch('https://api.openai.com/v1/images/generations', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'dall-e-3',
-          prompt: prompt,
-          n: 1,
-          size: '1024x1024',
-          quality: 'hd'
-        }),
-      });
+      const response = await fetch(
+        "https://api.openai.com/v1/images/generations",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${OPENAI_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "dall-e-3",
+            prompt: prompt,
+            n: 1,
+            size: "1024x1024",
+            quality: "standard", // Changed from 'hd' to 'standard' - hd costs more
+          }),
+        }
+      );
 
       if (!response.ok) {
-        const error = await response.text();
-        console.error('OpenAI API error:', error);
-        return res.status(500).json({ error: `OpenAI API error: ${response.status}` });
+        const errorText = await response.text();
+        console.error("OpenAI API error:", response.status, errorText);
+
+        let errorMessage = "Failed to generate image";
+        if (response.status === 401) {
+          errorMessage = "Invalid OpenAI API key";
+        } else if (response.status === 429) {
+          errorMessage = "OpenAI API quota exceeded";
+        } else if (response.status === 400) {
+          errorMessage = "Invalid request to OpenAI API";
+        }
+
+        return res.status(response.status).json({ error: errorMessage });
       }
 
       const result = await response.json();
-      console.log('Image generation successful');
+      console.log("Image generation successful");
 
-      // Download the image and convert to base64
+      // Return the direct URL instead of converting to base64
+      // This is simpler and avoids potential memory issues with large images
       const imageUrl = result.data[0].url;
-      const imageResponse = await fetch(imageUrl);
-      const imageBuffer = await imageResponse.arrayBuffer();
-      
-      const uint8Array = new Uint8Array(imageBuffer);
-      let binaryString = '';
-      for (let i = 0; i < uint8Array.length; i++) {
-        binaryString += String.fromCharCode(uint8Array[i]);
-      }
-      const base64Image = Buffer.from(uint8Array).toString('base64');
 
-      res.json({ 
+      res.json({
         success: true,
-        imageData: base64Image,
-        format: 'png'
+        imageUrl: imageUrl, // Return direct URL instead of base64
       });
     } catch (error) {
-      console.error('Error generating image:', error);
+      console.error("Error generating image:", error);
       res.status(500).json({ error: "Failed to generate image" });
     }
   });

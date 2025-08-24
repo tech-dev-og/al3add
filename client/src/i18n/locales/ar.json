@@ -18,7 +18,37 @@
   "hero": {
     "title": "اكتشف كم تبقى",
     "subtitle": "تتبع الأحداث المهمة في حياتك مع عدادات تنازلية جميلة",
-    "cta": "ابدأ العد التنازلي"
+    "cta": "ابدأ العد التنازلي",
+    "welcomeTitle": "مرحباً بك في تطبيق العد التنازلي",
+    "welcomeSubtitle": "احتفل بلحظاتك المميزة واجعل كل حدث له عدّ تنازلي خاص به",
+    "timeUnits": {
+      "days": "يوم",
+      "hours": "ساعة",
+      "minutes": "دقيقة",
+      "seconds": "ثانية",
+      "remaining": "باقي",
+      "passed": "مضت"
+    },
+    "lifeEvents": {
+      "eidFitr": "عيد الفطر",
+      "eidFitrSub": "الاحتفال المبارك",
+      "birthday": "عيد الميلاد",
+      "birthdaySub": "يوم خاص",
+      "marriage": "الزواج",
+      "marriageSub": "بداية جديدة",
+      "graduation": "التخرج",
+      "graduationSub": "إنجاز عظيم",
+      "travel": "السفر",
+      "travelSub": "مغامرة جديدة",
+      "newborn": "مولود جديد",
+      "newbornSub": "بركة وفرحة",
+      "workStart": "بداية العمل",
+      "workStartSub": "خطوة مهمة",
+      "valentine": "عيد الحب",
+      "valentineSub": "لحظات رومانسية",
+      "ramadan": "رمضان",
+      "ramadanSub": "شهر الخير"
+    }
   },
   "events": {
     "addEvent": "إضافة حدث جديد",
@@ -124,6 +154,8 @@
     "hoursLeft": "{{count}} ساعة متبقية",
     "minutesLeft": "{{count}} دقيقة متبقية",
     "secondsLeft": "{{count}} ثانية متبقية",
+    "change": "تغيير",
+    "selectedEventType": "نوع الحدث المختار",
     "eventTypes": {
       "eid": "العيد",
       "ramadan": "رمضان",
@@ -166,37 +198,5 @@
     "enterTitleToGenerate": "أدخل عنوان الحدث لإنشاء صورة بالذكاء الاصطناعي",
     "uploading": "جاري الرفع...",
     "generating": "جاري الإنشاء..."
-  },
-  "hero": {
-    "welcomeTitle": "مرحباً بك في تطبيق العد التنازلي",
-    "welcomeSubtitle": "احتفل بلحظاتك المميزة واجعل كل حدث له عدّ تنازلي خاص به",
-    "timeUnits": {
-      "days": "يوم",
-      "hours": "ساعة",
-      "minutes": "دقيقة",
-      "seconds": "ثانية",
-      "remaining": "باقي",
-      "passed": "مضت"
-    },
-    "lifeEvents": {
-      "eidFitr": "عيد الفطر",
-      "eidFitrSub": "الاحتفال المبارك",
-      "birthday": "عيد الميلاد",
-      "birthdaySub": "يوم خاص",
-      "marriage": "الزواج",
-      "marriageSub": "بداية جديدة",
-      "graduation": "التخرج",
-      "graduationSub": "إنجاز عظيم",
-      "travel": "السفر",
-      "travelSub": "مغامرة جديدة",
-      "newborn": "مولود جديد",
-      "newbornSub": "بركة وفرحة",
-      "workStart": "بداية العمل",
-      "workStartSub": "خطوة مهمة",
-      "valentine": "عيد الحب",
-      "valentineSub": "لحظات رومانسية",
-      "ramadan": "رمضان",
-      "ramadanSub": "شهر الخير"
-    }
   }
 }

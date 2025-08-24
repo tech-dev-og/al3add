@@ -18,7 +18,37 @@
   "hero": {
     "title": "Discover How Much Time Remains",
     "subtitle": "Track life's important events with beautiful countdown timers",
-    "cta": "Start Counting Down"
+    "cta": "Start Counting Down",
+    "welcomeTitle": "Welcome to the Countdown App",
+    "welcomeSubtitle": "Celebrate your special moments and give each event its own countdown",
+    "timeUnits": {
+      "days": "days",
+      "hours": "hours", 
+      "minutes": "minutes",
+      "seconds": "seconds",
+      "remaining": "remaining",
+      "passed": "passed"
+    },
+    "lifeEvents": {
+      "eidFitr": "Eid Al-Fitr",
+      "eidFitrSub": "Blessed Celebration",
+      "birthday": "Birthday",
+      "birthdaySub": "Special Day",
+      "marriage": "Marriage", 
+      "marriageSub": "New Beginning",
+      "graduation": "Graduation",
+      "graduationSub": "Great Achievement",
+      "travel": "Travel",
+      "travelSub": "New Adventure",
+      "newborn": "Newborn",
+      "newbornSub": "Blessing And Joy",
+      "workStart": "Start Of Work",
+      "workStartSub": "An Important Step",
+      "valentine": "Valentine's Day",
+      "valentineSub": "Romantic Moments",
+      "ramadan": "Ramadan",
+      "ramadanSub": "Month Of Goodness"
+    }
   },
   "events": {
     "addEvent": "Add New Event",
@@ -124,6 +154,8 @@
     "hoursLeft": "{{count}} hours left",
     "minutesLeft": "{{count}} minutes left",
     "secondsLeft": "{{count}} seconds left",
+    "change": "Change",
+    "selectedEventType": "Selected Event Type",
     "eventTypes": {
       "eid": "Eid",
       "ramadan": "Ramadan",
@@ -166,37 +198,5 @@
     "enterTitleToGenerate": "Enter an event title to generate an AI image",
     "uploading": "Uploading...",
     "generating": "Generating..."
-  },
-  "hero": {
-    "welcomeTitle": "Welcome to the Countdown App",
-    "welcomeSubtitle": "Celebrate your special moments and give each event its own countdown",
-    "timeUnits": {
-      "days": "days",
-      "hours": "hours", 
-      "minutes": "minutes",
-      "seconds": "seconds",
-      "remaining": "remaining",
-      "passed": "passed"
-    },
-    "lifeEvents": {
-      "eidFitr": "Eid Al-Fitr",
-      "eidFitrSub": "Blessed Celebration",
-      "birthday": "Birthday",
-      "birthdaySub": "Special Day",
-      "marriage": "Marriage", 
-      "marriageSub": "New Beginning",
-      "graduation": "Graduation",
-      "graduationSub": "Great Achievement",
-      "travel": "Travel",
-      "travelSub": "New Adventure",
-      "newborn": "Newborn",
-      "newbornSub": "Blessing And Joy",
-      "workStart": "Start Of Work",
-      "workStartSub": "An Important Step",
-      "valentine": "Valentine's Day",
-      "valentineSub": "Romantic Moments",
-      "ramadan": "Ramadan",
-      "ramadanSub": "Month Of Goodness"
-    }
   }
 }

@@ -1,15 +1,25 @@
 import { useState, useRef, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import { ChevronDown, ChevronUp, Upload, X, Wand2, Image } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 interface EventData {
   title: string;
@@ -40,7 +50,15 @@ interface AddEventDialogProps {
   preSelectedEventType?: string;
 }
 
-export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, eventToEdit, isEdit = false, preSelectedEventType }: AddEventDialogProps) {
+export function AddEventDialog({
+  open,
+  onOpenChange,
+  onAddEvent,
+  onEditEvent,
+  eventToEdit,
+  isEdit = false,
+  preSelectedEventType,
+}: AddEventDialogProps) {
   const { t, i18n } = useTranslation();
   const { toast } = useToast();
   const [title, setTitle] = useState("");
@@ -53,38 +71,64 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
   const [isGenerating, setIsGenerating] = useState(false);
   const [showEventTypes, setShowEventTypes] = useState(true);
   const [showCalculationTypes, setShowCalculationTypes] = useState(false);
-  const [imageOption, setImageOption] = useState<'upload' | 'generate'>('upload');
+  const [imageOption, setImageOption] = useState<"upload" | "generate">(
+    "upload"
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const EVENT_TYPES = [
-    { id: 'eid', label: t('addEvent.eventTypes.eid'), icon: '🌙' },
-    { id: 'ramadan', label: t('addEvent.eventTypes.ramadan'), icon: '☪️' },
-    { id: 'love', label: t('addEvent.eventTypes.love'), icon: '💕' },
-    { id: 'exams', label: t('addEvent.eventTypes.exams'), icon: '📚' },
-    { id: 'birthday', label: t('addEvent.eventTypes.birthday'), icon: '🎂' },
-    { id: 'diet', label: t('addEvent.eventTypes.diet'), icon: '🥗' },
-    { id: 'exercise', label: t('addEvent.eventTypes.exercise'), icon: '💪' },
-    { id: 'travel', label: t('addEvent.eventTypes.travel'), icon: '✈️' },
-    { id: 'marriage', label: t('addEvent.eventTypes.marriage'), icon: '💍' },
-    { id: 'work', label: t('addEvent.eventTypes.work'), icon: '💼' },
-    { id: 'quitSmoking', label: t('addEvent.eventTypes.quitSmoking'), icon: '🚭' },
-    { id: 'newborn', label: t('addEvent.eventTypes.newborn'), icon: '👶' }
+    { id: "eid", label: t("addEvent.eventTypes.eid"), icon: "🌙" },
+    { id: "ramadan", label: t("addEvent.eventTypes.ramadan"), icon: "☪️" },
+    { id: "love", label: t("addEvent.eventTypes.love"), icon: "💕" },
+    { id: "exams", label: t("addEvent.eventTypes.exams"), icon: "📚" },
+    { id: "birthday", label: t("addEvent.eventTypes.birthday"), icon: "🎂" },
+    { id: "diet", label: t("addEvent.eventTypes.diet"), icon: "🥗" },
+    { id: "exercise", label: t("addEvent.eventTypes.exercise"), icon: "💪" },
+    { id: "travel", label: t("addEvent.eventTypes.travel"), icon: "✈️" },
+    { id: "marriage", label: t("addEvent.eventTypes.marriage"), icon: "💍" },
+    { id: "work", label: t("addEvent.eventTypes.work"), icon: "💼" },
+    {
+      id: "quitSmoking",
+      label: t("addEvent.eventTypes.quitSmoking"),
+      icon: "🚭",
+    },
+    { id: "newborn", label: t("addEvent.eventTypes.newborn"), icon: "👶" },
   ];
 
   const CALCULATION_TYPES = [
-    { id: 'days-left', label: t('addEvent.calculationTypes.daysLeft'), description: t('addEvent.calculationTypes.daysLeftDesc') },
-    { id: 'days-passed', label: t('addEvent.calculationTypes.daysPassed'), description: t('addEvent.calculationTypes.daysPassedDesc') },
-    { id: 'months-duration', label: t('addEvent.calculationTypes.monthsDuration'), description: t('addEvent.calculationTypes.monthsDurationDesc') },
-    { id: 'weeks-duration', label: t('addEvent.calculationTypes.weeksDuration'), description: t('addEvent.calculationTypes.weeksDurationDesc') },
-    { id: 'years-months', label: t('addEvent.calculationTypes.yearsMonths'), description: t('addEvent.calculationTypes.yearsMonthsDesc') }
+    {
+      id: "days-left",
+      label: t("addEvent.calculationTypes.daysLeft"),
+      description: t("addEvent.calculationTypes.daysLeftDesc"),
+    },
+    {
+      id: "days-passed",
+      label: t("addEvent.calculationTypes.daysPassed"),
+      description: t("addEvent.calculationTypes.daysPassedDesc"),
+    },
+    {
+      id: "months-duration",
+      label: t("addEvent.calculationTypes.monthsDuration"),
+      description: t("addEvent.calculationTypes.monthsDurationDesc"),
+    },
+    {
+      id: "weeks-duration",
+      label: t("addEvent.calculationTypes.weeksDuration"),
+      description: t("addEvent.calculationTypes.weeksDurationDesc"),
+    },
+    {
+      id: "years-months",
+      label: t("addEvent.calculationTypes.yearsMonths"),
+      description: t("addEvent.calculationTypes.yearsMonthsDesc"),
+    },
   ];
 
   const REPEAT_OPTIONS = [
-    { id: 'none', label: t('addEvent.repeatOptions.none') },
-    { id: 'daily', label: t('addEvent.repeatOptions.daily') },
-    { id: 'weekly', label: t('addEvent.repeatOptions.weekly') },
-    { id: 'monthly', label: t('addEvent.repeatOptions.monthly') },
-    { id: 'yearly', label: t('addEvent.repeatOptions.yearly') }
+    { id: "none", label: t("addEvent.repeatOptions.none") },
+    { id: "daily", label: t("addEvent.repeatOptions.daily") },
+    { id: "weekly", label: t("addEvent.repeatOptions.weekly") },
+    { id: "monthly", label: t("addEvent.repeatOptions.monthly") },
+    { id: "yearly", label: t("addEvent.repeatOptions.yearly") },
   ];
 
   // Reset form fields when dialog opens/closes or when switching between add/edit modes
@@ -99,9 +143,13 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
       // Set image option based on existing background image
       if (eventToEdit.backgroundImage) {
         // If it starts with data: it's likely AI generated, otherwise uploaded
-        setImageOption(eventToEdit.backgroundImage.startsWith('data:') ? 'generate' : 'upload');
+        setImageOption(
+          eventToEdit.backgroundImage.startsWith("data:")
+            ? "generate"
+            : "upload"
+        );
       } else {
-        setImageOption('upload');
+        setImageOption("upload");
       }
     } else if (open && !isEdit) {
       setTitle("");
@@ -110,11 +158,13 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
       setCalculationType("days-left");
       setRepeatOption("none");
       setBackgroundImage("");
-      setImageOption('upload');
+      setImageOption("upload");
     }
   }, [open, isEdit, eventToEdit, preSelectedEventType]);
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -129,7 +179,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
     }
 
     // Check file type
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith("image/")) {
       toast({
         title: t("error"),
         description: "Please select an image file",
@@ -161,7 +211,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
       };
       reader.readAsDataURL(file);
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error("Error uploading image:", error);
       toast({
         title: t("error"),
         description: "Failed to upload image",
@@ -170,6 +220,8 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
       setIsUploading(false);
     }
   };
+
+  // Replace your handleGenerateImage function with this:
 
   const handleGenerateImage = async () => {
     if (!title.trim()) {
@@ -184,42 +236,69 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
     setIsGenerating(true);
 
     try {
-      const eventTypeName = EVENT_TYPES.find(type => type.id === eventType)?.label || eventType;
-      const prompt = `A beautiful, high-quality image for "${title}" ${eventTypeName ? `related to ${eventTypeName}` : ''}. Make it colorful, inspiring and suitable as a background image.`;
-      
-      console.log('Generating image with prompt:', prompt);
+      const eventTypeName =
+        EVENT_TYPES.find((type) => type.id === eventType)?.label || eventType;
+      const prompt = `A beautiful, high-quality image for "${title}" ${
+        eventTypeName ? `related to ${eventTypeName}` : ""
+      }. Make it colorful, inspiring and suitable as a background image.`;
 
-      const { data, error } = await supabase.functions.invoke('generate-event-image', {
-        body: { prompt }
+      console.log("Generating image with prompt:", prompt);
+
+      // Generate a user ID if you don't have one (for testing)
+      // In production, this should come from your authentication system
+      const userId = "user_" + Math.random().toString(36).substr(2, 9);
+
+      const response = await fetch("/api/generate-image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": userId, // Required by your backend
+        },
+        body: JSON.stringify({ prompt }),
       });
 
-      if (error) {
-        console.error('Error calling edge function:', error);
-        throw new Error(error.message || 'Failed to generate image');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}`);
       }
 
-      if (data.success && data.imageData) {
-        const imageUrl = `data:image/${data.format || 'png'};base64,${data.imageData}`;
-        setBackgroundImage(imageUrl);
+      const data = await response.json();
+
+      if (data.success && data.imageUrl) {
+        setBackgroundImage(data.imageUrl);
         toast({
           title: t("success"),
           description: "Image generated successfully!",
         });
       } else {
-        throw new Error(data.error || 'Failed to generate image');
+        throw new Error(data.error || "Failed to generate image");
       }
     } catch (error) {
-      console.error('Error generating image:', error);
+      console.error("Error generating image:", error);
+
+      let errorMessage = "Failed to generate image";
+
+      if (error.message.includes("User ID required")) {
+        errorMessage = "Authentication error. Please refresh the page.";
+      } else if (error.message.includes("Invalid OpenAI API key")) {
+        errorMessage = "Server configuration error. Please contact support.";
+      } else if (error.message.includes("quota exceeded")) {
+        errorMessage = "API quota exceeded. Please try again later.";
+      } else if (error.message.includes("Invalid request")) {
+        errorMessage = "Invalid request. Please try a different prompt.";
+      } else {
+        errorMessage = error.message || "Failed to generate image";
+      }
+
       toast({
         title: t("error"),
-        description: error instanceof Error ? error.message : "Failed to generate image",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
       setIsGenerating(false);
     }
   };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title && date && eventType) {
@@ -229,7 +308,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
       }
 
       // Sanitize title to prevent XSS
-      const sanitizedTitle = title.replace(/<[^>]*>/g, '').trim();
+      const sanitizedTitle = title.replace(/<[^>]*>/g, "").trim();
 
       const eventData = {
         title: sanitizedTitle,
@@ -264,17 +343,18 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent 
+      <DialogContent
         className="sm:max-w-2xl w-full max-w-[95vw] max-h-[90vh] overflow-y-auto"
-        dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
+        dir={i18n.language === "ar" ? "rtl" : "ltr"}
       >
         <DialogHeader>
           <DialogTitle className="text-xl text-center">
-            {isEdit ? t('addEvent.editEvent') : t('addEvent.whatEventType')}
+            {isEdit ? t("addEvent.editEvent") : t("addEvent.whatEventType")}
           </DialogTitle>
           <p className="text-sm text-muted-foreground text-center">
-            {t('addEvent.cantFindEvent')}<br />
-            {t('addEvent.chooseHereToCreate')}
+            {t("addEvent.cantFindEvent")}
+            <br />
+            {t("addEvent.chooseHereToCreate")}
           </p>
         </DialogHeader>
 
@@ -297,7 +377,9 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
                     )}
                   >
                     <span className="text-2xl">{type.icon}</span>
-                    <span className="text-xs text-center px-1">{type.label}</span>
+                    <span className="text-xs text-center px-1">
+                      {type.label}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -317,7 +399,9 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
                       )}
                     >
                       <span className="text-2xl">{type.icon}</span>
-                      <span className="text-xs text-center px-1">{type.label}</span>
+                      <span className="text-xs text-center px-1">
+                        {type.label}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -327,14 +411,14 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
             <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">
-                  {EVENT_TYPES.find(type => type.id === eventType)?.icon}
+                  {EVENT_TYPES.find((type) => type.id === eventType)?.icon}
                 </span>
                 <div>
                   <div className="font-medium">
-                    {EVENT_TYPES.find(type => type.id === eventType)?.label}
+                    {EVENT_TYPES.find((type) => type.id === eventType)?.label}
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    {t('addEvent.selectedEventType')}
+                    {t("addEvent.selectedEventType")}
                   </div>
                 </div>
               </div>
@@ -344,7 +428,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
                 size="sm"
                 onClick={() => setEventType("")}
               >
-                {t('addEvent.change')}
+                {t("addEvent.change")}
               </Button>
             </div>
           )}
@@ -356,11 +440,21 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
               onClick={() => setShowCalculationTypes(!showCalculationTypes)}
               className="w-full flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
             >
-              <div className={cn(i18n.language === 'ar' ? "text-right" : "text-left")}>
-                <h3 className="font-medium">{t('addEvent.dayCalculation')}</h3>
-                <p className="text-sm text-muted-foreground">{t('addEvent.dayCalculationDesc')}</p>
+              <div
+                className={cn(
+                  i18n.language === "ar" ? "text-right" : "text-left"
+                )}
+              >
+                <h3 className="font-medium">{t("addEvent.dayCalculation")}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("addEvent.dayCalculationDesc")}
+                </p>
               </div>
-              {showCalculationTypes ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              {showCalculationTypes ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
             </button>
 
             {showCalculationTypes && (
@@ -372,12 +466,15 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
                     onClick={() => setCalculationType(type.id)}
                     className={cn(
                       "p-3 rounded-lg border transition-all hover:bg-muted/50",
-                      i18n.language === 'ar' ? "text-right" : "text-left",
-                      calculationType === type.id && "bg-primary/10 border-primary"
+                      i18n.language === "ar" ? "text-right" : "text-left",
+                      calculationType === type.id &&
+                        "bg-primary/10 border-primary"
                     )}
                   >
                     <div className="font-medium text-accent">{type.label}</div>
-                    <div className="text-sm text-muted-foreground">{type.description}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {type.description}
+                    </div>
                   </button>
                 ))}
               </div>
@@ -386,13 +483,15 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
 
           {/* Event Title */}
           <div className="space-y-2">
-            <Label htmlFor="title">{t('addEvent.eventTitle')}</Label>
+            <Label htmlFor="title">{t("addEvent.eventTitle")}</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder={t('addEvent.eventTitlePlaceholder')}
-              className={cn(i18n.language === 'ar' ? "text-right" : "text-left")}
+              placeholder={t("addEvent.eventTitlePlaceholder")}
+              className={cn(
+                i18n.language === "ar" ? "text-right" : "text-left"
+              )}
               maxLength={100}
               required
             />
@@ -400,62 +499,62 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
 
           {/* Date Selection */}
           <div className="space-y-2">
-            <Label>{t('addEvent.eventDate')}</Label>
+            <Label>{t("addEvent.eventDate")}</Label>
             <EnhancedDatePicker
               date={date}
               onSelect={setDate}
-              disabled={(date) => 
-                calculationType === "days-passed" || 
-                calculationType === "months-duration" || 
-                calculationType === "weeks-duration" || 
-                calculationType === "years-months" 
-                  ? false 
+              disabled={(date) =>
+                calculationType === "days-passed" ||
+                calculationType === "months-duration" ||
+                calculationType === "weeks-duration" ||
+                calculationType === "years-months"
+                  ? false
                   : date < new Date()
               }
-              placeholder={t('addEvent.chooseDate')}
+              placeholder={t("addEvent.chooseDate")}
             />
           </div>
 
           {/* Background Image Section */}
           <div className="space-y-3">
-            <Label>{t('addEvent.backgroundImage')}</Label>
-            
+            <Label>{t("addEvent.backgroundImage")}</Label>
+
             {/* Image Option Toggle */}
             <div className="flex gap-2 p-1 bg-muted rounded-lg">
               <button
                 type="button"
-                onClick={() => setImageOption('upload')}
+                onClick={() => setImageOption("upload")}
                 className={cn(
                   "flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm transition-all",
-                  imageOption === 'upload' 
-                    ? "bg-background shadow-sm text-foreground" 
+                  imageOption === "upload"
+                    ? "bg-background shadow-sm text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <Upload className="h-4 w-4" />
-                {t('addEvent.uploadImage')}
+                {t("addEvent.uploadImage")}
               </button>
               <button
                 type="button"
-                onClick={() => setImageOption('generate')}
+                onClick={() => setImageOption("generate")}
                 className={cn(
                   "flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm transition-all",
-                  imageOption === 'generate' 
-                    ? "bg-background shadow-sm text-foreground" 
+                  imageOption === "generate"
+                    ? "bg-background shadow-sm text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <Wand2 className="h-4 w-4" />
-                {t('addEvent.generateWithAI')}
+                {t("addEvent.generateWithAI")}
               </button>
             </div>
 
             {/* Image Preview */}
             {backgroundImage && (
               <div className="relative">
-                <img 
-                  src={backgroundImage} 
-                  alt="Event background" 
+                <img
+                  src={backgroundImage}
+                  alt="Event background"
                   className="w-full h-32 object-cover rounded-md border"
                 />
                 <Button
@@ -469,9 +568,9 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
                 </Button>
               </div>
             )}
-            
+
             {/* Upload Option */}
-            {imageOption === 'upload' && (
+            {imageOption === "upload" && (
               <>
                 <input
                   ref={fileInputRef}
@@ -488,11 +587,13 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
                   className="w-full"
                 >
                   {isUploading ? (
-                    t('addEvent.uploading')
+                    t("addEvent.uploading")
                   ) : (
                     <>
                       <Upload className="h-4 w-4 mr-2" />
-                      {backgroundImage ? t('addEvent.changeImage') : t('addEvent.uploadImage')}
+                      {backgroundImage
+                        ? t("addEvent.changeImage")
+                        : t("addEvent.uploadImage")}
                     </>
                   )}
                 </Button>
@@ -500,7 +601,7 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
             )}
 
             {/* Generate Option */}
-            {imageOption === 'generate' && (
+            {imageOption === "generate" && (
               <Button
                 type="button"
                 variant="outline"
@@ -509,29 +610,31 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
                 className="w-full"
               >
                 {isGenerating ? (
-                  t('addEvent.generating')
+                  t("addEvent.generating")
                 ) : (
                   <>
                     <Wand2 className="h-4 w-4 mr-2" />
-                    {backgroundImage ? t('addEvent.generateNewImage') : t('addEvent.generateImageWithAI')}
+                    {backgroundImage
+                      ? t("addEvent.generateNewImage")
+                      : t("addEvent.generateImageWithAI")}
                   </>
                 )}
               </Button>
             )}
 
-            {imageOption === 'generate' && !title.trim() && (
+            {imageOption === "generate" && !title.trim() && (
               <p className="text-xs text-muted-foreground">
-                {t('addEvent.enterTitleToGenerate')}
+                {t("addEvent.enterTitleToGenerate")}
               </p>
             )}
           </div>
 
           {/* Repeat Options */}
           <div className="space-y-2">
-            <Label>{t('addEvent.repeat')}</Label>
+            <Label>{t("addEvent.repeat")}</Label>
             <Select value={repeatOption} onValueChange={setRepeatOption}>
               <SelectTrigger>
-                <SelectValue placeholder={t('addEvent.chooseRepeatType')} />
+                <SelectValue placeholder={t("addEvent.chooseRepeatType")} />
               </SelectTrigger>
               <SelectContent>
                 {REPEAT_OPTIONS.map((option) => (
@@ -544,11 +647,20 @@ export function AddEventDialog({ open, onOpenChange, onAddEvent, onEditEvent, ev
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="flex-1">
-              {t('addEvent.cancel')}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              className="flex-1"
+            >
+              {t("addEvent.cancel")}
             </Button>
-            <Button type="submit" className="flex-1 bg-gradient-primary" disabled={!title || !date || !eventType}>
-              {isEdit ? t('addEvent.editEvent') : t('addEvent.addEvent')}
+            <Button
+              type="submit"
+              className="flex-1 bg-gradient-primary"
+              disabled={!title || !date || !eventType}
+            >
+              {isEdit ? t("addEvent.editEvent") : t("addEvent.addEvent")}
             </Button>
           </div>
         </form>
