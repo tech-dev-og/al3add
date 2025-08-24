@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { useLocation } from 'wouter';
 import { TranslationManager } from '@/components/admin/translation-manager';
 import { AdminSidebar } from '@/components/admin/admin-sidebar';
 import { AdminDashboard } from '@/components/admin/admin-dashboard';
@@ -8,52 +7,55 @@ import { UserManagement } from '@/components/admin/user-management';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Admin = () => {
-  const navigate = useNavigate();
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
+  const { user, isLoading: authLoading } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
 
   useEffect(() => {
     const checkAuth = async () => {
+      if (authLoading) return;
+      
+      if (!user) {
+        toast({
+          title: 'Access Denied',
+          description: 'You must be logged in to access the admin panel',
+          variant: 'destructive',
+        });
+        setLocation('/auth');
+        return;
+      }
+
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!session) {
-          toast({
-            title: 'Access Denied',
-            description: 'You must be logged in to access the admin panel',
-            variant: 'destructive',
-          });
-          navigate('/auth');
-          return;
-        }
-
         // Check if user has admin role
-        const { data: hasAdminRole, error } = await supabase
-          .rpc('has_role', { _user_id: session.user.id, _role: 'admin' });
+        const response = await fetch('/api/user/role/check', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ role: 'admin' }),
+          credentials: 'include',
+        });
 
-        if (error) {
-          console.error('Error checking admin role:', error);
-          toast({
-            title: 'Access Error',
-            description: 'Unable to verify admin permissions',
-            variant: 'destructive',
-          });
-          navigate('/');
-          return;
+        if (!response.ok) {
+          throw new Error('Failed to check admin role');
         }
 
-        if (!hasAdminRole) {
+        const { hasRole } = await response.json();
+
+        if (!hasRole) {
           toast({
             title: 'Access Denied',
             description: 'Admin privileges required to access this panel',
             variant: 'destructive',
           });
-          navigate('/');
+          setLocation('/');
           return;
         }
 
@@ -65,14 +67,14 @@ const Admin = () => {
           description: 'Authentication check failed',
           variant: 'destructive',
         });
-        navigate('/');
+        setLocation('/');
       } finally {
         setIsLoading(false);
       }
     };
 
     checkAuth();
-  }, [navigate, toast]);
+  }, [user, authLoading, setLocation, toast]);
 
   if (isLoading) {
     return (
@@ -122,7 +124,7 @@ const Admin = () => {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => navigate('/')}
+              onClick={() => setLocation('/')}
               className="flex items-center gap-1 sm:gap-2 text-sm"
             >
               <ArrowLeft className="w-4 h-4" />

@@ -431,21 +431,32 @@ const Index = () => {
           <div className="flex items-center gap-1 sm:gap-2">
             {user ? (
               <>
-                <div className="hidden md:flex items-center gap-2 mr-2">
-                  <Avatar className="h-6 w-6">
+                <div className="flex items-center gap-2 mr-2">
+                  <Avatar className="h-8 w-8 ring-2 ring-primary/20">
                     <AvatarImage 
                       src={user.profileImageUrl} 
                       alt={user.email?.split('@')[0] || 'User'}
                       className="object-cover"
                     />
-                    <AvatarFallback className="text-xs bg-gradient-primary text-primary-foreground">
+                    <AvatarFallback className="text-sm bg-gradient-primary text-primary-foreground font-semibold">
                       {user.email?.charAt(0).toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm text-muted-foreground truncate max-w-[100px]">
-                    {user.email?.split('@')[0]}
-                  </span>
+                  <div className="hidden md:block">
+                    <span className="text-sm text-muted-foreground truncate max-w-[100px]">
+                      {user.email?.split('@')[0]}
+                    </span>
+                  </div>
                 </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setLocation("/admin")}
+                  className="h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-3"
+                  title="Admin Panel"
+                >
+                  ⚙️
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"
