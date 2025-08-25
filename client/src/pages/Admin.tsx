@@ -74,7 +74,7 @@ const Admin = () => {
     };
 
     checkAuth();
-  }, [user, authLoading, setLocation, toast]);
+  }, [user, authLoading, navigate, toast]);
 
   if (isLoading) {
     return (
