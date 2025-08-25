@@ -1,8 +1,85 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Activity, Users, Calendar, Languages } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
+
+interface DashboardStats {
+  userCount: number;
+  eventCount: number;
+  translationCount: number;
+  activeSessions: number;
+}
 
 export const AdminDashboard = () => {
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    loadDashboardStats();
+  }, []);
+
+  const loadDashboardStats = async () => {
+    try {
+      const response = await fetch('/api/admin/stats', {
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch dashboard statistics');
+      }
+      
+      const statsData = await response.json();
+      setStats(statsData);
+    } catch (error) {
+      console.error('Error loading dashboard stats:', error);
+      toast({
+        title: 'Error loading dashboard',
+        description: 'Failed to load dashboard statistics',
+        variant: 'destructive',
+      });
+      // Set default values on error
+      setStats({
+        userCount: 0,
+        eventCount: 0,
+        translationCount: 0,
+        activeSessions: 0,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold flex items-center gap-2">
+            <Activity className="h-6 w-6" />
+            Dashboard Overview
+          </h2>
+          <p className="text-muted-foreground">System overview and key metrics</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i}>
+              <CardHeader className="pb-3">
+                <Skeleton className="h-6 w-24" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-16 mb-2" />
+                <Skeleton className="h-4 w-32" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -22,8 +99,8 @@ export const AdminDashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">1,234</div>
-            <p className="text-sm text-muted-foreground">+12% from last month</p>
+            <div className="text-3xl font-bold">{stats?.userCount || 0}</div>
+            <p className="text-sm text-muted-foreground">Total registered users</p>
           </CardContent>
         </Card>
         
@@ -35,8 +112,8 @@ export const AdminDashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">5,678</div>
-            <p className="text-sm text-muted-foreground">+8% from last month</p>
+            <div className="text-3xl font-bold">{stats?.eventCount || 0}</div>
+            <p className="text-sm text-muted-foreground">Total events created</p>
           </CardContent>
         </Card>
         
@@ -48,7 +125,7 @@ export const AdminDashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">245</div>
+            <div className="text-3xl font-bold">{stats?.translationCount || 0}</div>
             <p className="text-sm text-muted-foreground">Active translations</p>
           </CardContent>
         </Card>
@@ -61,8 +138,8 @@ export const AdminDashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">89</div>
-            <p className="text-sm text-muted-foreground">Currently online</p>
+            <div className="text-3xl font-bold">{stats?.activeSessions || 0}</div>
+            <p className="text-sm text-muted-foreground">Active sessions</p>
           </CardContent>
         </Card>
       </div>

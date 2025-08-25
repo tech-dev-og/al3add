@@ -7,17 +7,19 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useToast } from '@/hooks/use-toast';
 import { User, Shield, Calendar } from 'lucide-react';
 
-interface User {
+interface UserWithRole {
   id: string;
   email: string;
-  created_at: string;
+  firstName?: string;
+  lastName?: string;
+  profileImageUrl?: string;
+  createdAt: string;
   role?: string;
-  display_name?: string;
-  event_count?: number;
+  eventCount?: number;
 }
 
 export const UserManagement = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserWithRole[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
@@ -27,47 +29,17 @@ export const UserManagement = () => {
 
   const loadUsers = async () => {
     try {
-      // Get basic user data first
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, user_id, display_name, created_at');
-
-      if (profilesError) throw profilesError;
-
-      // Get user roles
-      const { data: rolesData, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('user_id, role');
-
-      if (rolesError) throw rolesError;
-
-      // Get event counts - get all events and count client-side
-      const { data: eventsData, error: eventsError } = await supabase
-        .from('events')
-        .select('user_id');
-
-      if (eventsError) console.log('Events error (non-critical):', eventsError);
-
-      // Count events per user
-      const eventCounts = eventsData?.reduce((acc, event) => {
-        acc[event.user_id] = (acc[event.user_id] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>) || {};
-
-      // Transform and combine data
-      const transformedUsers = profilesData?.map(profile => {
-        const userRole = rolesData?.find(role => role.user_id === profile.user_id);
-        return {
-          id: profile.user_id,
-          email: 'user@example.com', // We can't get email from profiles table
-          created_at: profile.created_at,
-          role: userRole?.role || null,
-          display_name: profile.display_name,
-          event_count: eventCounts[profile.user_id] || 0
-        };
-      }) || [];
+      // Get all users with their details
+      const usersResponse = await fetch('/api/admin/users', {
+        credentials: 'include',
+      });
       
-      setUsers(transformedUsers);
+      if (!usersResponse.ok) {
+        throw new Error('Failed to fetch users');
+      }
+      
+      const usersData = await usersResponse.json();
+      setUsers(usersData);
     } catch (error) {
       console.error('Error loading users:', error);
       toast({
@@ -82,39 +54,28 @@ export const UserManagement = () => {
 
   const updateUserRole = async (userId: string, newRole: string) => {
     try {
-      if (newRole === 'none') {
-        // Remove all roles
-        const { error } = await supabase
-          .from('user_roles')
-          .delete()
-          .eq('user_id', userId);
-        
-        if (error) throw error;
-      } else {
-        // First remove existing roles
-        await supabase
-          .from('user_roles')
-          .delete()
-          .eq('user_id', userId);
-        
-        // Then add new role - ensure the role matches the enum
-        const roleValue = newRole as 'admin' | 'moderator' | 'user';
-        const { error } = await supabase
-          .from('user_roles')
-          .insert({ user_id: userId, role: roleValue });
-        
-        if (error) throw error;
+      const response = await fetch('/api/admin/users/role', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ userId, role: newRole }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update user role');
       }
       
-      // Refresh users list
-      loadUsers();
+      // Refresh the users list
+      await loadUsers();
       
       toast({
         title: 'Role updated successfully',
-        description: `User role has been updated`,
+        description: `User role has been ${newRole === 'none' ? 'removed' : 'updated to ' + newRole}`,
       });
     } catch (error) {
-      console.error('Error updating role:', error);
+      console.error('Error updating user role:', error);
       toast({
         title: 'Error updating role',
         description: 'Please try again',
@@ -184,7 +145,7 @@ export const UserManagement = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {users.filter(u => (u.event_count || 0) > 0).length}
+              {users.filter(u => (u.eventCount || 0) > 0).length}
             </div>
           </CardContent>
         </Card>
@@ -209,8 +170,17 @@ export const UserManagement = () => {
             <TableBody>
               {users.map((user) => (
                 <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.email}</TableCell>
-                  <TableCell>{user.display_name || '-'}</TableCell>
+                  <TableCell className="font-medium">
+                    <div>
+                      <div>{user.email}</div>
+                      {(user.firstName || user.lastName) && (
+                        <div className="text-sm text-muted-foreground">
+                          {user.firstName} {user.lastName}
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>{(user.firstName || user.lastName) ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : '-'}</TableCell>
                   <TableCell>
                     {user.role ? (
                       <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
@@ -220,9 +190,9 @@ export const UserManagement = () => {
                       <Badge variant="outline">user</Badge>
                     )}
                   </TableCell>
-                  <TableCell>{user.event_count || 0}</TableCell>
+                  <TableCell>{user.eventCount || 0}</TableCell>
                   <TableCell>
-                    {new Date(user.created_at).toLocaleDateString()}
+                    {new Date(user.createdAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
                     <Select 

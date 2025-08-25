@@ -54,6 +54,10 @@ export interface IStorage {
   createTranslation(translation: InsertTranslation): Promise<Translation>;
   updateTranslation(key: string, updates: Partial<Translation>): Promise<Translation | undefined>;
   deleteTranslation(key: string): Promise<boolean>;
+  
+  // Admin methods
+  getAllUsersWithRoles(): Promise<any[]>;
+  updateUserRole(userId: string, role: string): Promise<void>;
 }
 
 export class PostgresStorage implements IStorage {
@@ -199,6 +203,50 @@ export class PostgresStorage implements IStorage {
       .where(eq(translations.key, key))
       .returning();
     return result.length > 0;
+  }
+
+  // Admin methods
+  async getAllUsersWithRoles(): Promise<any[]> {
+    const usersWithRoles = await db
+      .select({
+        id: users.id,
+        email: users.email,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        profileImageUrl: users.profileImageUrl,
+        createdAt: users.createdAt,
+        role: userRoles.role,
+        eventCount: 0, // Will be calculated below
+      })
+      .from(users)
+      .leftJoin(userRoles, eq(users.id, userRoles.userId));
+
+    // Get event counts for each user
+    const eventsData = await db.select().from(events);
+    const eventCounts = eventsData.reduce((acc: Record<string, number>, event) => {
+      acc[event.userId] = (acc[event.userId] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Add event counts to users
+    return usersWithRoles.map(user => ({
+      ...user,
+      eventCount: eventCounts[user.id] || 0,
+    }));
+  }
+
+  async updateUserRole(userId: string, role: string): Promise<void> {
+    if (role === 'none') {
+      // Remove all roles for this user
+      await db.delete(userRoles).where(eq(userRoles.userId, userId));
+    } else {
+      // First remove existing roles, then add new one
+      await db.delete(userRoles).where(eq(userRoles.userId, userId));
+      await db.insert(userRoles).values({
+        userId,
+        role: role as 'admin' | 'moderator' | 'user',
+      });
+    }
   }
 }
 
