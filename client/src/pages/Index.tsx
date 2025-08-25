@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
 import { CountdownCard } from "@/components/ui/countdown-card";
@@ -38,7 +38,7 @@ const Index = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [preSelectedEventType, setPreSelectedEventType] = useState<string>("");
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const [location, setLocation] = useLocation();
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   // Update loading state when auth loading changes
@@ -197,7 +197,7 @@ const Index = () => {
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={() => setLocation("/auth")}
+            onClick={() => navigate("/auth")}
             className="ml-2"
           >
             تسجيل الدخول
@@ -415,7 +415,7 @@ const Index = () => {
         <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4 flex items-center justify-between">
           <div 
             className="flex items-center gap-2 sm:gap-3 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => setLocation("/")}
+            onClick={() => navigate("/")}
           >
             <div className="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-primary rounded-full flex items-center justify-center">
               <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
@@ -451,7 +451,7 @@ const Index = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setLocation("/admin")}
+                  onClick={() => navigate("/admin")}
                   className="h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-3"
                   title="Admin Panel"
                 >
@@ -471,7 +471,7 @@ const Index = () => {
               <Button
                 variant="default"
                 size="sm"
-                onClick={() => setLocation("/auth")}
+                onClick={() => navigate("/auth")}
                 className="h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-3"
               >
                 <User className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />

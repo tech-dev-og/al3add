@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from 'wouter';
+import { useNavigate } from 'react-router-dom';
 import { TranslationManager } from '@/components/admin/translation-manager';
 import { AdminSidebar } from '@/components/admin/admin-sidebar';
 import { AdminDashboard } from '@/components/admin/admin-dashboard';
@@ -11,7 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Admin = () => {
-  const [location, setLocation] = useLocation();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { user, isLoading: authLoading } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
@@ -28,7 +28,7 @@ const Admin = () => {
           description: 'You must be logged in to access the admin panel',
           variant: 'destructive',
         });
-        setLocation('/auth');
+        navigate('/auth');
         return;
       }
 
@@ -55,7 +55,7 @@ const Admin = () => {
             description: 'Admin privileges required to access this panel',
             variant: 'destructive',
           });
-          setLocation('/');
+          navigate('/');
           return;
         }
 
@@ -67,7 +67,7 @@ const Admin = () => {
           description: 'Authentication check failed',
           variant: 'destructive',
         });
-        setLocation('/');
+        navigate('/');
       } finally {
         setIsLoading(false);
       }
@@ -124,7 +124,7 @@ const Admin = () => {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => setLocation('/')}
+              onClick={() => navigate('/')}
               className="flex items-center gap-1 sm:gap-2 text-sm"
             >
               <ArrowLeft className="w-4 h-4" />
